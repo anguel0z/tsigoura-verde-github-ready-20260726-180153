@@ -1070,6 +1070,40 @@ body{background:var(--paper)!important;}
 .announce.nudging{animation:annIn .8s var(--ez-out) both,
                             annSheen 7.5s var(--ez-inout) 1.2s infinite,
                             annRing 2.1s ease-out 1s infinite!important;}
+/* ── banner polish: hierarchy + real press feedback ───────────────────────── */
+.announce{padding:17px 18px 16px!important;
+  -webkit-tap-highlight-color:transparent!important;
+  user-select:none;-webkit-user-select:none;}
+/* `scale` is its own property, so it composes with the transform that annIn
+   holds via fill:both — a transform-based :active would simply be ignored. */
+.announce:active{scale:.982;filter:brightness(1.07) saturate(1.06)!important;}
+.announce .kick{position:relative;z-index:2;display:inline-block;margin-bottom:7px;
+  padding:3px 9px;border-radius:999px;
+  background:rgba(255,236,204,.20);border:1px solid rgba(255,226,178,.42);
+  color:#FFE7C2;font-size:9.5px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;}
+.announce .ttl{padding-right:44px!important;}
+.announce .bd{margin-top:6px!important;padding-right:44px!important;}
+
+/* special menu inside the category rail */
+.tab.special-tab{background:linear-gradient(122deg,#8E3616,#C98B3E)!important;
+  border-color:rgba(255,214,150,.55)!important;color:#FFF3E0!important;
+  font-weight:800!important;box-shadow:0 6px 16px rgba(122,46,18,.28)!important;}
+.tab.special-tab .sp-em{font-size:15px;line-height:1;}
+.tab.special-tab:active{scale:.96;}
+/* and as the first card in the category landing */
+.guide-menu-card.special-card{--acc:#C98B3E;
+  background:linear-gradient(135deg,#40160A 0%,#8E3616 52%,#C98B3E 100%)!important;
+  border-color:rgba(255,214,150,.42)!important;
+  box-shadow:0 18px 40px rgba(92,32,10,.34)!important;}
+.guide-menu-card.special-card .guide-menu-icon{background:rgba(255,247,235,.16)!important;
+  border-color:rgba(255,226,178,.34)!important;font-size:34px;}
+.guide-menu-card.special-card b{color:#FFF3E0!important;}
+.guide-menu-card.special-card b em{display:block;font-style:normal;
+  font-family:system-ui,-apple-system,sans-serif;
+  font-size:12.5px;font-weight:650;letter-spacing:.2px;
+  color:rgba(255,238,214,.88);margin-top:4px;}
+.guide-menu-card.special-card i{color:#FFD79A!important;}
+
 /* explicit button-looking CTA inside the banner */
 @keyframes ctaArrow{0%,100%{transform:translateX(0);}50%{transform:translateX(4px);}}
 .announce .ann-cta{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;
@@ -3000,6 +3034,15 @@ function renderTabs(){
   const shouldShow=menuView()==='list' && !cleanSearch(searchValue()) && cats.length > 1 && !document.body.classList.contains('sheet-open');
   document.body.classList.toggle('no-category-tabs', !shouldShow);
   if(!shouldShow) return;
+  /* The special menu belongs in the category rail too — not everyone taps
+     the banner, and some guests scroll straight past it to the categories. */
+  if(!specialMenuActive && announcementIsLive() && specialMenuIds().length){
+    const sp=document.createElement('button');
+    sp.className='tab special-tab';
+    sp.setAttribute('data-special-open','');
+    sp.innerHTML=`<span class="sp-em">${esc((activeAnnouncement()||{}).emoji||'🔥')}</span>${esc(SU('special'))}`;
+    row.appendChild(sp);
+  }
   cats.forEach((c,ix)=>{
     const b=document.createElement('button');
     b.className='tab'+(activeCat===c.id?' on':''); b.dataset.cat=c.id; b.dataset.adminCat=c.id;
@@ -3254,6 +3297,12 @@ function guideLandingHTML(cats){
       ${specialMenuActive?`<button class="special-exit" type="button" data-special-exit>${esc(SU('full'))}</button>`:''}
     </div>
     <div class="guide-menu">
+      ${(!specialMenuActive && announcementIsLive() && specialMenuIds().length) ? `
+        <button type="button" class="guide-menu-card special-card" data-special-open>
+          <span class="guide-menu-icon">${(activeAnnouncement()||{}).emoji||'🔥'}</span>
+          <b>${esc(SU('special'))}<em>${esc(CTA())}</em></b>
+          <i>›</i>
+        </button>` : ''}
       ${cats.map((c,k)=>{
         const acc=[c.accent||CAT_ACC[k%CAT_ACC.length][0], c.tint||CAT_ACC[k%CAT_ACC.length][1]];
         return `<button type="button" class="guide-menu-card" data-guide-pick="${esc(c.id)}" style="--acc:${acc[0]};--accbg:${acc[1]};animation-delay:${Math.min(k,7)*55}ms">
@@ -4713,6 +4762,7 @@ function renderAnnounce(){
   const nudging = A.nudge!==false && !specialMenuActive && !nudgeDismissed();
   slot.innerHTML=`<button class="announce${nudging?' nudging':''}" type="button" id="announceGo" data-special-open data-admin-announcement="1" style="--ann-img:${img}">
     ${A.emoji?`<span class="em">${A.emoji}</span>`:''}
+    <span class="kick">${esc(SU('special'))}</span>
     <div class="ttl">${esc(t.title||'')}</div>
     ${t.body?`<div class="bd">${esc(t.body)}</div>`:''}
     <span class="ann-cta">${esc(CTA())} <b aria-hidden="true">→</b></span>
