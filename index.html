@@ -1070,7 +1070,15 @@ body{background:var(--paper)!important;}
 .announce.nudging{animation:annIn .8s var(--ez-out) both,
                             annSheen 7.5s var(--ez-inout) 1.2s infinite,
                             annRing 2.1s ease-out 1s infinite!important;}
-.announce .tap-cue{position:absolute;right:14px;bottom:10px;font-size:22px;z-index:2;
+/* explicit button-looking CTA inside the banner */
+@keyframes ctaArrow{0%,100%{transform:translateX(0);}50%{transform:translateX(4px);}}
+.announce .ann-cta{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;
+  margin-top:11px;padding:7px 14px;border-radius:999px;
+  background:rgba(255,238,214,.94);color:#7A2E12;
+  font-size:12.5px;font-weight:800;letter-spacing:.2px;
+  box-shadow:0 4px 12px rgba(40,12,3,.28);}
+.announce .ann-cta b{font-weight:900;animation:ctaArrow 1.4s ease-in-out infinite!important;}
+.announce .tap-cue{position:absolute;right:14px;bottom:12px;font-size:22px;z-index:3;
   filter:drop-shadow(0 2px 5px rgba(0,0,0,.35));
   animation:tapCue 1.5s ease-in-out .8s infinite!important;}
 .ann-nudge{margin:7px 20px 0;padding:7px 12px;border-radius:999px;
@@ -1081,7 +1089,7 @@ body{background:var(--paper)!important;}
 /* the reduced-motion pass earlier in the file cannot reach these later
    !important rules, so restate it here */
 @media (prefers-reduced-motion:reduce){
-  .announce,.announce::before,.announce .em,
+  .announce,.announce::before,.announce .em,.announce .ann-cta b,
   .announce.nudging,.announce .tap-cue,.ann-nudge{animation:none!important;}
   .announce{background-position:58% 0,0 0,0 0!important;}
   .ann-nudge{opacity:1!important;transform:none!important;}
@@ -2719,6 +2727,17 @@ const NUDGE_UI = {
   bg:'Докоснете банера за празничното меню'
 };
 function NU(){ return NUDGE_UI[lang] || NUDGE_UI.en; }
+/* Call to action shown INSIDE the banner, so it reads as a button even to
+   someone who never taps a banner. Always present, not only while nudging. */
+const CTA_UI = {
+  el:'Δείτε το ειδικό μενού',
+  en:'See the special menu',
+  de:'Zum Spezialmenü',
+  ro:'Vezi meniul special',
+  sr:'Погледајте посебан мени',
+  bg:'Вижте специалното меню'
+};
+function CTA(){ return CTA_UI[lang] || CTA_UI.en; }
 const ANN_NUDGE_KEY='tv_ann_nudge';
 /* Show it once per day per device — a hint that never stops is just noise. */
 function nudgeDismissed(){
@@ -4696,6 +4715,7 @@ function renderAnnounce(){
     ${A.emoji?`<span class="em">${A.emoji}</span>`:''}
     <div class="ttl">${esc(t.title||'')}</div>
     ${t.body?`<div class="bd">${esc(t.body)}</div>`:''}
+    <span class="ann-cta">${esc(CTA())} <b aria-hidden="true">→</b></span>
     ${nudging?`<span class="tap-cue" aria-hidden="true">👆</span>`:''}
   </button>${nudging?`<div class="ann-nudge" role="status">${esc(NU())}</div>`:''}`;
   const go=document.getElementById('announceGo');

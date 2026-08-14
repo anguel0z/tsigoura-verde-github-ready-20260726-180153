@@ -3561,6 +3561,7 @@ function announcementEditorHTML(){
       <div><label>Κατηγορίες ειδικού μενού</label><div class="checks">${cats.map(c=>`<label><input type="checkbox" data-ann-cat value="${ioEsc(c.id)}" ${chosen.has(String(c.id))?'checked':''}>${catLabel(c,'el')}</label>`).join('')}</div></div>
     </div>
     <div class="announce-actions">
+      <button class="btn sm pressable" id="annFeast" data-testid="announcement-feast">🔥 Γέμισε: Δεκαπενταύγουστος · Σούβλες</button>
       <button class="btn sm pressable" id="annSave" data-testid="announcement-save">${ICO.get('check')}Αποθήκευση banner</button>
       <button class="btn ghost sm pressable" id="annHide">${ICO.get('eye')}Κρύψιμο</button>
       <button class="btn danger sm pressable" id="annRemove">${ICO.get('trash')}Αφαίρεση κειμένου</button>
@@ -3658,6 +3659,44 @@ function wireAnnouncementEditor(){
     toast(nudgeTog.classList.contains('on')
       ? 'Καθοδήγηση ON — πατήστε Αποθήκευση banner'
       : 'Καθοδήγηση OFF — πατήστε Αποθήκευση banner');
+  };
+  /* One click fills every field, including the four languages the owner
+     cannot otherwise proof-read, then saves. Nothing here is hard-wired into
+     the guest menu — it just populates the form, so it stays fully editable. */
+  const FEAST_15AUG={
+    emoji:'🔥', from:'2026-08-15', to:'2026-08-15', fromTime:'', toTime:'', nudge:true,
+    cats:['spit','meat'],
+    t:{
+      el:{title:'Δεκαπενταύγουστος · Σούβλες στη Τσιγγούρα', body:'Σάββατο 15 Αυγούστου · Αρνί, κοντοσούβλι και κοκορέτσι στη σούβλα. Πατήστε εδώ.'},
+      en:{title:'15 August · Souvles at Tsigoura', body:'Saturday 15 August · Spit-roasted lamb, kontosouvli and kokoretsi. Tap here.'},
+      de:{title:'15. August · Souvles im Tsigoura', body:'Samstag, 15. August · Lamm vom Spieß, Kontosouvli und Kokoretsi. Hier tippen.'},
+      ro:{title:'15 august · Souvles la Tsigoura', body:'Sâmbătă, 15 august · Miel la proțap, kontosouvli și kokoretsi. Apăsați aici.'},
+      sr:{title:'15. август · Сувле у Tsigoura', body:'Субота, 15. август · Јагње са ражња, контосувли и кокорец. Додирните овде.'},
+      bg:{title:'15 август · Сувлес в Tsigoura', body:'Събота, 15 август · Агне на шиш, контосувли и кокорек. Докоснете тук.'}
+    }
+  };
+  const feastBtn=document.getElementById('annFeast');
+  if(feastBtn) feastBtn.onclick=async()=>{
+    const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.value=v; };
+    set('annEmoji',FEAST_15AUG.emoji);
+    set('annFrom',FEAST_15AUG.from); set('annTo',FEAST_15AUG.to);
+    set('annFromTime',FEAST_15AUG.fromTime); set('annToTime',FEAST_15AUG.toTime);
+    LANGUAGES.forEach(l=>{
+      const tv=FEAST_15AUG.t[l.code]; if(!tv) return;
+      set(annFieldId('title',l.code),tv.title);
+      set(annFieldId('body',l.code),tv.body);
+    });
+    /* Only tick categories that actually exist in this catalogue. */
+    const boxes=[...box.querySelectorAll('[data-ann-cat]')];
+    const wanted=FEAST_15AUG.cats.filter(id=>boxes.some(cb=>String(cb.value)===id));
+    if(wanted.length) boxes.forEach(cb=>{ cb.checked=wanted.includes(String(cb.value)); });
+    const tgt=document.getElementById('annTarget');
+    if(tgt && wanted.length && [...tgt.options].some(o=>o.value===wanted[0])) tgt.value=wanted[0];
+    const nTog=document.getElementById('annNudge');
+    if(nTog) nTog.classList.toggle('on', FEAST_15AUG.nudge);
+    const onTog=$('annOn'); if(onTog) onTog.classList.add('on');
+    S.settings.announcement=Object.assign({}, normalizeAnnouncement(S.settings.announcement||{}), {on:true});
+    await saveAnn('Το banner του Δεκαπενταύγουστου αποθηκεύτηκε σε 6 γλώσσες');
   };
   $('annSave').onclick=()=>saveAnn('Το banner αποθηκεύτηκε');
   $('annHide').onclick=async()=>{
