@@ -1,0 +1,153 @@
+════════════════════════════════════════════════════════════════════════
+  TSIGOURA VERDE — MASTER ICON PROMPT  (Nano Banana / Gemini image)
+  Παράγει 15 εικονίδια στο ίδιο ύφος με τα 68 υπάρχοντα 144×144 PNG.
+════════════════════════════════════════════════════════════════════════
+
+──────────────────────────────────────────────────────────────
+STYLE CONTRACT  —  ισχύει για ΚΑΘΕ εικονίδιο, μην το αλλάξεις
+──────────────────────────────────────────────────────────────
+
+Create a single food-menu icon in this exact house style:
+
+DRAWING STYLE
+· Hand-drawn illustration, as if inked with a fine 0.3mm technical pen
+  and then filled with soft watercolour washes.
+· Outline: fine, confident, slightly uneven dark-brown ink line
+  (#3A2A1E), consistent 2–3px weight at 144px, never pure black.
+· Fill: soft flat watercolour, gently uneven, with a little pigment
+  pooling near the outline. Not vector-flat, not gradient-heavy.
+· Shading: light diagonal cross-hatch only where a shadow would fall.
+  No airbrush, no gloss, no 3D render, no photorealism.
+· Palette: warm muted earthy tones only — terracotta #B4623A,
+  olive green #38564F, cream #F5F0E3, gold #A07E3C, soft brown #7A5C22.
+  Muted and appetising, never neon, never saturated primary colours.
+
+COMPOSITION
+· ONE single centred subject. Nothing else in frame.
+· Even breathing room on all four sides — roughly 10% padding.
+· Slight 3/4 viewing angle, as if looking down at a table.
+· Must stay instantly readable when shrunk to 40×40 pixels:
+  bold silhouette, few details, generous internal spacing.
+
+ABSOLUTELY NOT
+· No text, no letters, no numbers, no signature, no watermark.
+· No plate under the food unless the item IS a bowl or a plate.
+· No table, no surface, no ground plane, no cast shadow.
+· No frame, no border, no circle badge, no container.
+· No drop shadow, no glow, no vignette, no reflection.
+
+╔══════════════════════════════════════════════════════════╗
+║  TRANSPARENCY  —  ΤΟ ΠΙΟ ΚΡΙΣΙΜΟ ΜΕΡΟΣ                    ║
+╚══════════════════════════════════════════════════════════╝
+· Output MUST be a PNG-24 with a real ALPHA CHANNEL.
+· The background must be 100% transparent — zero pixels of colour,
+  zero white, zero off-white, zero paper texture, zero gradient.
+· The alpha must be fully transparent right up to the ink outline.
+· Anti-aliased edges are fine; a halo, fringe or soft white glow
+  around the subject is NOT — no matte fringing of any kind.
+· Nothing may bleed off the edges. The whole subject fits inside.
+
+⚠ IF you cannot output a true alpha channel, then instead render the
+  subject on a FLAT PURE MAGENTA background, hex exactly #FF00FF,
+  perfectly uniform, no shading, no gradient, no glow, no reflection
+  of magenta onto the subject — so the background can be keyed out
+  cleanly afterwards. Never use white or grey as the fallback.
+
+OUTPUT
+· Square canvas, 144 × 144 pixels, unless the item says otherwise.
+· One icon per image.
+
+──────────────────────────────────────────────────────────────
+ΤΑ 15 ΘΕΜΑΤΑ  —  βάλε το style contract πάνω από κάθε ένα
+──────────────────────────────────────────────────────────────
+
+【ΕΠΕΙΓΟΝ · λείπει από το μενού τώρα】
+
+1. 70-kokoretsi.png  (144×144)
+   Traditional Greek kokoretsi: seasoned lamb offal wrapped in caul fat
+   and neatly coiled intestine, wound tightly in even spirals around a
+   long horizontal metal skewer, deep golden-brown roasted crust with
+   crisp darker edges, one thin wisp of smoke curling upward.
+
+【ΚΑΤΗΓΟΡΙΕΣ · 144×144】
+
+2. cat-appetizers.png
+   A small meze spread: three little ceramic bowls of dips arranged in a
+   loose triangle, one folded pita wedge leaning on them, a single olive.
+
+3. cat-salads.png
+   A rustic shallow bowl of Greek salad: tomato wedges, cucumber slices,
+   red onion rings, one thick slab of feta on top, black olives, a thin
+   drizzle of olive oil catching the light.
+
+4. cat-spit.png
+   A long horizontal roasting spit with a whole small lamb threaded on
+   it, mid-turn, over a low bed of glowing embers with small flames.
+
+5. cat-meat.png
+   One thick grilled chop and one loaded skewer resting side by side on
+   a cast-iron griddle plate, dark grill marks seared across both.
+
+6. cat-drinks.png
+   A squat carafe of house wine beside a small straight tumbler half
+   filled, one bottle cap resting flat next to them.
+
+7. cat-pizza.png
+   A round stone-baked pizza seen from above with one wedge slice lifted
+   away and tilted, melted cheese stretching, fresh basil leaves on top.
+
+【ΘΕΜΑΤΑ ΓΙΟΡΤΩΝ · 512×512 · διακοσμητικά για γωνία banner】
+
+8. theme-assumption.png   ← Δεκαπενταύγουστος, το κύριο
+   Decorative corner ornament: a sprig of fresh basil, a small hanging
+   votive oil lamp, and stylised Aegean waves beneath, with one
+   eight-pointed gold star above.
+   PALETTE OVERRIDE: deep sea blue #0B2A4A, clean white, gold #D8B24C.
+
+9. theme-ember.png
+   Decorative corner ornament: a cluster of glowing embers with sparks
+   rising, and two roasting skewers crossed behind them.
+   PALETTE OVERRIDE: dark red #40160A, burnt orange #8E3616, gold #C98B3E.
+
+10. theme-olive.png
+    Decorative corner ornament: an olive branch heavy with leaves and
+    ripe olives, with a small round clay oil jug at its base.
+    PALETTE OVERRIDE: deep green #1E3A2E, olive #B8C06A, cream.
+
+11. theme-night.png
+    Decorative corner ornament: a slim crescent moon, three small
+    scattered stars, and one sprig of rosemary.
+    PALETTE OVERRIDE: charcoal #14161A, antique gold #B99A5B.
+
+12. theme-festive.png
+    Decorative corner ornament: a laurel wreath with two small lanterns
+    hanging from it and a few confetti specks drifting.
+    PALETTE OVERRIDE: deep wine #3A0F2A, magenta-plum #7B1E4B, gold #D9A24B.
+
+【ΕΞΤΡΑ】
+
+13. special-badge.png  (256×256)
+    A small circular seal, like a quality mark pressed into gold foil:
+    a laurel border running around the rim, one clean star at the
+    centre. Completely empty inside apart from the star. NO TEXT.
+
+14. special-divider.png  (1024×64, wide not square)
+    A slim horizontal ornamental rule: a thin line that swells at the
+    centre into a small olive sprig motif, then tapers to fine points at
+    both far ends. Symmetrical. Transparent background.
+
+15. spit-hero.jpg  (1600×900) ⚠ ΕΞΑΙΡΕΣΗ — ΟΧΙ διάφανο, ΟΧΙ αυτό το στυλ
+    Painterly illustrated scene, NOT the icon style above: a whole lamb
+    roasting on a spit over glowing embers at dusk in a Greek taverna
+    courtyard. Warm firelight from the lower right, deep shadow
+    elsewhere, soft focus background, gentle smoke.
+    ⚠ CRITICAL: the LEFT THIRD of the image must stay DARK and EMPTY —
+    no subject, no bright area — because menu text is overlaid there.
+    Opaque JPG. No transparency.
+
+════════════════════════════════════════════════════════════════════════
+ΜΕΤΑ ΤΗ ΔΗΜΙΟΥΡΓΙΑ
+· Ρίξε τα PNG στο  media/dishes/
+· Έλεγξε ότι το φόντο είναι όντως διάφανο, όχι λευκό
+· Πες μου και τα συνδέω στο μενού
+════════════════════════════════════════════════════════════════════════

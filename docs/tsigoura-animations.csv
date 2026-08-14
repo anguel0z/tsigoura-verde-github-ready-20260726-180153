@@ -1,0 +1,18 @@
+﻿Στοιχείο,Τι κάνει,Έμπνευση,Πώς υλοποιείται,Χρόνος,Κατάσταση
+Banner εισόδου,Ανεβαίνει και ξεθωριάζει μέσα,Motion Primitives (fade-up),CSS @keyframes annIn,0.8s ease-out,ΕΓΙΝΕ
+Λάμψη banner,Φως περνά διαγώνια κάθε ~7s,ffuel.co / godly.website (sheen),animation background-position,7.5s loop,ΕΓΙΝΕ
+Παλμός banner,Δαχτυλίδι φωτός για προσοχή,React Bits (pulse ring),box-shadow keyframes,2.1s loop,ΕΓΙΝΕ
+Πάτημα banner,Μαζεύει + φωτίζει,iOS native feel,scale + filter στο :active,0.2s,ΕΓΙΝΕ
+Δάχτυλο 👆,Κουνιέται πάνω-κάτω,React Bits (bounce cue),transform keyframes,1.5s loop,ΕΓΙΝΕ
+Βελάκι CTA,Σπρώχνει δεξιά,Motion Primitives,translateX keyframes,1.4s loop,ΕΓΙΝΕ
+Αλλαγή σελίδας,Γλιστράει από τη μεριά που ήρθες,Motion Primitives (directional),data-travel + keyframes,0.42s ease-out,ΕΓΙΝΕ
+Κάρτες κατηγοριών,Μπαίνουν κλιμακωτά,React Bits (stagger),animation-delay ανά κάρτα,0.55s +80ms,ΕΓΙΝΕ
+Φόντο σπέσιαλ,Ζεστό ambient wash,godly.website,body::after radial-gradient,0.7s,ΕΓΙΝΕ
+Κουκκίδες pager,Η ενεργή απλώνεται σε γραμμή,React Bits (pill indicator),transition width,0.24s,ΕΓΙΝΕ
+— ΠΡΟΤΑΣΕΙΣ ΑΠΟ ΕΔΩ ΚΑΙ ΚΑΤΩ —,,,,,
+Ομαλό σκρολ,Το σκρολ γλιστράει με αδράνεια,lenis.dev,"Lenis — vanilla, ΤΑΙΡΙΑΖΕΙ",~1.2s ease,ΠΡΟΤΑΣΗ
+Φωτιά στο banner,Αληθινή κινούμενη φλόγα,rive.app,Αρχείο .riv + runtime,loop,ΠΡΟΤΑΣΗ
+Σούβλα που γυρίζει,Το αρνί γυρίζει αργά,rive.app,Αρχείο .riv,loop,ΠΡΟΤΑΣΗ
+Πιάτα που εμφανίζονται,Κάθε πιάτο μπαίνει στο σκρολ,React Bits (reveal),IntersectionObserver + CSS,0.5s,ΠΡΟΤΑΣΗ
+Τιμή που μετράει,Η τιμή ανεβαίνει αριθμητικά,React Bits (count-up),requestAnimationFrame,0.6s,ΠΡΟΤΑΣΗ
+Παλέτα θεμάτων,Χρώματα ανά γιορτή,vicolors.app (χρώματα),CSS variables --a1..--a3,—,ΕΓΙΝΕ (5 θέματα)
