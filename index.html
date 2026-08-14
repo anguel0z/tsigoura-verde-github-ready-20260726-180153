@@ -1201,9 +1201,36 @@ body.special-menu #viewSwitch{display:none!important;}
 .guide-landing.is-special .guide-menu-card:nth-child(3){animation-delay:.26s;}
 .guide-landing.is-special .guide-menu-card:nth-child(n+4){animation-delay:.34s;}
 
+/* ══ SCRUBBING BETWEEN PAGES ═══════════════════════════════════════════════
+   A pager that stays under the thumb, plus a slide that carries the direction
+   of travel so moving between categories reads as movement, not a redraw. */
+@keyframes pageInNext{from{opacity:0;transform:translateX(26px);}to{opacity:1;transform:none;}}
+@keyframes pageInPrev{from{opacity:0;transform:translateX(-26px);}to{opacity:1;transform:none;}}
+.guide-stage[data-travel="next"]{animation:pageInNext .42s var(--ez-out) both;}
+.guide-stage[data-travel="prev"]{animation:pageInPrev .42s var(--ez-out) both;}
+.guide-pager{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:24;
+  display:flex;align-items:center;gap:10px;margin:14px 0 6px;padding:8px 10px;
+  border-radius:999px;background:rgba(255,253,248,.94);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border:1px solid var(--aline);box-shadow:0 12px 28px rgba(20,40,42,.14);}
+.guide-pager .gp-arrow{flex:0 0 auto;width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;
+  background:linear-gradient(122deg,var(--a2),var(--a3));color:var(--aink);
+  border:1px solid var(--aline);box-shadow:0 5px 14px rgba(20,12,6,.20);}
+.guide-pager .gp-arrow:disabled{opacity:.3;box-shadow:none;}
+.guide-pager .gp-arrow:not(:disabled):active{scale:.92;}
+.guide-pager .gp-dots{flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;}
+.guide-pager .gp-dot{width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:none;border:0;}
+.guide-pager .gp-dot i{display:block;width:8px;height:8px;border-radius:50%;
+  background:rgba(34,53,57,.24);transition:width .24s var(--ez-out),background .24s;}
+.guide-pager .gp-dot.on i{width:22px;border-radius:999px;background:var(--a2);}
+.guide-pager .gp-count{flex:0 0 auto;font-size:12px;font-weight:800;color:var(--muted);
+  font-variant-numeric:tabular-nums;}
+
 /* the reduced-motion pass earlier in the file cannot reach these later
    !important rules, so restate it here */
 @media (prefers-reduced-motion:reduce){
+  .guide-stage[data-travel],.guide-pager .gp-dot i,
   .announce,.announce::before,.announce .em,.announce .ann-cta b,
   .announce.nudging,.announce .tap-cue,.ann-nudge,
   body.special-menu::after,.special-back,
@@ -3359,19 +3386,62 @@ function wireMenuRootActions(root){
   root.querySelectorAll('[data-guide-home]').forEach(b=>b.onclick=()=>{ activeCat=null; renderTabs(); renderList(); scrollMenuTop(); });
   root.querySelectorAll('[data-special-exit]').forEach(b=>b.onclick=exitSpecialMenu);
   root.querySelectorAll('[data-clear-filters]').forEach(b=>b.onclick=clearGuestFilters);
+  root.querySelectorAll('[data-guide-step]').forEach(b=>b.onclick=()=>stepGuideCategory(Number(b.dataset.guideStep)));
+  wireGuideSwipe(root);
 }
 function guideCategories(){
   return activeMenuCats().filter(c=>!c.hidden && S.menu.some(i=>isGuestVisible(i)&&i.cat===c.id&&matches(i)));
 }
-function setGuideCategory(id){
+function setGuideCategory(id,dir){
   const cats=guideCategories();
   if(!cats.length) return;
   const c=cats.find(x=>x.id===id) || cats[0];
+  /* Remember which way we travelled so the next page can slide in from the
+     side the guest swiped from — movement without direction reads as a glitch. */
+  guideTravel = dir || (()=>{
+    const from=cats.findIndex(x=>x.id===activeCat), to=cats.findIndex(x=>x.id===c.id);
+    return (from>=0 && to>=0 && to<from) ? 'prev' : 'next';
+  })();
   activeCat=c.id;
   manualCatUntil=Date.now()+900;
   renderTabs();
   renderList();
   setTimeout(scrollGuideStage,40);
+}
+let guideTravel='next';
+/* Step one category along, staying inside the current set (the special menu
+   filters the list, so this walks only the categories it contains). */
+function stepGuideCategory(delta){
+  const cats=guideCategories();
+  if(cats.length<2) return false;
+  const ix=cats.findIndex(c=>c.id===activeCat);
+  if(ix<0) return false;
+  const next=ix+delta;
+  if(next<0 || next>=cats.length) return false;
+  setGuideCategory(cats[next].id, delta>0?'next':'prev');
+  return true;
+}
+/* Horizontal swipe to move between pages — the gesture guests already expect.
+   Ignores vertical scrolling and anything that starts on a scrollable rail. */
+function wireGuideSwipe(root){
+  if(!root || root.dataset.swipeWired==='1') return;
+  root.dataset.swipeWired='1';
+  let x0=0,y0=0,t0=0,tracking=false;
+  root.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1) { tracking=false; return; }
+    if(e.target.closest('.guide-picker,.nav .row,.sheet,input,textarea,select')) { tracking=false; return; }
+    const t=e.touches[0]; x0=t.clientX; y0=t.clientY; t0=Date.now(); tracking=true;
+  },{passive:true});
+  root.addEventListener('touchend',e=>{
+    if(!tracking) return;
+    tracking=false;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-x0, dy=t.clientY-y0, dt=Date.now()-t0;
+    if(dt>700) return;                      /* a slow drag is not a swipe */
+    if(Math.abs(dx)<56) return;             /* too short to be deliberate */
+    if(Math.abs(dx)<Math.abs(dy)*1.6) return; /* mostly vertical = scrolling */
+    stepGuideCategory(dx<0?1:-1);
+  },{passive:true});
 }
 function scrollGuideStage(){
   const picker=document.querySelector('.guide-picker');
@@ -3450,7 +3520,7 @@ function guideSectionHTML(c,ix,cats){
   const rest=items.filter(i=>i!==pick);
   const acc=[c.accent||CAT_ACC[ix%CAT_ACC.length][0], c.tint||CAT_ACC[ix%CAT_ACC.length][1]];
   const prev=cats[ix-1], next=cats[ix+1];
-  return `<section class="sec guide-sec guide-stage ${esc(c.id)}" id="sec-${c.id}" data-admin-cat="${esc(c.id)}" style="--stage:${ix}">
+  return `<section class="sec guide-sec guide-stage ${esc(c.id)}" id="sec-${c.id}" data-admin-cat="${esc(c.id)}" data-travel="${esc(guideTravel)}" style="--stage:${ix}">
     <div class="guide-chapter" data-admin-cat="${esc(c.id)}" style="--acc:${acc[0]};--accbg:${acc[1]}">
       <span class="gicon">${catIcon(c)}</span>
       <button type="button" class="guide-home" data-guide-home="1">‹ ${esc(T('guideBackCats'))}</button>
@@ -3464,7 +3534,21 @@ function guideSectionHTML(c,ix,cats){
       <button type="button" class="guide-prev" ${prev?`data-guide-jump="${esc(prev.id)}"`:'disabled'}>‹ ${esc(prev?catName(prev):T('guidePrev'))}</button>
       <button type="button" class="guide-next" ${next?`data-guide-jump="${esc(next.id)}"`:'disabled'}>${esc(next?catName(next):T('guideNext'))} ›</button>
     </div>
+    ${guidePagerHTML(cats,ix)}
   </section>`;
+}
+/* Always-visible pager: where you are, how many pages, and a tap target either
+   side. Sits above the thumb, so scrubbing never needs a scroll to the bottom. */
+function guidePagerHTML(cats,ix){
+  if(!cats || cats.length<2) return '';
+  return `<nav class="guide-pager" aria-label="${esc(T('viewGuided'))}">
+    <button type="button" class="gp-arrow" data-guide-step="-1" ${ix<=0?'disabled':''} aria-label="${esc(T('guidePrev'))}">‹</button>
+    <div class="gp-dots">
+      ${cats.map((c,k)=>`<button type="button" class="gp-dot${k===ix?' on':''}" data-guide-jump="${esc(c.id)}" aria-label="${esc(catName(c))}" aria-current="${k===ix?'true':'false'}"><i></i></button>`).join('')}
+    </div>
+    <span class="gp-count">${ix+1}/${cats.length}</span>
+    <button type="button" class="gp-arrow" data-guide-step="1" ${ix>=cats.length-1?'disabled':''} aria-label="${esc(T('guideNext'))}">›</button>
+  </nav>`;
 }
 function guideVisual(i,cls,large){
   const t=tx(i), art=(typeof dishArt==='function'&&dishArt(i)) ? dishArt(i) : '';
