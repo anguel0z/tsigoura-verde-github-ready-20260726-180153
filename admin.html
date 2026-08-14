@@ -3889,7 +3889,13 @@ window.addEventListener('storage', e=>{
     renderOrders(); renderTables(); renderMenuArea(); renderSettings(); renderServicePill(); renderQR(); renderDash();
   }
 });
-setInterval(()=>{ const fresh=loadState(); if(fresh.updatedAt!==S.updatedAt){ flushOpenProForms(); S=fresh; renderOrders(); renderTables(); renderMenuArea(); renderSettings(); renderServicePill(); renderQR(); renderDash(); } }, 4000);
+/* Flush AFTER the swap, not before. flushOpenProForms() copies the open forms
+   into whatever S points at — doing it first wrote the owner's in-progress
+   dish and banner edits into the very object the next line throws away, so
+   anything typed in the seconds before a background refresh was silently lost.
+   The DOM still holds those values, so flushing against the fresh state keeps
+   them. */
+setInterval(()=>{ const fresh=loadState(); if(fresh.updatedAt!==S.updatedAt){ S=fresh; flushOpenProForms(); renderOrders(); renderTables(); renderMenuArea(); renderSettings(); renderServicePill(); renderQR(); renderDash(); } }, 4000);
 
 /* stay logged in across a QR scan during this browser session only */
 try{ if(sessionStorage.getItem('tv_admin_ok')==='1' && sessionStorage.getItem('tv_admin_pin')) unlock(); }catch(e){}
