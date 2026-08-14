@@ -3543,7 +3543,7 @@ function announcementEditorHTML(){
     </div>
     <p class="hint" style="margin:8px 0 0;">Οι ώρες ισχύουν στην πρώτη και στην τελευταία ημέρα. Π.χ. 15/08 με ώρα έναρξης 14:00 → το banner εμφανίζεται στις 2 το μεσημέρι.</p>
     <div class="setting-row">
-      <div class="txt"><div class="t">Καθοδήγηση πελάτη</div><div class="d">Παλμός και μήνυμα «πατήστε εδώ» ώστε να καταλάβουν ότι το banner ανοίγει το ειδικό μενού.</div></div>
+      <div class="txt"><div class="t">Καθοδήγηση πελάτη</div><div class="d">Παλμός και μήνυμα «πατήστε εδώ» ώστε να καταλάβουν ότι το banner ανοίγει το σπέσιαλ μενού.</div></div>
       <div class="toggle ${A.nudge!==false?'on':''}" id="annNudge"></div>
     </div>
     <div class="ann-langs">${LANGUAGES.map(l=>{
@@ -3558,7 +3558,7 @@ function announcementEditorHTML(){
     }).join('')}</div>
     <div class="fieldrow">
       <div><label>Κύρια κατηγορία όταν πατηθεί</label><select id="annTarget">${cats.map(c=>`<option value="${ioEsc(c.id)}" ${String(A.targetCat)===String(c.id)?'selected':''}>${catLabel(c,'el')}</option>`).join('')}</select></div>
-      <div><label>Κατηγορίες ειδικού μενού</label><div class="checks">${cats.map(c=>`<label><input type="checkbox" data-ann-cat value="${ioEsc(c.id)}" ${chosen.has(String(c.id))?'checked':''}>${catLabel(c,'el')}</label>`).join('')}</div></div>
+      <div><label>Κατηγορίες σπέσιαλ μενού</label><div class="checks">${cats.map(c=>`<label><input type="checkbox" data-ann-cat value="${ioEsc(c.id)}" ${chosen.has(String(c.id))?'checked':''}>${catLabel(c,'el')}</label>`).join('')}</div></div>
     </div>
     <div class="announce-actions">
       <button class="btn sm pressable" id="annFeast" data-testid="announcement-feast">🔥 Γέμισε: Δεκαπενταύγουστος · Σούβλες</button>

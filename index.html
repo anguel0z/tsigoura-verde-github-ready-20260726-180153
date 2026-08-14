@@ -2809,7 +2809,7 @@ const catName = c => {
 };
 const orderedCats = () => S.categories.slice().sort((a,b)=>a.order-b.order);
 const SPECIAL_UI = {
-  el:{special:'Ειδικό μενού', full:'Όλος ο κατάλογος'},
+  el:{special:'Σπέσιαλ μενού', full:'Όλος ο κατάλογος'},
   en:{special:'Special menu', full:'Full menu'},
   de:{special:'Spezialmenü', full:'Ganze Speisekarte'},
   ro:{special:'Meniu special', full:'Meniu complet'},
@@ -2819,7 +2819,7 @@ const SPECIAL_UI = {
 function SU(k){ return (SPECIAL_UI[lang]&&SPECIAL_UI[lang][k]) || SPECIAL_UI.en[k] || k; }
 /* Guided nudge — many guests do not realise the banner is a button. */
 const NUDGE_UI = {
-  el:'Πατήστε το banner για το γιορτινό μενού',
+  el:'Πατήστε το banner για το σπέσιαλ μενού',
   en:'Tap the banner for the festive menu',
   de:'Tippen Sie auf das Banner für das Festmenü',
   ro:'Apăsați bannerul pentru meniul festiv',
@@ -2830,7 +2830,7 @@ function NU(){ return NUDGE_UI[lang] || NUDGE_UI.en; }
 /* Call to action shown INSIDE the banner, so it reads as a button even to
    someone who never taps a banner. Always present, not only while nudging. */
 const CTA_UI = {
-  el:'Δείτε το ειδικό μενού',
+  el:'Δείτε το σπέσιαλ μενού',
   en:'See the special menu',
   de:'Zum Spezialmenü',
   ro:'Vezi meniul special',
