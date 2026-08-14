@@ -343,7 +343,8 @@ const ZONES = {
    παράθυρο [from,to]. Τώρα: ειδική βραδιά σούβλας (Κυρ. 26/7).
    ──────────────────────────────────────────────────────────────────────── */
 const ANNOUNCE = {
-  on:false, from:'2026-07-26', to:'2026-07-26', emoji:'🔥', targetCat:'spit', specialCats:['spit','meat'],
+  on:false, from:'2026-07-26', to:'2026-07-26', fromTime:'', toTime:'', nudge:true,
+  emoji:'🔥', targetCat:'spit', specialCats:['spit','meat'],
   t:{
     el:{ title:'Κυριακή 26 Ιουλίου · Σούβλες στη Τσιγγούρα', body:'Ειδική βραδιά με αρνί σούβλας και κοντοσούβλι. Πατήστε εδώ για να δείτε το σημερινό μενού.' },
     en:{ title:'Sunday, 26 July · Souvles at Tsigoura', body:'Special night with spit-roasted lamb and kontosouvli. Tap here to see today’s menu.' },
@@ -528,16 +529,31 @@ function announcementDateKey(v){
   v=String(v||'').trim().slice(0,10);
   return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : '';
 }
+/* "HH:MM" or '' — an empty time means "no limit on that side of the window". */
+function announcementTimeKey(v){
+  v=String(v||'').trim().slice(0,5);
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(v) ? v : '';
+}
 function announcementWindowStatus(a, at){
   const A=(a && typeof a==='object') ? a : {};
   const from=announcementDateKey(A.from);
   const to=announcementDateKey(A.to);
+  const fromTime=announcementTimeKey(A.fromTime);
+  const toTime=announcementTimeKey(A.toTime);
   const d=at instanceof Date ? at : new Date(at||Date.now());
   const pad=n=>String(n).padStart(2,'0');
   const today=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-  if(from && today<from) return {active:false, upcoming:true, expired:false, today, from, to};
-  if(to && today>to) return {active:false, upcoming:false, expired:true, today, from, to};
-  return {active:true, upcoming:false, expired:false, today, from, to};
+  const nowTime=pad(d.getHours())+':'+pad(d.getMinutes());
+  const out={today, from, to, fromTime, toTime};
+  /* Times apply only on the edge days, so a multi-day window stays open
+     overnight in between (e.g. 14:00 on the 15th → 02:00 on the 16th). */
+  if(from && today<from) return Object.assign(out,{active:false, upcoming:true, expired:false});
+  if(from && today===from && fromTime && nowTime<fromTime)
+    return Object.assign(out,{active:false, upcoming:true, expired:false});
+  if(to && today>to) return Object.assign(out,{active:false, upcoming:false, expired:true});
+  if(to && today===to && toTime && nowTime>toTime)
+    return Object.assign(out,{active:false, upcoming:false, expired:true});
+  return Object.assign(out,{active:true, upcoming:false, expired:false});
 }
 function normalizeAnnouncement(a){
   const base=JSON.parse(JSON.stringify(DEFAULT_ANNOUNCEMENT));
@@ -551,6 +567,11 @@ function normalizeAnnouncement(a){
   if(Object.prototype.hasOwnProperty.call(a,'to')) out.to = announcementDateKey(a.to);
   else out.to = announcementDateKey(base.to);
   if(out.from && out.to && out.from>out.to){ const swap=out.from; out.from=out.to; out.to=swap; }
+  /* Time-of-day window on the edge days (e.g. σούβλες served from 14:00). */
+  out.fromTime = announcementTimeKey(Object.prototype.hasOwnProperty.call(a,'fromTime') ? a.fromTime : base.fromTime);
+  out.toTime   = announcementTimeKey(Object.prototype.hasOwnProperty.call(a,'toTime')   ? a.toTime   : base.toTime);
+  /* Guided nudge for guests who would not realise the banner is tappable. */
+  out.nudge = Object.prototype.hasOwnProperty.call(a,'nudge') ? a.nudge !== false : base.nudge !== false;
   out.emoji = String(out.emoji||'').slice(0,8);
   out.targetCat = String(out.targetCat||base.targetCat).slice(0,32);
   out.specialCats = Array.isArray(out.specialCats) ? out.specialCats.map(x=>String(x).slice(0,32)).filter(Boolean).slice(0,8) : base.specialCats.slice();

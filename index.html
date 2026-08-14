@@ -1059,11 +1059,32 @@ body{background:var(--paper)!important;}
   animation:emberIn .6s var(--ez-spring) .4s both,
             emberSway 3.4s ease-in-out 1s infinite alternate,
             emberFlick 2.6s ease-in-out 1s infinite!important;}
+/* ── guided nudge: make it obvious the banner is a button ──────────────────
+   Guests who are not comfortable with phones do not read a banner as tappable.
+   A soft ring, a finger cue and one line of text fix that without shouting. */
+@keyframes annRing{0%{box-shadow:0 14px 30px rgba(92,32,10,.32),0 0 0 0 rgba(255,183,94,.55);}
+                   70%{box-shadow:0 14px 30px rgba(92,32,10,.32),0 0 0 12px rgba(255,183,94,0);}
+                   100%{box-shadow:0 14px 30px rgba(92,32,10,.32),0 0 0 0 rgba(255,183,94,0);}}
+@keyframes tapCue{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-5px) scale(1.12);}}
+@keyframes nudgeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+.announce.nudging{animation:annIn .8s var(--ez-out) both,
+                            annSheen 7.5s var(--ez-inout) 1.2s infinite,
+                            annRing 2.1s ease-out 1s infinite!important;}
+.announce .tap-cue{position:absolute;right:14px;bottom:10px;font-size:22px;z-index:2;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.35));
+  animation:tapCue 1.5s ease-in-out .8s infinite!important;}
+.ann-nudge{margin:7px 20px 0;padding:7px 12px;border-radius:999px;
+  background:rgba(154,62,30,.10);border:1px dashed rgba(154,62,30,.42);
+  color:#7A2E12;font-size:12.5px;font-weight:650;line-height:1.35;text-align:center;
+  animation:nudgeIn .5s var(--ez-out) .5s both;}
+
 /* the reduced-motion pass earlier in the file cannot reach these later
    !important rules, so restate it here */
 @media (prefers-reduced-motion:reduce){
-  .announce,.announce::before,.announce .em{animation:none!important;}
+  .announce,.announce::before,.announce .em,
+  .announce.nudging,.announce .tap-cue,.ann-nudge{animation:none!important;}
   .announce{background-position:58% 0,0 0,0 0!important;}
+  .ann-nudge{opacity:1!important;transform:none!important;}
 }
 
 /* ── 3. search + notice ─────────────────────────────────────────────────── */
@@ -2688,6 +2709,26 @@ const SPECIAL_UI = {
   bg:{special:'Специално меню', full:'Пълно меню'}
 };
 function SU(k){ return (SPECIAL_UI[lang]&&SPECIAL_UI[lang][k]) || SPECIAL_UI.en[k] || k; }
+/* Guided nudge — many guests do not realise the banner is a button. */
+const NUDGE_UI = {
+  el:'Πατήστε το banner για το γιορτινό μενού',
+  en:'Tap the banner for the festive menu',
+  de:'Tippen Sie auf das Banner für das Festmenü',
+  ro:'Apăsați bannerul pentru meniul festiv',
+  sr:'Додирните банер за празнични мени',
+  bg:'Докоснете банера за празничното меню'
+};
+function NU(){ return NUDGE_UI[lang] || NUDGE_UI.en; }
+const ANN_NUDGE_KEY='tv_ann_nudge';
+/* Show it once per day per device — a hint that never stops is just noise. */
+function nudgeDismissed(){
+  try{ return safeLS.get(ANN_NUDGE_KEY)===localDateKey(); }catch(e){ return false; }
+}
+function dismissNudge(){
+  try{ safeLS.set(ANN_NUDGE_KEY, localDateKey()); }catch(e){}
+  document.querySelectorAll('.ann-nudge').forEach(n=>n.remove());
+  document.querySelectorAll('.announce.nudging').forEach(b=>b.classList.remove('nudging'));
+}
 function activeAnnouncement(){
   const fallback=(typeof ANNOUNCE!=='undefined')?ANNOUNCE:null;
   const A=(S.settings&&S.settings.announcement) || fallback;
@@ -4222,9 +4263,22 @@ function toast(m){
 let lastLiveCheckAt=0;
 let liveCheckBusy=false;
 let renderedScheduleDate=localDateKey();
+/* null = not measured yet, so the first pass only records the state. */
+let renderedAnnounceActive=null;
+function announcementIsLive(){
+  const A=activeAnnouncement();
+  if(!A || !(A.on===true || A.on===1 || A.on==='true')) return false;
+  if(typeof announcementWindowStatus!=='function') return true;
+  return !!announcementWindowStatus(A).active;
+}
 function checkScheduleDate(){
   const today=localDateKey();
-  if(today===renderedScheduleDate) return false;
+  /* The banner can also open/close on a TIME boundary (e.g. σούβλες from 14:00),
+     which no date comparison would ever catch. Re-render on either change. */
+  const annLive=announcementIsLive();
+  const annFlipped = renderedAnnounceActive!==null && annLive!==renderedAnnounceActive;
+  renderedAnnounceActive=annLive;
+  if(today===renderedScheduleDate && !annFlipped) return false;
   renderedScheduleDate=today;
   cart=cart.filter(l=>{ const i=itemOf(l.id); return i&&isGuestVisible(i)&&i.available&&i.price>0; });
   saveCart(); apply();
@@ -4637,13 +4691,20 @@ function renderAnnounce(){
             || null;
   if(!t){ slot.innerHTML=''; return; }
   const img = (typeof MEDIA!=='undefined' && (MEDIA.souvles||MEDIA.hero)) ? `url('${MEDIA.souvles||MEDIA.hero}')` : 'none';
-  slot.innerHTML=`<button class="announce" type="button" id="announceGo" data-special-open data-admin-announcement="1" style="--ann-img:${img}">
+  const nudging = A.nudge!==false && !specialMenuActive && !nudgeDismissed();
+  slot.innerHTML=`<button class="announce${nudging?' nudging':''}" type="button" id="announceGo" data-special-open data-admin-announcement="1" style="--ann-img:${img}">
     ${A.emoji?`<span class="em">${A.emoji}</span>`:''}
     <div class="ttl">${esc(t.title||'')}</div>
     ${t.body?`<div class="bd">${esc(t.body)}</div>`:''}
-  </button>`;
+    ${nudging?`<span class="tap-cue" aria-hidden="true">👆</span>`:''}
+  </button>${nudging?`<div class="ann-nudge" role="status">${esc(NU())}</div>`:''}`;
   const go=document.getElementById('announceGo');
-  if(go) go.onclick=openSpecialMenu;
+  if(go) go.onclick=()=>{ dismissNudge(); openSpecialMenu(); };
+  /* Stop nagging on its own — the cue has done its job after a while. */
+  if(nudging){
+    clearTimeout(renderAnnounce._nudgeTimer);
+    renderAnnounce._nudgeTimer=setTimeout(dismissNudge, 25000);
+  }
 }
 
 /* ─── smart QR handoff ───

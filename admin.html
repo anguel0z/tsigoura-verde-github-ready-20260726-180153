@@ -432,9 +432,14 @@ nav.tabs button.on{color:var(--cream);border-bottom-color:var(--gold);}
 .ann-langs{margin-top:14px;display:grid;gap:9px;}
 .ann-lang{border:1px solid var(--line);border-radius:11px;padding:9px 11px 11px;background:rgba(255,255,255,.55);}
 .ann-lang.primary{border-color:rgba(201,162,39,.42);background:rgba(255,252,243,.9);}
-.ann-lang-h{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--forest);}
-.ann-lang-h .fl{font-size:15px;line-height:1;}
-.ann-lang-h em{font-style:normal;font-weight:500;color:var(--muted);font-size:11px;}
+/* wrap instead of overflowing — the flag row spilled out of the pane on narrow screens */
+.ann-lang-h{display:flex;align-items:center;flex-wrap:wrap;gap:4px 7px;min-width:0;
+  font-size:12px;font-weight:700;color:var(--forest);overflow-wrap:anywhere;}
+.ann-lang-h .fl{font-size:15px;line-height:1;flex:0 0 auto;}
+.ann-lang-h em{font-style:normal;font-weight:500;color:var(--muted);font-size:11px;flex:0 1 auto;min-width:0;}
+.ann-lang input,.ann-lang textarea{width:100%;max-width:100%;min-width:0;box-sizing:border-box;}
+.ann-lang input::placeholder,.ann-lang textarea::placeholder{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ann-lang .fieldrow{margin-top:7px;}
 .ann-lang textarea{resize:vertical;}
 .preset-list{display:grid;gap:8px;margin-top:12px;}
@@ -1501,10 +1506,14 @@ function readAnnouncementEditor(){
   const box=document.getElementById('announceEditor');
   if(!box || !$(annFieldId('title','el')) || !$('annTarget')) return null;
   const cur=normalizeAnnouncement(S.settings.announcement||{});
+  const nudgeEl=document.getElementById('annNudge');
   const next={
     on:cur.on,
     from:$('annFrom').value,
     to:$('annTo').value,
+    fromTime:$('annFromTime')?$('annFromTime').value:cur.fromTime,
+    toTime:$('annToTime')?$('annToTime').value:cur.toTime,
+    nudge:nudgeEl?nudgeEl.classList.contains('on'):cur.nudge!==false,
     emoji:$('annEmoji').value.trim().slice(0,8),
     targetCat:$('annTarget').value,
     specialCats:[...box.querySelectorAll('[data-ann-cat]')].filter(cb=>cb.checked).map(cb=>cb.value),
@@ -3526,14 +3535,23 @@ function announcementEditorHTML(){
     <div class="fieldrow">
       <div><label>Από (κενό = χωρίς όριο)</label><input type="date" id="annFrom" value="${ioEsc(A.from||'')}"></div>
       <div><label>Έως (κενό = χωρίς όριο)</label><input type="date" id="annTo" value="${ioEsc(A.to||'')}"></div>
-      <div><label>Emoji</label><input id="annEmoji" value="${ioEsc(A.emoji||'')}" maxlength="8" placeholder="π.χ. 🔥"></div>
+      <div><label>Emoji</label><input id="annEmoji" value="${ioEsc(A.emoji||'')}" maxlength="8" placeholder="🔥"></div>
+    </div>
+    <div class="fieldrow">
+      <div><label>Ώρα έναρξης (π.χ. 14:00)</label><input type="time" id="annFromTime" value="${ioEsc(A.fromTime||'')}"></div>
+      <div><label>Ώρα λήξης (κενό = μέχρι το τέλος)</label><input type="time" id="annToTime" value="${ioEsc(A.toTime||'')}"></div>
+    </div>
+    <p class="hint" style="margin:8px 0 0;">Οι ώρες ισχύουν στην πρώτη και στην τελευταία ημέρα. Π.χ. 15/08 με ώρα έναρξης 14:00 → το banner εμφανίζεται στις 2 το μεσημέρι.</p>
+    <div class="setting-row">
+      <div class="txt"><div class="t">Καθοδήγηση πελάτη</div><div class="d">Παλμός και μήνυμα «πατήστε εδώ» ώστε να καταλάβουν ότι το banner ανοίγει το ειδικό μενού.</div></div>
+      <div class="toggle ${A.nudge!==false?'on':''}" id="annNudge"></div>
     </div>
     <div class="ann-langs">${LANGUAGES.map(l=>{
       const tv=(A.t&&A.t[l.code])||{title:'',body:''};
       return `<div class="ann-lang${l.code==='el'?' primary':''}">
         <div class="ann-lang-h"><span class="fl">${l.flag}</span>${ioEsc(l.label)}${l.code==='el'?' <em>· κύρια γλώσσα</em>':''}</div>
         <div class="fieldrow">
-          <div><label>Τίτλος</label><input id="${annFieldId('title',l.code)}" value="${ioEsc(tv.title||'')}" maxlength="90" placeholder="${l.code==='el'?'π.χ. Δεκαπενταύγουστος στη Τσιγγούρα':''}"></div>
+          <div><label>Τίτλος</label><input id="${annFieldId('title',l.code)}" value="${ioEsc(tv.title||'')}" maxlength="90" placeholder="Τίτλος"></div>
           <div><label>Κείμενο</label><textarea id="${annFieldId('body',l.code)}" rows="2" maxlength="220">${ioEsc(tv.body||'')}</textarea></div>
         </div>
       </div>`;
@@ -3628,6 +3646,14 @@ function wireAnnouncementEditor(){
       const win=announcementWindowStatus(A);
       toast(win.active?'Το banner εμφανίζεται στους πελάτες':'Το banner είναι ON αλλά εκτός ημερομηνιών');
     }else toast('Το banner κρύφτηκε');
+  };
+  const nudgeTog=document.getElementById('annNudge');
+  if(nudgeTog) nudgeTog.onclick=()=>{
+    /* Toggle in place only — never re-render, or the form is wiped mid-edit. */
+    nudgeTog.classList.toggle('on');
+    toast(nudgeTog.classList.contains('on')
+      ? 'Καθοδήγηση ON — πατήστε Αποθήκευση banner'
+      : 'Καθοδήγηση OFF — πατήστε Αποθήκευση banner');
   };
   $('annSave').onclick=()=>saveAnn('Το banner αποθηκεύτηκε');
   $('annHide').onclick=async()=>{
