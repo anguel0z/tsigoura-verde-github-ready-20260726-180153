@@ -1515,6 +1515,8 @@ function readAnnouncementEditor(){
     toTime:$('annToTime')?$('annToTime').value:cur.toTime,
     nudge:nudgeEl?nudgeEl.classList.contains('on'):cur.nudge!==false,
     theme:$('annTheme')?$('annTheme').value:cur.theme,
+    riv:$('annRiv')?$('annRiv').value.trim():cur.riv,
+    rivMachine:$('annRivMachine')?$('annRivMachine').value.trim():cur.rivMachine,
     /* the picker always holds a colour, so an explicit clear is what removes it */
     accent:$('annAccent')?($('annAccent').dataset.cleared==='1'?'':$('annAccent').value):cur.accent,
     emoji:$('annEmoji').value.trim().slice(0,8),
@@ -3551,6 +3553,11 @@ function announcementEditorHTML(){
       <div><label>&nbsp;</label><button type="button" class="btn ghost sm pressable" id="annAccentClear">Καθαρισμός χρώματος</button></div>
     </div>
     <p class="hint" style="margin:8px 0 0;">Το θέμα αλλάζει όλη την εμφάνιση του σπέσιαλ μενού — banner, κουμπί στις κατηγορίες και φόντο. Κάθε γιορτή μπορεί να έχει το δικό της.</p>
+    <div class="fieldrow">
+      <div><label>Rive animation (.riv) — προαιρετικό</label><input id="annRiv" value="${ioEsc(A.riv||'')}" maxlength="300" placeholder="media/rive/flame.riv"></div>
+      <div><label>State machine (αν έχει)</label><input id="annRivMachine" value="${ioEsc(A.rivMachine||'')}" maxlength="60" placeholder="π.χ. Flame"></div>
+    </div>
+    <p class="hint" style="margin:8px 0 0;">Κινούμενο γραφικό πάνω στο banner, φτιαγμένο στο rive.app. Αφήστε το κενό και δεν κατεβαίνει τίποτα επιπλέον. Δεν παίζει σε αργή σύνδεση ή αν ο πελάτης έχει «λιγότερη κίνηση» — τότε μένει το emoji.</p>
     <div class="setting-row">
       <div class="txt"><div class="t">Καθοδήγηση πελάτη</div><div class="d">Παλμός και μήνυμα «πατήστε εδώ» ώστε να καταλάβουν ότι το banner ανοίγει το σπέσιαλ μενού.</div></div>
       <div class="toggle ${A.nudge!==false?'on':''}" id="annNudge"></div>
