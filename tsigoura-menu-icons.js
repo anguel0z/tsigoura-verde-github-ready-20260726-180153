@@ -179,6 +179,22 @@ function svgFor(src){
   if(src[0]==='@'){ const n=src.slice(1); return CUSTOM[n] || PACK[FALLBACK[n]||'dish'] || PACK.dish; }
   return PACK[src] || PACK.dish;
 }
-function pngIcon(file){ return `<span class="greek-ic" style="--food:url('${GREEK_FOOD_BASE}${file}')" aria-hidden="true"></span>`; }
-function dishIcon(i){ return (i&&GREEK_FOOD_ICON[i.id]&&!i.iconOverride) ? pngIcon(GREEK_FOOD_ICON[i.id]) : svgFor(DISH_ICON[i&&i.icon] || i&&i.icon || 'dish'); }
-function catIcon(c){ return (c&&c.imageIcon) ? pngIcon(c.imageIcon) : svgFor(DISH_ICON[c&&c.icon] || CAT_ICON[c&&c.id] || c&&c.icon || 'dish'); }
+function pngIcon(file){
+  let v=safeMediaPath(file);
+  if(!v) return svgFor('dish');
+  /* KV/admin often store a full relative path (media/dishes/cat-spit.png).
+     The built-in maps store a filename only (01-tzatziki.png). Prefix the
+     latter — never both, or every icon 404s as media/dishes/media/dishes/… */
+  if(!/^https?:\/\//i.test(v) && v.indexOf('/')<0) v=GREEK_FOOD_BASE+v;
+  return `<span class="greek-ic" style="--food:url('${v}')" aria-hidden="true"></span>`;
+}
+function dishIcon(i){
+  if(i&&i.image) return pngIcon(i.image);
+  if(i&&GREEK_FOOD_ICON[i.id]&&!i.iconOverride) return pngIcon(GREEK_FOOD_ICON[i.id]);
+  return svgFor(DISH_ICON[i&&i.icon] || i&&i.icon || 'dish');
+}
+function catIcon(c){
+  const file=(c&&(c.imageIcon||c.image)) || (c&&GREEK_CAT_ICON[c.id]);
+  if(file) return pngIcon(file);
+  return svgFor(DISH_ICON[c&&c.icon] || CAT_ICON[c&&c.id] || c&&c.icon || 'dish');
+}

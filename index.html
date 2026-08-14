@@ -1260,9 +1260,12 @@ body.special-only .guide-pick.on{background:linear-gradient(135deg,var(--a2),var
   background:radial-gradient(circle at 30% 30%,#FFE7B0,var(--a3) 58%,transparent 74%);
   animation:emberRise 4.8s linear infinite;}
 body.special-only .guide-landing.is-special .guide-menu-card::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
   background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.18) 50%,transparent 62%);
   background-size:220% 100%;animation:cardSheen 5.8s ease-in-out infinite;}
+.guide-menu-icon,.guide-menu-card b,.guide-menu-card i{position:relative;z-index:1;}
+.gicon,.sic,.dish-ic{z-index:1;}
+.special-fx{z-index:0;}
 
 /* ══ SCRUBBING BETWEEN PAGES ═══════════════════════════════════════════════
    A pager that stays under the thumb, plus a slide that carries the direction

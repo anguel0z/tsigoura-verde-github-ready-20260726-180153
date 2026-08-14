@@ -68,3 +68,18 @@ Append-only. Newest entries at the bottom.
 **Suggested improvement:** When introducing a powerful lock, give the opt-out a new explicit token (here exclusiveMode:'with-full') that only the new editor can write. Absent token = new product default. Do not reuse a boolean that old saves already persist as false.
 
 **Principle:** A stored false from an unused default is not a user choice. Opt-outs need a value that cannot appear in historical data.
+
+### Observation 4: Asset helpers must accept both filenames and stored paths
+
+**Status:** OPEN
+**Date:** 2026-08-14
+**Session context:** Special-menu deploy; owner reported icons gone. Live KV had category imageIcon values like media/dishes/cat-appetizers.png. pngIcon always prefixed media/dishes/, so chips requested media/dishes/media/dishes/… and 404ed.
+**Skill:** task-observer (data-vs-renderer contract)
+**Type:** open-source
+**Phase/Area:** Media path helpers
+
+**Issue:** The renderer assumed imageIcon was a bare filename matching GREEK_FOOD_ICON. Production data used the same shape as image (a relative path). First visual check after wiring imageIcon was skipped (handover). The empty wells looked like a CSS regression from the special-menu work.
+
+**Suggested improvement:** When a helper concatenates a base directory onto a stored field, accept filename OR already-qualified path (and https). Prove both shapes with a one-liner before shipping. If a field was just populated in KV, curl the resolved URL.
+
+**Principle:** A stored asset field will eventually hold whatever the admin actually saved. Concatenating a base path is only safe after you inspect live values, not the helper's original examples.
