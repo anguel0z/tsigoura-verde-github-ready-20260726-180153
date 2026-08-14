@@ -1120,11 +1120,57 @@ body{background:var(--paper)!important;}
   color:#7A2E12;font-size:12.5px;font-weight:650;line-height:1.35;text-align:center;
   animation:nudgeIn .5s var(--ez-out) .5s both;}
 
+/* ══ ONE GUTTER ═══════════════════════════════════════════════════════════
+   The banner and the view switch sat flush to the screen edge while the
+   search, nav and sections were inset 16px, so nothing lined up vertically.
+   Everything above the menu body now shares a single gutter. */
+/* (the actual rules live at the very end of this stylesheet — a later block
+   forces width:100% + margin:auto on these same elements with !important) */
+
+/* ══ IMMERSIVE SPECIAL MENU ════════════════════════════════════════════════
+   Entering the special menu should feel like walking into the feast, not like
+   a filtered list. Warm ambient ground, one obvious way back, staged entrance. */
+@keyframes spWash{from{opacity:0;}to{opacity:1;}}
+@keyframes spRise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+@keyframes spBackIn{from{opacity:0;transform:translateX(-10px);}to{opacity:1;transform:none;}}
+body.special-menu::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(120% 62% at 50% -12%,rgba(201,139,62,.20),transparent 62%),
+    radial-gradient(90% 46% at 50% 108%,rgba(122,46,18,.14),transparent 66%);
+  animation:spWash .7s ease both;}
+body.special-menu .wrap,body.special-menu main{position:relative;z-index:1;}
+/* one way out, not two — the list/categories switch silently dropped you out
+   of the special menu from a second, unrelated place */
+body.special-menu #viewSwitch{display:none!important;}
+.special-back{display:inline-flex;align-items:center;gap:8px;margin:2px 0 12px;
+  min-height:42px;padding:0 16px 0 13px;border-radius:999px;
+  background:linear-gradient(122deg,#40160A,#8E3616 60%,#C98B3E);
+  border:1px solid rgba(255,214,150,.42);color:#FFF3E0;
+  font-size:13.5px;font-weight:800;letter-spacing:.2px;
+  box-shadow:0 10px 24px rgba(92,32,10,.30);
+  animation:spBackIn .5s var(--ez-out) both;}
+.special-back span{font-size:16px;line-height:1;}
+.special-back:active{scale:.96;}
+.guide-landing.is-special .guide-landing-copy{
+  background:linear-gradient(135deg,#FFFDF8,#F7EADB)!important;
+  border-color:rgba(201,139,62,.44)!important;
+  box-shadow:0 16px 38px rgba(92,32,10,.14)!important;
+  animation:spRise .6s var(--ez-out) .06s both;}
+.guide-landing.is-special .guide-landing-copy small{color:#B4623A!important;}
+.guide-landing.is-special .guide-menu-card{animation:spRise .55s var(--ez-out) both;}
+.guide-landing.is-special .guide-menu-card:nth-child(1){animation-delay:.10s;}
+.guide-landing.is-special .guide-menu-card:nth-child(2){animation-delay:.18s;}
+.guide-landing.is-special .guide-menu-card:nth-child(3){animation-delay:.26s;}
+.guide-landing.is-special .guide-menu-card:nth-child(n+4){animation-delay:.34s;}
+
 /* the reduced-motion pass earlier in the file cannot reach these later
    !important rules, so restate it here */
 @media (prefers-reduced-motion:reduce){
   .announce,.announce::before,.announce .em,.announce .ann-cta b,
-  .announce.nudging,.announce .tap-cue,.ann-nudge{animation:none!important;}
+  .announce.nudging,.announce .tap-cue,.ann-nudge,
+  body.special-menu::after,.special-back,
+  .guide-landing.is-special .guide-landing-copy,
+  .guide-landing.is-special .guide-menu-card{animation:none!important;}
   .announce{background-position:58% 0,0 0,0 0!important;}
   .ann-nudge{opacity:1!important;transform:none!important;}
 }
@@ -2156,6 +2202,26 @@ body.searching .search-clear{transform:none!important;}
   .sheet,.scrim,.item,.sec-h{transition:none!important;animation:none!important;}
 }
 
+
+/* ══ ONE GUTTER — must be last ═══════════════════════════════════════════════
+   An earlier block forces width:100% + margin-inline:auto on .updates and
+   #viewSwitch with !important, so the banner and the view switch sat flush to
+   the screen edge while the search, nav and dish rows were inset. Nothing
+   lined up down the left edge. These rules run last so one gutter wins. */
+:root{--gut:16px;}
+@media(min-width:601px){:root{--gut:20px;}}
+.updates,#viewSwitch{
+  width:auto!important;
+  max-width:calc(100% - (var(--gut) * 2))!important;
+  margin-left:var(--gut)!important;
+  margin-right:var(--gut)!important;
+}
+.updates .announce,.ann-nudge,#viewSwitch .view-switch{
+  width:auto!important;
+  max-width:100%!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
 </style>
 </head>
 <body>
@@ -3289,12 +3355,12 @@ function guideLandingHTML(cats){
   const ann=announceText();
   const title=specialMenuActive && ann ? ann.title : T('guidePick');
   const body=specialMenuActive && ann ? ann.body : T('guidePickSub');
-  return `<section class="guide-landing" aria-label="${esc(T('viewGuided'))}">
+  return `<section class="guide-landing${specialMenuActive?' is-special':''}" aria-label="${esc(T('viewGuided'))}">
+    ${specialMenuActive?`<button class="special-back" type="button" data-special-exit><span aria-hidden="true">←</span>${esc(SU('full'))}</button>`:''}
     <div class="guide-landing-copy">
       <small>${esc(specialMenuActive?SU('special'):T('viewGuided'))}</small>
       <h2>${esc(title)}</h2>
       <p>${esc(body)}</p>
-      ${specialMenuActive?`<button class="special-exit" type="button" data-special-exit>${esc(SU('full'))}</button>`:''}
     </div>
     <div class="guide-menu">
       ${(!specialMenuActive && announcementIsLive() && specialMenuIds().length) ? `
