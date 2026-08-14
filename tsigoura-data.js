@@ -344,6 +344,7 @@ const ZONES = {
    ──────────────────────────────────────────────────────────────────────── */
 const ANNOUNCE = {
   on:false, from:'2026-07-26', to:'2026-07-26', fromTime:'', toTime:'', nudge:true,
+  theme:'ember', accent:'',
   emoji:'🔥', targetCat:'spit', specialCats:['spit','meat'],
   t:{
     el:{ title:'Κυριακή 26 Ιουλίου · Σούβλες στη Τσιγγούρα', body:'Ειδική βραδιά με αρνί σούβλας και κοντοσούβλι. Πατήστε εδώ για να δείτε το σημερινό μενού.' },
@@ -529,6 +530,16 @@ function announcementDateKey(v){
   v=String(v||'').trim().slice(0,10);
   return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : '';
 }
+/* Looks a special menu can wear. Each one is a full palette, applied to the
+   banner, the category chip/card and the ambient wash behind the special menu,
+   so a feast night does not look like an ordinary filtered list. */
+const ANNOUNCEMENT_THEMES = {
+  ember:      { el:'Σούβλες · φωτιά',            emoji:'🔥' },
+  assumption: { el:'Δεκαπενταύγουστος · γαλάζιο', emoji:'✨' },
+  olive:      { el:'Ταβέρνα · λαδί',              emoji:'🌿' },
+  night:      { el:'Βραδινό · σκούρο',            emoji:'🌙' },
+  festive:    { el:'Γιορτινό · βυσσινί',          emoji:'🎉' },
+};
 /* "HH:MM" or '' — an empty time means "no limit on that side of the window". */
 function announcementTimeKey(v){
   v=String(v||'').trim().slice(0,5);
@@ -572,6 +583,10 @@ function normalizeAnnouncement(a){
   out.toTime   = announcementTimeKey(Object.prototype.hasOwnProperty.call(a,'toTime')   ? a.toTime   : base.toTime);
   /* Guided nudge for guests who would not realise the banner is tappable. */
   out.nudge = Object.prototype.hasOwnProperty.call(a,'nudge') ? a.nudge !== false : base.nudge !== false;
+  /* Look of the banner and the whole special menu, so each event can carry its
+     own character (σούβλες fire, Δεκαπενταύγουστος blue-and-gold, …). */
+  out.theme = ANNOUNCEMENT_THEMES[String(a.theme||base.theme||'')] ? String(a.theme||base.theme) : 'ember';
+  out.accent = /^#[0-9a-f]{6}$/i.test(String(a.accent||'')) ? String(a.accent) : '';
   out.emoji = String(out.emoji||'').slice(0,8);
   out.targetCat = String(out.targetCat||base.targetCat).slice(0,32);
   out.specialCats = Array.isArray(out.specialCats) ? out.specialCats.map(x=>String(x).slice(0,32)).filter(Boolean).slice(0,8) : base.specialCats.slice();

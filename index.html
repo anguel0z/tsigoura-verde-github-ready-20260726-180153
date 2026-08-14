@@ -1025,14 +1025,14 @@ body{background:var(--paper)!important;}
 @keyframes emberFlick{0%,100%{opacity:1;}38%{opacity:.8;}62%{opacity:.97;}}
 .announce{
   background-image:
-    linear-gradient(105deg,transparent 34%,rgba(255,228,174,.26) 47%,transparent 61%),
-    radial-gradient(140% 92% at 88% -16%,rgba(255,188,98,.44),transparent 62%),
-    linear-gradient(122deg,#40160A 0%,#8E3616 46%,#C98B3E 100%)!important;
+    linear-gradient(105deg,transparent 34%,rgba(255,255,255,.20) 47%,transparent 61%),
+    radial-gradient(140% 92% at 88% -16%,color-mix(in srgb,var(--a3) 55%,transparent),transparent 62%),
+    linear-gradient(122deg,var(--a1) 0%,var(--a2) 46%,var(--a3) 100%)!important;
   background-size:260% 100%,100% 100%,100% 100%!important;
   background-position:190% 0,0 0,0 0!important;
   background-repeat:no-repeat!important;
-  border:1px solid rgba(255,214,150,.36)!important;
-  box-shadow:0 14px 30px rgba(92,32,10,.32),inset 0 1px 0 rgba(255,236,204,.20)!important;
+  border:1px solid var(--aline)!important;
+  box-shadow:0 14px 30px rgba(20,12,6,.30),inset 0 1px 0 rgba(255,255,255,.18)!important;
   transition:filter .2s var(--ez-out)!important;
   animation:annIn .8s var(--ez-out) both,
             annSheen 7.5s var(--ez-inout) 1.2s infinite,
@@ -1042,7 +1042,7 @@ body{background:var(--paper)!important;}
 .announce::after{background:
   linear-gradient(180deg,rgba(46,13,4,.18),rgba(46,13,4,.56)),
   radial-gradient(120% 78% at 50% 118%,rgba(28,8,2,.34),transparent 66%)!important;}
-.announce .ttl{color:#FFF1D8!important;letter-spacing:.1px!important;
+.announce .ttl{color:var(--aink)!important;letter-spacing:.1px!important;
   text-shadow:0 1px 10px rgba(60,18,4,.42)!important;}
 /* gradient lettering only where it is safe — never risk invisible text */
 @supports ((-webkit-background-clip:text) or (background-clip:text)){
@@ -1052,7 +1052,7 @@ body{background:var(--paper)!important;}
     text-shadow:none!important;
     filter:drop-shadow(0 1px 8px rgba(60,18,4,.44))!important;}
 }
-.announce .bd{color:rgba(255,241,219,.93)!important;
+.announce .bd{color:color-mix(in srgb,var(--aink) 92%,transparent)!important;
   text-shadow:0 1px 6px rgba(60,18,4,.34)!important;}
 .announce .em{font-size:34px!important;
   filter:drop-shadow(0 0 11px rgba(255,152,52,.5)) drop-shadow(0 2px 6px rgba(0,0,0,.34))!important;
@@ -1062,14 +1062,52 @@ body{background:var(--paper)!important;}
 /* ── guided nudge: make it obvious the banner is a button ──────────────────
    Guests who are not comfortable with phones do not read a banner as tappable.
    A soft ring, a finger cue and one line of text fix that without shouting. */
-@keyframes annRing{0%{box-shadow:0 14px 30px rgba(92,32,10,.32),0 0 0 0 rgba(255,183,94,.55);}
-                   70%{box-shadow:0 14px 30px rgba(92,32,10,.32),0 0 0 12px rgba(255,183,94,0);}
-                   100%{box-shadow:0 14px 30px rgba(92,32,10,.32),0 0 0 0 rgba(255,183,94,0);}}
+@keyframes annRing{0%{box-shadow:0 14px 30px rgba(20,12,6,.30),0 0 0 0 var(--aglow);}
+                   70%{box-shadow:0 14px 30px rgba(20,12,6,.30),0 0 0 12px transparent;}
+                   100%{box-shadow:0 14px 30px rgba(20,12,6,.30),0 0 0 0 transparent;}}
 @keyframes tapCue{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-5px) scale(1.12);}}
 @keyframes nudgeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
 .announce.nudging{animation:annIn .8s var(--ez-out) both,
                             annSheen 7.5s var(--ez-inout) 1.2s infinite,
                             annRing 2.1s ease-out 1s infinite!important;}
+/* ══ SPECIAL MENU THEMES ═══════════════════════════════════════════════════
+   One palette per event. Everything downstream reads these variables, so a
+   new look is a handful of colours rather than a second copy of the CSS.
+   --a1..--a3 gradient stops · --aink text · --aline hairline
+   --acta / --actaink call-to-action pill · --aglow ambient wash */
+:root{
+  --a1:#40160A; --a2:#8E3616; --a3:#C98B3E;
+  --aink:#FFF3E0; --aline:rgba(255,214,150,.36);
+  --acta:rgba(255,238,214,.94); --actaink:#7A2E12;
+  --aglow:rgba(255,183,94,.55); --awash:rgba(201,139,62,.20); --awash2:rgba(122,46,18,.14);
+}
+:root[data-ann-theme="assumption"]{
+  --a1:#0B2A4A; --a2:#17558C; --a3:#D8B24C;
+  --aink:#F2F8FF; --aline:rgba(216,178,76,.44);
+  --acta:rgba(244,249,255,.96); --actaink:#123A63;
+  --aglow:rgba(216,178,76,.55); --awash:rgba(23,85,140,.20); --awash2:rgba(216,178,76,.12);
+}
+:root[data-ann-theme="olive"]{
+  --a1:#1E3A2E; --a2:#3E6B4A; --a3:#B8C06A;
+  --aink:#F4F7EC; --aline:rgba(184,192,106,.42);
+  --acta:rgba(246,250,236,.95); --actaink:#26452F;
+  --aglow:rgba(184,192,106,.5); --awash:rgba(62,107,74,.18); --awash2:rgba(184,192,106,.12);
+}
+:root[data-ann-theme="night"]{
+  --a1:#14161A; --a2:#2A2F38; --a3:#B99A5B;
+  --aink:#F5F0E4; --aline:rgba(185,154,91,.40);
+  --acta:rgba(246,241,229,.95); --actaink:#2A2F38;
+  --aglow:rgba(185,154,91,.5); --awash:rgba(42,47,56,.24); --awash2:rgba(185,154,91,.10);
+}
+:root[data-ann-theme="festive"]{
+  --a1:#3A0F2A; --a2:#7B1E4B; --a3:#D9A24B;
+  --aink:#FFF0F6; --aline:rgba(217,162,75,.42);
+  --acta:rgba(255,240,246,.95); --actaink:#6A1A42;
+  --aglow:rgba(217,162,75,.52); --awash:rgba(123,30,75,.20); --awash2:rgba(217,162,75,.12);
+}
+/* an accent picked in admin overrides the preset's highlight — applied as an
+   inline --a3 by renderAnnounce, since attr() cannot produce a colour */
+
 /* ── banner polish: hierarchy + real press feedback ───────────────────────── */
 .announce{padding:17px 18px 16px!important;
   -webkit-tap-highlight-color:transparent!important;
@@ -1079,36 +1117,36 @@ body{background:var(--paper)!important;}
 .announce:active{scale:.982;filter:brightness(1.07) saturate(1.06)!important;}
 .announce .kick{position:relative;z-index:2;display:inline-block;margin-bottom:7px;
   padding:3px 9px;border-radius:999px;
-  background:rgba(255,236,204,.20);border:1px solid rgba(255,226,178,.42);
-  color:#FFE7C2;font-size:9.5px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;}
+  background:rgba(255,255,255,.16);border:1px solid var(--aline);
+  color:var(--aink);font-size:9.5px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;}
 .announce .ttl{padding-right:44px!important;}
 .announce .bd{margin-top:6px!important;padding-right:44px!important;}
 
 /* special menu inside the category rail */
-.tab.special-tab{background:linear-gradient(122deg,#8E3616,#C98B3E)!important;
-  border-color:rgba(255,214,150,.55)!important;color:#FFF3E0!important;
-  font-weight:800!important;box-shadow:0 6px 16px rgba(122,46,18,.28)!important;}
+.tab.special-tab{background:linear-gradient(122deg,var(--a2),var(--a3))!important;
+  border-color:var(--aline)!important;color:var(--aink)!important;
+  font-weight:800!important;box-shadow:0 6px 16px rgba(20,12,6,.26)!important;}
 .tab.special-tab .sp-em{font-size:15px;line-height:1;}
 .tab.special-tab:active{scale:.96;}
 /* and as the first card in the category landing */
 .guide-menu-card.special-card{--acc:#C98B3E;
-  background:linear-gradient(135deg,#40160A 0%,#8E3616 52%,#C98B3E 100%)!important;
-  border-color:rgba(255,214,150,.42)!important;
-  box-shadow:0 18px 40px rgba(92,32,10,.34)!important;}
+  background:linear-gradient(135deg,var(--a1) 0%,var(--a2) 52%,var(--a3) 100%)!important;
+  border-color:var(--aline)!important;
+  box-shadow:0 18px 40px rgba(20,12,6,.32)!important;}
 .guide-menu-card.special-card .guide-menu-icon{background:rgba(255,247,235,.16)!important;
   border-color:rgba(255,226,178,.34)!important;font-size:34px;}
-.guide-menu-card.special-card b{color:#FFF3E0!important;}
+.guide-menu-card.special-card b{color:var(--aink)!important;}
 .guide-menu-card.special-card b em{display:block;font-style:normal;
   font-family:system-ui,-apple-system,sans-serif;
   font-size:12.5px;font-weight:650;letter-spacing:.2px;
-  color:rgba(255,238,214,.88);margin-top:4px;}
-.guide-menu-card.special-card i{color:#FFD79A!important;}
+  color:color-mix(in srgb,var(--aink) 86%,transparent);margin-top:4px;}
+.guide-menu-card.special-card i{color:var(--a3)!important;}
 
 /* explicit button-looking CTA inside the banner */
 @keyframes ctaArrow{0%,100%{transform:translateX(0);}50%{transform:translateX(4px);}}
 .announce .ann-cta{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;
   margin-top:11px;padding:7px 14px;border-radius:999px;
-  background:rgba(255,238,214,.94);color:#7A2E12;
+  background:var(--acta);color:var(--actaink);
   font-size:12.5px;font-weight:800;letter-spacing:.2px;
   box-shadow:0 4px 12px rgba(40,12,3,.28);}
 .announce .ann-cta b{font-weight:900;animation:ctaArrow 1.4s ease-in-out infinite!important;}
@@ -1135,8 +1173,8 @@ body{background:var(--paper)!important;}
 @keyframes spBackIn{from{opacity:0;transform:translateX(-10px);}to{opacity:1;transform:none;}}
 body.special-menu::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
-    radial-gradient(120% 62% at 50% -12%,rgba(201,139,62,.20),transparent 62%),
-    radial-gradient(90% 46% at 50% 108%,rgba(122,46,18,.14),transparent 66%);
+    radial-gradient(120% 62% at 50% -12%,var(--awash),transparent 62%),
+    radial-gradient(90% 46% at 50% 108%,var(--awash2),transparent 66%);
   animation:spWash .7s ease both;}
 body.special-menu .wrap,body.special-menu main{position:relative;z-index:1;}
 /* one way out, not two — the list/categories switch silently dropped you out
@@ -1144,8 +1182,8 @@ body.special-menu .wrap,body.special-menu main{position:relative;z-index:1;}
 body.special-menu #viewSwitch{display:none!important;}
 .special-back{display:inline-flex;align-items:center;gap:8px;margin:2px 0 12px;
   min-height:42px;padding:0 16px 0 13px;border-radius:999px;
-  background:linear-gradient(122deg,#40160A,#8E3616 60%,#C98B3E);
-  border:1px solid rgba(255,214,150,.42);color:#FFF3E0;
+  background:linear-gradient(122deg,var(--a1),var(--a2) 60%,var(--a3));
+  border:1px solid var(--aline);color:var(--aink);
   font-size:13.5px;font-weight:800;letter-spacing:.2px;
   box-shadow:0 10px 24px rgba(92,32,10,.30);
   animation:spBackIn .5s var(--ez-out) both;}
@@ -2838,6 +2876,22 @@ const CTA_UI = {
   bg:'Вижте специалното меню'
 };
 function CTA(){ return CTA_UI[lang] || CTA_UI.en; }
+/* Paint the chosen palette onto the whole special-menu surface: the banner,
+   the category chip and card, and the ambient wash. Themes are plain CSS
+   variables, so this is one attribute plus an optional accent override. */
+const ANN_THEME_CLASSES = ['ann-ember','ann-assumption','ann-olive','ann-night','ann-festive'];
+function applyAnnouncementTheme(A){
+  A = A || activeAnnouncement() || {};
+  const theme = String(A.theme||'ember');
+  const accent = /^#[0-9a-f]{6}$/i.test(String(A.accent||'')) ? String(A.accent) : '';
+  const root = document.documentElement;
+  root.setAttribute('data-ann-theme', theme);
+  ANN_THEME_CLASSES.forEach(c=>document.body.classList.remove(c));
+  document.body.classList.add('ann-'+theme);
+  /* accent wins over the preset's highlight stop */
+  if(accent) root.style.setProperty('--a3', accent);
+  else root.style.removeProperty('--a3');
+}
 const ANN_NUDGE_KEY='tv_ann_nudge';
 /* Show it once per day per device — a hint that never stops is just noise. */
 function nudgeDismissed(){
@@ -4826,6 +4880,7 @@ function renderAnnounce(){
   if(!t){ slot.innerHTML=''; return; }
   const img = (typeof MEDIA!=='undefined' && (MEDIA.souvles||MEDIA.hero)) ? `url('${MEDIA.souvles||MEDIA.hero}')` : 'none';
   const nudging = A.nudge!==false && !specialMenuActive && !nudgeDismissed();
+  applyAnnouncementTheme(A);
   slot.innerHTML=`<button class="announce${nudging?' nudging':''}" type="button" id="announceGo" data-special-open data-admin-announcement="1" style="--ann-img:${img}">
     ${A.emoji?`<span class="em">${A.emoji}</span>`:''}
     <span class="kick">${esc(SU('special'))}</span>

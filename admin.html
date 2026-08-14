@@ -1514,6 +1514,9 @@ function readAnnouncementEditor(){
     fromTime:$('annFromTime')?$('annFromTime').value:cur.fromTime,
     toTime:$('annToTime')?$('annToTime').value:cur.toTime,
     nudge:nudgeEl?nudgeEl.classList.contains('on'):cur.nudge!==false,
+    theme:$('annTheme')?$('annTheme').value:cur.theme,
+    /* the picker always holds a colour, so an explicit clear is what removes it */
+    accent:$('annAccent')?($('annAccent').dataset.cleared==='1'?'':$('annAccent').value):cur.accent,
     emoji:$('annEmoji').value.trim().slice(0,8),
     targetCat:$('annTarget').value,
     specialCats:[...box.querySelectorAll('[data-ann-cat]')].filter(cb=>cb.checked).map(cb=>cb.value),
@@ -3542,6 +3545,12 @@ function announcementEditorHTML(){
       <div><label>Ώρα λήξης (κενό = μέχρι το τέλος)</label><input type="time" id="annToTime" value="${ioEsc(A.toTime||'')}"></div>
     </div>
     <p class="hint" style="margin:8px 0 0;">Οι ώρες ισχύουν στην πρώτη και στην τελευταία ημέρα. Π.χ. 15/08 με ώρα έναρξης 14:00 → το banner εμφανίζεται στις 2 το μεσημέρι.</p>
+    <div class="fieldrow">
+      <div><label>Εμφάνιση / θέμα</label><select id="annTheme">${Object.keys(ANNOUNCEMENT_THEMES).map(k=>`<option value="${k}" ${String(A.theme||'ember')===k?'selected':''}>${ANNOUNCEMENT_THEMES[k].emoji} ${ioEsc(ANNOUNCEMENT_THEMES[k].el)}</option>`).join('')}</select></div>
+      <div><label>Χρώμα τόνου (προαιρετικό)</label><input type="color" id="annAccent" value="${ioEsc(A.accent||'#C98B3E')}"></div>
+      <div><label>&nbsp;</label><button type="button" class="btn ghost sm pressable" id="annAccentClear">Καθαρισμός χρώματος</button></div>
+    </div>
+    <p class="hint" style="margin:8px 0 0;">Το θέμα αλλάζει όλη την εμφάνιση του σπέσιαλ μενού — banner, κουμπί στις κατηγορίες και φόντο. Κάθε γιορτή μπορεί να έχει το δικό της.</p>
     <div class="setting-row">
       <div class="txt"><div class="t">Καθοδήγηση πελάτη</div><div class="d">Παλμός και μήνυμα «πατήστε εδώ» ώστε να καταλάβουν ότι το banner ανοίγει το σπέσιαλ μενού.</div></div>
       <div class="toggle ${A.nudge!==false?'on':''}" id="annNudge"></div>
@@ -3568,6 +3577,10 @@ function announcementEditorHTML(){
       <button class="btn ghost sm pressable" id="annReset">${ICO.get('arrow')}Επαναφορά 26/7</button>
     </div>
   </div>`;
+}
+function A_hasAccent(){
+  const a=normalizeAnnouncement(S.settings.announcement||{});
+  return /^#[0-9a-f]{6}$/i.test(String(a.accent||''));
 }
 function wireAnnouncementEditor(){
   const box=$('announceEditor'); if(!box) return;
@@ -3652,6 +3665,15 @@ function wireAnnouncementEditor(){
       toast(win.active?'Το banner εμφανίζεται στους πελάτες':'Το banner είναι ON αλλά εκτός ημερομηνιών');
     }else toast('Το banner κρύφτηκε');
   };
+  /* A colour input can never be "empty", so track an explicit clear. */
+  const accentEl=document.getElementById('annAccent');
+  if(accentEl) accentEl.dataset.cleared = String(A_hasAccent()?0:1);
+  const accentClear=document.getElementById('annAccentClear');
+  if(accentClear) accentClear.onclick=()=>{
+    if(accentEl) accentEl.dataset.cleared='1';
+    toast('Το χρώμα καθαρίστηκε — πατήστε Αποθήκευση banner');
+  };
+  if(accentEl) accentEl.oninput=()=>{ accentEl.dataset.cleared='0'; };
   const nudgeTog=document.getElementById('annNudge');
   if(nudgeTog) nudgeTog.onclick=()=>{
     /* Toggle in place only — never re-render, or the form is wiped mid-edit. */
