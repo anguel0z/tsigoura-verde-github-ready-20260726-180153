@@ -3575,10 +3575,12 @@ function wireAnnouncementEditor(){
     return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
   };
   const ensureVisibleWindow=(A)=>{
-    /* Turning the banner on with the old July-26 sample dates left it invisible.
-       Clear expired gates so "Εμφάνιση banner" actually shows on the guest menu. */
+    /* Turning the banner on with the old July-26 sample dates left it invisible,
+       so an EXPIRED gate gets cleared. Never touch an UPCOMING one: "!win.active"
+       is also true for a banner deliberately scheduled for a future date, and
+       clearing that wiped the owner's schedule on every save made beforehand. */
     const win=announcementWindowStatus(A);
-    if(A.on && !win.active){
+    if(A.on && win.expired){
       A.from='';
       A.to='';
       return true;
@@ -3625,7 +3627,9 @@ function wireAnnouncementEditor(){
     syncToggleUi(S.settings.announcement||A);
     if(ok){
       const win=announcementWindowStatus(A);
-      if(A.on && !win.active) toast('Το banner είναι ON αλλά εκτός ημερομηνιών — δεν φαίνεται στους πελάτες');
+      /* A scheduled banner is correct, not broken — say so instead of alarming. */
+      if(A.on && win.upcoming) toast('Αποθηκεύτηκε · προγραμματισμένο για '+(win.from||'')+(win.fromTime?' στις '+win.fromTime:'')+' — θα εμφανιστεί μόνο του');
+      else if(A.on && win.expired) toast('Το banner είναι ON αλλά οι ημερομηνίες πέρασαν — δεν φαίνεται στους πελάτες');
       else if(A.on && !String((A.t.el&&A.t.el.title)||'').trim() && !String((A.t.el&&A.t.el.body)||'').trim()) toast('Βάλτε τίτλο ή κείμενο για να εμφανιστεί το banner');
       else toast(cleared ? 'Το banner εμφανίζεται (καθαρίστηκαν παλιές ημερομηνίες)' : (msg||'Το banner αποθηκεύτηκε'));
     }
