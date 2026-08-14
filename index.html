@@ -1142,6 +1142,14 @@ body{background:var(--paper)!important;}
   color:color-mix(in srgb,var(--aink) 86%,transparent);margin-top:4px;}
 .guide-menu-card.special-card i{color:var(--a3)!important;}
 
+/* Rive canvas sits above the photo but below the text. Fades in only once the
+   file has actually loaded, so a slow or failed fetch shows nothing at all
+   rather than a black rectangle over the banner. */
+.announce .ann-riv{position:absolute;inset:0;width:100%;height:100%;
+  z-index:1;pointer-events:none;opacity:0;transition:opacity .5s var(--ez-out);}
+.announce .ann-riv.on{opacity:1;}
+.announce.has-riv .em{opacity:0;transition:opacity .4s;}
+
 /* explicit button-looking CTA inside the banner */
 @keyframes ctaArrow{0%,100%{transform:translateX(0);}50%{transform:translateX(4px);}}
 .announce .ann-cta{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;
@@ -1201,6 +1209,61 @@ body.special-menu #viewSwitch{display:none!important;}
 .guide-landing.is-special .guide-menu-card:nth-child(3){animation-delay:.26s;}
 .guide-landing.is-special .guide-menu-card:nth-child(n+4){animation-delay:.34s;}
 
+/* ══ "THIS IS A SPECIAL MENU" SIGNALS ══════════════════════════════════════
+   A live dot that breathes, a slow shimmer across the kicker, and — in
+   exclusive mode — a thin lit rail under the header so the whole screen reads
+   as an event rather than the everyday menu. */
+@keyframes liveBeat{0%,100%{transform:scale(1);opacity:1;}
+                    50%{transform:scale(1.5);opacity:.45;}}
+@keyframes liveHalo{0%{box-shadow:0 0 0 0 var(--aglow);}
+                    70%{box-shadow:0 0 0 7px transparent;}
+                    100%{box-shadow:0 0 0 0 transparent;}}
+@keyframes kickShine{0%,72%{background-position:-140% 0;}100%{background-position:240% 0;}}
+@keyframes railSweep{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+.announce .kick{display:inline-flex!important;align-items:center;gap:6px;
+  background-image:linear-gradient(100deg,transparent 38%,rgba(255,255,255,.34) 50%,transparent 62%)!important;
+  background-size:220% 100%!important;background-repeat:no-repeat!important;
+  animation:kickShine 6s ease-in-out 1.4s infinite!important;}
+.announce .kick .livedot,.guide-landing-copy small .livedot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;
+  background:#7CFF9E;box-shadow:0 0 0 0 var(--aglow);
+  animation:liveBeat 1.7s ease-in-out infinite, liveHalo 1.7s ease-out infinite!important;}
+.guide-landing-copy small{display:inline-flex;align-items:center;gap:7px;}
+.announce.is-locked{cursor:default;}
+body.special-fx-off .special-fx{display:none!important;}
+/* exclusive mode: the menu IS the event */
+body.special-only .head::after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--a3),transparent);
+  overflow:hidden;animation:railSweep 3.4s linear infinite;}
+body.special-only .head{position:relative;overflow:hidden;}
+/* nothing offers a way back out, so do not tease one */
+body.special-only #viewSwitch,
+body.special-only .special-back,
+body.special-only .special-exit,
+body.special-only .search,
+body.special-only .announce .ann-cta,
+body.special-only .announce .tap-cue,
+body.special-only .ann-nudge{display:none!important;}
+body.special-only .announce{cursor:default;}
+body.special-only .head{border-bottom-color:var(--aline)!important;
+  background:color-mix(in srgb,var(--a1) 16%,rgba(245,240,227,.92))!important;}
+.guide-landing.is-special .guide-landing-copy{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--a1) 10%,#FFFDF8),color-mix(in srgb,var(--a3) 18%,#FFF8EA))!important;
+  border-color:var(--aline)!important;}
+.guide-landing.is-special .guide-landing-copy small{color:var(--a2)!important;}
+body.special-only .guide-pick.on{background:linear-gradient(135deg,var(--a2),var(--a3))!important;color:var(--aink)!important;}
+@keyframes emberRise{0%{transform:translate3d(0,10px,0) scale(.55);opacity:0;}
+                     14%{opacity:.9;}
+                     100%{transform:translate3d(10px,-105vh,0) scale(.2);opacity:0;}}
+@keyframes cardSheen{0%{background-position:130% 0;}100%{background-position:-30% 0;}}
+.special-fx{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden;}
+.special-fx i{position:absolute;bottom:-12px;width:6px;height:6px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#FFE7B0,var(--a3) 58%,transparent 74%);
+  animation:emberRise 4.8s linear infinite;}
+body.special-only .guide-landing.is-special .guide-menu-card::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.18) 50%,transparent 62%);
+  background-size:220% 100%;animation:cardSheen 5.8s ease-in-out infinite;}
+
 /* ══ SCRUBBING BETWEEN PAGES ═══════════════════════════════════════════════
    A pager that stays under the thumb, plus a slide that carries the direction
    of travel so moving between categories reads as movement, not a redraw. */
@@ -1231,6 +1294,8 @@ body.special-menu #viewSwitch{display:none!important;}
    !important rules, so restate it here */
 @media (prefers-reduced-motion:reduce){
   .guide-stage[data-travel],.guide-pager .gp-dot i,
+  .announce .kick,.announce .kick .livedot,body.special-only .head::after,
+  .special-fx i,body.special-only .guide-landing.is-special .guide-menu-card::before,
   .announce,.announce::before,.announce .em,.announce .ann-cta b,
   .announce.nudging,.announce .tap-cue,.ann-nudge,
   body.special-menu::after,.special-back,
@@ -2287,6 +2352,10 @@ body.searching .search-clear{transform:none!important;}
   margin-left:0!important;
   margin-right:0!important;
 }
+body.special-only .search,
+body.special-only #viewSwitch,
+body.special-only .special-back,
+body.special-only .special-exit{display:none!important;}
 </style>
 </head>
 <body>
@@ -2881,7 +2950,31 @@ const SPECIAL_UI = {
   sr:{special:'Посебан мени', full:'Цео мени'},
   bg:{special:'Специално меню', full:'Пълно меню'}
 };
-function SU(k){ return (SPECIAL_UI[lang]&&SPECIAL_UI[lang][k]) || SPECIAL_UI.en[k] || k; }
+const LIVE_UI = { el:'ΖΩΝΤΑΝΑ', en:'LIVE', de:'LIVE', ro:'LIVE', sr:'УЖИВО', bg:'НА ЖИВО' };
+function annPane(){
+  const A=activeAnnouncement();
+  return (A&&A.t&&(A.t[lang]||A.t.en||A.t.el)) || {};
+}
+function annCopy(key){
+  const pane=annPane();
+  const v=String((pane&&pane[key])||'').trim();
+  if(v) return v;
+  if(key==='kick'){
+    const live=String((pane&&pane.live)||'').trim();
+    if(live) return live;
+  }
+  if(key==='live' || key==='kick'){
+    const A=activeAnnouncement();
+    const lab=A&&String(A.liveLabel||'').trim();
+    if(lab) return lab;
+  }
+  return '';
+}
+function SU(k){
+  if(k==='special'){ const v=annCopy('kick'); if(v) return v; }
+  if(k==='full'){ const v=annCopy('back'); if(v) return v; }
+  return (SPECIAL_UI[lang]&&SPECIAL_UI[lang][k]) || SPECIAL_UI.en[k] || k;
+}
 /* Guided nudge — many guests do not realise the banner is a button. */
 const NUDGE_UI = {
   el:'Πατήστε το banner για το σπέσιαλ μενού',
@@ -2891,7 +2984,7 @@ const NUDGE_UI = {
   sr:'Додирните банер за празнични мени',
   bg:'Докоснете банера за празничното меню'
 };
-function NU(){ return NUDGE_UI[lang] || NUDGE_UI.en; }
+function NU(){ return annCopy('nudge') || NUDGE_UI[lang] || NUDGE_UI.en; }
 /* Call to action shown INSIDE the banner, so it reads as a button even to
    someone who never taps a banner. Always present, not only while nudging. */
 const CTA_UI = {
@@ -2902,10 +2995,58 @@ const CTA_UI = {
   sr:'Погледајте посебан мени',
   bg:'Вижте специалното меню'
 };
-function CTA(){ return CTA_UI[lang] || CTA_UI.en; }
+function CTA(){ return annCopy('cta') || CTA_UI[lang] || CTA_UI.en; }
+function liveWord(){ return annCopy('live') || LIVE_UI[lang] || LIVE_UI.en; }
 /* Paint the chosen palette onto the whole special-menu surface: the banner,
    the category chip and card, and the ambient wash. Themes are plain CSS
    variables, so this is one attribute plus an optional accent override. */
+/* ─── Rive animation over the banner (optional) ───────────────────────────
+   The runtime is ~hundreds of KB of WASM, and this menu is opened on phones
+   on taverna wifi. So it is NEVER fetched unless an owner has actually set a
+   .riv, and never on a metered/slow connection or when the guest asked for
+   less motion. The emoji stays underneath as the fallback in every case. */
+const RIVE_CDN = 'https://unpkg.com/@rive-app/canvas-lite@2';
+let rivePromise=null, riveInstance=null;
+function riveAllowed(){
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+  const c = navigator.connection || {};
+  if(c.saveData) return false;
+  if(/^(slow-2g|2g)$/.test(String(c.effectiveType||''))) return false;
+  return true;
+}
+function loadRive(){
+  if(window.rive) return Promise.resolve(window.rive);
+  if(rivePromise) return rivePromise;
+  rivePromise = new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src=RIVE_CDN; s.async=true;
+    s.onload=()=>resolve(window.rive);
+    s.onerror=()=>{ rivePromise=null; reject(new Error('rive_cdn_unreachable')); };
+    document.head.appendChild(s);
+  });
+  return rivePromise;
+}
+function teardownRive(){
+  try{ if(riveInstance && riveInstance.cleanup) riveInstance.cleanup(); }catch(e){}
+  riveInstance=null;
+}
+function mountRive(A){
+  teardownRive();
+  const canvas=document.getElementById('annRive');
+  if(!canvas || !A || !A.riv || !riveAllowed()) return;
+  loadRive().then(rive=>{
+    if(!rive || !document.body.contains(canvas)) return;   /* re-rendered meanwhile */
+    const opts={ src:A.riv, canvas, autoplay:true,
+      layout:new rive.Layout({fit:rive.Fit.Cover, alignment:rive.Alignment.Center}),
+      onLoad:()=>{ try{ riveInstance.resizeDrawingSurfaceToCanvas(); }catch(e){}
+                   canvas.classList.add('on');
+                   /* only now retire the emoji — until the file is really on
+                      screen it is the thing keeping the banner from looking bare */
+                   const btn=canvas.closest('.announce'); if(btn) btn.classList.add('has-riv'); } };
+    if(A.rivMachine) opts.stateMachines=A.rivMachine;
+    try{ riveInstance=new rive.Rive(opts); }catch(e){}
+  }).catch(()=>{ /* offline or blocked — the emoji already covers this */ });
+}
 const ANN_THEME_CLASSES = ['ann-ember','ann-assumption','ann-olive','ann-night','ann-festive'];
 function applyAnnouncementTheme(A){
   A = A || activeAnnouncement() || {};
@@ -2918,6 +3059,12 @@ function applyAnnouncementTheme(A){
   /* accent wins over the preset's highlight stop */
   if(accent) root.style.setProperty('--a3', accent);
   else root.style.removeProperty('--a3');
+}
+function clearAnnouncementTheme(){
+  const root=document.documentElement;
+  root.removeAttribute('data-ann-theme');
+  root.style.removeProperty('--a3');
+  ANN_THEME_CLASSES.forEach(c=>document.body.classList.remove(c));
 }
 const ANN_NUDGE_KEY='tv_ann_nudge';
 /* Show it once per day per device — a hint that never stops is just noise. */
@@ -2946,6 +3093,25 @@ function activeMenuCats(){
   const ids=specialMenuIds();
   return ids.length ? cats.filter(c=>ids.includes(String(c.id))) : cats;
 }
+/* Exclusive mode locks the guest inside the special menu. It is only honoured
+   when the announcement is genuinely live AND its categories actually contain
+   visible dishes — otherwise a mistyped date or an emptied category would
+   leave the guest staring at nothing with no way back to the real menu. */
+function specialIsExclusive(){
+  const A=activeAnnouncement();
+  if(!A) return false;
+  if(!announcementIsLive()) return false;
+  if(String(A.exclusiveMode)==='with-full') return false;
+  return specialMenuHasContent();
+}
+function specialMenuHasContent(){
+  const ids=specialMenuIds();
+  if(!ids.length) return false;
+  return orderedCats().some(c=>
+    !c.hidden && ids.includes(String(c.id)) &&
+    S.menu.some(i=>String(i.cat)===String(c.id) && isGuestVisible(i))
+  );
+}
 function openSpecialMenu(){
   specialMenuActive=true;
   const search=document.getElementById('q'); if(search) search.value='';
@@ -2953,12 +3119,57 @@ function openSpecialMenu(){
   activeCat=null;
   document.body.classList.remove('searching');
   document.body.classList.add('guided-view','special-menu');
+  applyAnnouncementTheme(activeAnnouncement());
+  syncSpecialFx();
   renderStrip(); renderAnnounce(); renderViewSwitch(); renderTabs(); renderList();
   setTimeout(scrollGuideStage,40);
 }
 function exitSpecialMenu(){
+  /* In exclusive mode there is no "out" — refuse rather than half-leave and
+     strand the guest between two states. */
+  if(specialIsExclusive()) return;
   specialMenuActive=false; activeCat=null; document.body.classList.remove('special-menu');
   renderAnnounce(); renderViewSwitch(); renderTabs(); renderList(); scrollMenuTop();
+}
+/* Drop the guest straight into the special menu when the owner has made it
+   exclusive. STATE ONLY — never renders, because the callers are themselves
+   about to render and a nested repaint would paint the screen twice. */
+function enforceExclusiveSpecial(){
+  const on=specialIsExclusive();
+  const wasOnly=document.body.classList.contains('special-only');
+  document.body.classList.toggle('special-only', on);
+  document.body.classList.toggle('special-fx-off', on && ((activeAnnouncement()||{}).fx===false));
+  if(on && !specialMenuActive){
+    specialMenuActive=true;
+    activeCat=null;
+    q=''; const s=document.getElementById('q'); if(s) s.value='';
+    safeLS.set(VIEW_KEY,'guide');
+    document.body.classList.remove('searching');
+    document.body.classList.add('guided-view','special-menu');
+  }else if(!on && specialMenuActive && (!announcementIsLive() || !specialMenuHasContent())){
+    /* the window closed or the food was pulled — never strand them inside */
+    specialMenuActive=false;
+    document.body.classList.remove('special-menu');
+  }else if(!on && wasOnly && specialMenuActive){
+    /* owner switched back to banner+full catalogue — leave them in special
+       but restore the back button (special-only class already removed). */
+  }
+  if(announcementIsLive()) applyAnnouncementTheme(activeAnnouncement());
+  else clearAnnouncementTheme();
+  syncSpecialFx();
+}
+function syncSpecialFx(){
+  const box=document.getElementById('specialFx');
+  const A=activeAnnouncement()||{};
+  const want=specialIsExclusive() && A.fx!==false && typeof richMotionAllowed==='function' && richMotionAllowed();
+  if(!want){ if(box) box.remove(); return; }
+  if(box) return;
+  const fx=document.createElement('div');
+  fx.id='specialFx'; fx.className='special-fx'; fx.setAttribute('aria-hidden','true');
+  fx.innerHTML=Array.from({length:9},(_,i)=>
+    `<i style="left:${6+i*11}%;animation-delay:${(i*0.42).toFixed(2)}s;animation-duration:${3.8+(i%3)*0.7}s"></i>`
+  ).join('');
+  document.body.appendChild(fx);
 }
 const VIEW_KEY = 'tv_menu_view';
 const CLASSIC_UI_VERSION = 'classic-list-2026-07-30';
@@ -2968,10 +3179,11 @@ if(safeLS.get('tv_ui_version')!==CLASSIC_UI_VERSION){
 }
 function menuView(){ return safeLS.get(VIEW_KEY)==='guide' ? 'guide' : 'list'; }
 function setMenuView(v){
+  if(specialIsExclusive()) v='guide';
   safeLS.set(VIEW_KEY, v==='guide' ? 'guide' : 'list');
   if(v==='guide') activeCat=null;
   document.body.classList.toggle('guided-view', menuView()==='guide' && !cleanSearch(searchValue()));
-  if(v==='list') specialMenuActive=false;
+  if(v==='list' && !specialIsExclusive()) specialMenuActive=false;
   document.body.classList.toggle('special-menu', specialMenuActive);
   renderHead();renderViewSwitch();renderTabs();renderList();scrollMenuTop();
 }
@@ -3480,9 +3692,9 @@ function guideLandingHTML(cats){
   const title=specialMenuActive && ann ? ann.title : T('guidePick');
   const body=specialMenuActive && ann ? ann.body : T('guidePickSub');
   return `<section class="guide-landing${specialMenuActive?' is-special':''}" aria-label="${esc(T('viewGuided'))}">
-    ${specialMenuActive?`<button class="special-back" type="button" data-special-exit><span aria-hidden="true">←</span>${esc(SU('full'))}</button>`:''}
+    ${specialMenuActive && !specialIsExclusive()?`<button class="special-back" type="button" data-special-exit><span aria-hidden="true">←</span>${esc(SU('full'))}</button>`:''}
     <div class="guide-landing-copy">
-      <small>${esc(specialMenuActive?SU('special'):T('viewGuided'))}</small>
+      <small>${specialMenuActive && (activeAnnouncement()||{}).live!==false?`<i class="livedot" aria-hidden="true"></i>`:''}${esc(specialMenuActive?SU('special'):T('viewGuided'))}</small>
       <h2>${esc(title)}</h2>
       <p>${esc(body)}</p>
     </div>
@@ -4963,18 +5175,23 @@ function renderAnnounce(){
             || null;
   if(!t){ slot.innerHTML=''; return; }
   const img = (typeof MEDIA!=='undefined' && (MEDIA.souvles||MEDIA.hero)) ? `url('${MEDIA.souvles||MEDIA.hero}')` : 'none';
-  const nudging = A.nudge!==false && !specialMenuActive && !nudgeDismissed();
+  const locked=specialIsExclusive();
+  const nudging = !locked && A.nudge!==false && !specialMenuActive && !nudgeDismissed();
   applyAnnouncementTheme(A);
-  slot.innerHTML=`<button class="announce${nudging?' nudging':''}" type="button" id="announceGo" data-special-open data-admin-announcement="1" style="--ann-img:${img}">
+  const kickTxt=annCopy('kick') || A.liveLabel || SU('special');
+  const liveOn=A.live!==false;
+  slot.innerHTML=`<button class="announce${nudging?' nudging':''}${locked?' is-locked':''}" type="button" id="announceGo" ${locked?'':'data-special-open'} data-admin-announcement="1" style="--ann-img:${img}" ${locked?'aria-disabled="true"':''}>
+    ${A.riv?`<canvas class="ann-riv" id="annRive" aria-hidden="true"></canvas>`:''}
     ${A.emoji?`<span class="em">${A.emoji}</span>`:''}
-    <span class="kick">${esc(SU('special'))}</span>
+    <span class="kick">${liveOn?`<i class="livedot" aria-hidden="true"></i>`:''}${esc(kickTxt)}</span>
     <div class="ttl">${esc(t.title||'')}</div>
     ${t.body?`<div class="bd">${esc(t.body)}</div>`:''}
-    <span class="ann-cta">${esc(CTA())} <b aria-hidden="true">→</b></span>
+    ${locked?'':`<span class="ann-cta">${esc(CTA())} <b aria-hidden="true">→</b></span>`}
     ${nudging?`<span class="tap-cue" aria-hidden="true">👆</span>`:''}
   </button>${nudging?`<div class="ann-nudge" role="status">${esc(NU())}</div>`:''}`;
   const go=document.getElementById('announceGo');
-  if(go) go.onclick=()=>{ dismissNudge(); openSpecialMenu(); };
+  if(go && !locked) go.onclick=()=>{ dismissNudge(); openSpecialMenu(); };
+  mountRive(A);
   /* Stop nagging on its own — the cue has done its job after a while. */
   if(nudging){
     clearTimeout(renderAnnounce._nudgeTimer);
@@ -5116,6 +5333,8 @@ function handleHandoff(){
 /* ═══════════════ init ═══════════════ */
 function apply(){
   forceCloseFloatingUI();
+  /* Settle exclusivity BEFORE painting, so this render already reflects it. */
+  enforceExclusiveSpecial();
   renderHead();renderStrip();renderAnnounce();renderGuestFilters();renderViewSwitch();renderTabs();renderList();
   setStickyMetrics();
   renderCartSheet();updateCart();renderLang();renderClosing();resetHelp();initCookie();

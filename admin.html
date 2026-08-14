@@ -429,6 +429,8 @@ nav.tabs button.on{color:var(--cream);border-bottom-color:var(--gold);}
 .announce-editor .mini-preview span{position:absolute;right:12px;top:10px;font-size:23px;}
 .announce-editor .mini-preview p{font-size:12px;line-height:1.4;margin:5px 0 0;color:rgba(255,248,234,.82);}
 /* per-language panes — all six editable, Greek first and visually primary */
+.setting-row.danger-row{border:1px solid rgba(190,60,40,.34);background:rgba(190,60,40,.05);
+  border-radius:12px;padding:10px 12px;margin-top:10px;}
 .ann-langs{margin-top:14px;display:grid;gap:9px;}
 .ann-lang{border:1px solid var(--line);border-radius:11px;padding:9px 11px 11px;background:rgba(255,255,255,.55);}
 .ann-lang.primary{border-color:rgba(201,162,39,.42);background:rgba(255,252,243,.9);}
@@ -1501,7 +1503,10 @@ function flushOpenProForms(){
    back into state before anything rebuilds it. */
 /* One id scheme for every language pane, shared by the renderer, the reader
    and the clear handler — so adding a language to LANGUAGES needs no edits here. */
-function annFieldId(kind,code){ return 'ann'+(kind==='title'?'Title':'Body')+'_'+code; }
+function annFieldId(kind,code){
+  const map={title:'Title',body:'Body',cta:'Cta',kick:'Kick',live:'LiveTxt',nudge:'Nudge',back:'Back'};
+  return 'ann'+(map[kind]||kind)+'_'+code;
+}
 function readAnnouncementEditor(){
   const box=document.getElementById('announceEditor');
   if(!box || !$(annFieldId('title','el')) || !$('annTarget')) return null;
@@ -1514,6 +1519,12 @@ function readAnnouncementEditor(){
     fromTime:$('annFromTime')?$('annFromTime').value:cur.fromTime,
     toTime:$('annToTime')?$('annToTime').value:cur.toTime,
     nudge:nudgeEl?nudgeEl.classList.contains('on'):cur.nudge!==false,
+    live:document.getElementById('annLive')?document.getElementById('annLive').classList.contains('on'):cur.live!==false,
+    liveLabel:$('annLiveLabel')?$('annLiveLabel').value.trim():cur.liveLabel,
+    fx:document.getElementById('annFx')?document.getElementById('annFx').classList.contains('on'):cur.fx!==false,
+    exclusiveMode:document.getElementById('annExclusive')
+      ? (document.getElementById('annExclusive').classList.contains('on')?'only':'with-full')
+      : (cur.exclusiveMode||'only'),
     theme:$('annTheme')?$('annTheme').value:cur.theme,
     riv:$('annRiv')?$('annRiv').value.trim():cur.riv,
     rivMachine:$('annRivMachine')?$('annRivMachine').value.trim():cur.rivMachine,
@@ -1528,9 +1539,19 @@ function readAnnouncementEditor(){
   LANGUAGES.forEach(l=>{
     const ti=$(annFieldId('title',l.code)), bo=$(annFieldId('body',l.code));
     if(!ti && !bo) return;               /* language pane absent — keep stored value */
+    const stored=(cur.t&&cur.t[l.code])||{};
+    const pick=(kind,max)=> {
+      const el=$(annFieldId(kind,l.code));
+      return el ? el.value.trim().slice(0,max) : String(stored[kind]||'');
+    };
     next.t[l.code]={
       title:(ti?ti.value:'').trim().slice(0,90),
-      body:(bo?bo.value:'').trim().slice(0,220)
+      body:(bo?bo.value:'').trim().slice(0,220),
+      cta:pick('cta',60),
+      kick:pick('kick',32),
+      live:pick('live',24),
+      nudge:pick('nudge',90),
+      back:pick('back',40)
     };
   });
   return normalizeAnnouncement(next);
@@ -3531,7 +3552,7 @@ function announcementEditorHTML(){
   const chosen=new Set((Array.isArray(A.specialCats)&&A.specialCats.length?A.specialCats:[A.targetCat]).map(String));
   return `<div class="announce-editor" id="announceEditor">
     <h3>${ICO.get('star')}Special announcement</h3>
-    <p class="hint">Αυτό είναι το banner πάνω από την αναζήτηση. Μπορεί να κρυφτεί, να αλλάξει, να αφαιρεθεί, ή να ανοίγει συγκεκριμένες κατηγορίες όταν το πατάει ο πελάτης.</p>
+    <p class="hint">Banner πάνω από την αναζήτηση. Όταν είναι ON και «Μόνο το σπέσιαλ μενού» είναι ON, ο πελάτης βλέπει αποκλειστικά τις κατηγορίες που τσεκάρετε — τίποτα άλλο. Κάθε κείμενο, χρώμα και εφέ αλλάζει από εδώ.</p>
     <div class="mini-preview"><span>${ioEsc(A.emoji||'')}</span><b>${ioEsc(el.title||'Κρυφό / χωρίς τίτλο')}</b><p>${ioEsc(el.body||'Δεν θα εμφανιστεί αν είναι κρυφό ή άδειο.')}</p></div>
     <div class="setting-row">
       <div class="txt"><div class="t">Εμφάνιση banner</div><div class="d">Όταν είναι off, εξαφανίζεται τελείως από το menu.</div></div>
@@ -3562,6 +3583,21 @@ function announcementEditorHTML(){
       <div class="txt"><div class="t">Καθοδήγηση πελάτη</div><div class="d">Παλμός και μήνυμα «πατήστε εδώ» ώστε να καταλάβουν ότι το banner ανοίγει το σπέσιαλ μενού.</div></div>
       <div class="toggle ${A.nudge!==false?'on':''}" id="annNudge"></div>
     </div>
+    <div class="setting-row">
+      <div class="txt"><div class="t">Ζωντανή ένδειξη</div><div class="d">Πράσινη κουκκίδα που χτυπά και λάμψη στο σήμα, ώστε να δείχνει «τώρα».</div></div>
+      <div class="toggle ${A.live!==false?'on':''}" id="annLive"></div>
+    </div>
+    <div class="fieldrow">
+      <div><label>Κείμενο σήματος (κενό = «Σπέσιαλ μενού»)</label><input id="annLiveLabel" value="${ioEsc(A.liveLabel||'')}" maxlength="24" placeholder="π.χ. ΣΗΜΕΡΑ"></div>
+    </div>
+    <div class="setting-row danger-row">
+      <div class="txt"><div class="t">⚠ Μόνο το σπέσιαλ μενού</div><div class="d">Όσο τρέχει, ο πελάτης βλέπει ΜΟΝΟ αυτές τις κατηγορίες — ο υπόλοιπος κατάλογος κρύβεται τελείως και δεν υπάρχει έξοδος. Αν οι κατηγορίες μείνουν χωρίς πιάτα, αγνοείται αυτόματα για να μη μείνει ο πελάτης με άδειο μενού.</div></div>
+      <div class="toggle ${A.exclusiveMode!=='with-full'?'on':''}" id="annExclusive"></div>
+    </div>
+    <div class="setting-row">
+      <div class="txt"><div class="t">Κινούμενα εφέ</div><div class="d">Ζωντανή κουκκίδα, λάμψη στο banner και ανερχόμενοι σπινθήρες. Σβήνει μόνο του αν ο πελάτης έχει «λιγότερη κίνηση».</div></div>
+      <div class="toggle ${A.fx!==false?'on':''}" id="annFx"></div>
+    </div>
     <div class="ann-langs">${LANGUAGES.map(l=>{
       const tv=(A.t&&A.t[l.code])||{title:'',body:''};
       return `<div class="ann-lang${l.code==='el'?' primary':''}">
@@ -3569,6 +3605,17 @@ function announcementEditorHTML(){
         <div class="fieldrow">
           <div><label>Τίτλος</label><input id="${annFieldId('title',l.code)}" value="${ioEsc(tv.title||'')}" maxlength="90" placeholder="Τίτλος"></div>
           <div><label>Κείμενο</label><textarea id="${annFieldId('body',l.code)}" rows="2" maxlength="220">${ioEsc(tv.body||'')}</textarea></div>
+        </div>
+        <div class="fieldrow">
+          <div><label>Κουμπί (CTA)</label><input id="${annFieldId('cta',l.code)}" value="${ioEsc(tv.cta||'')}" maxlength="60" placeholder="Δείτε το σπέσιαλ μενού"></div>
+          <div><label>Σήμα banner</label><input id="${annFieldId('kick',l.code)}" value="${ioEsc(tv.kick||'')}" maxlength="32" placeholder="Σπέσιαλ μενού"></div>
+        </div>
+        <div class="fieldrow">
+          <div><label>Ζωντανή ένδειξη</label><input id="${annFieldId('live',l.code)}" value="${ioEsc(tv.live||'')}" maxlength="24" placeholder="ΖΩΝΤΑΝΑ"></div>
+          <div><label>Υπόδειξη «πατήστε»</label><input id="${annFieldId('nudge',l.code)}" value="${ioEsc(tv.nudge||'')}" maxlength="90" placeholder="Πατήστε το banner…"></div>
+        </div>
+        <div class="fieldrow">
+          <div><label>Κουμπί επιστροφής</label><input id="${annFieldId('back',l.code)}" value="${ioEsc(tv.back||'')}" maxlength="40" placeholder="Όλος ο κατάλογος"></div>
         </div>
       </div>`;
     }).join('')}</div>
@@ -3623,13 +3670,14 @@ function wireAnnouncementEditor(){
     }
     const live=normalizeAnnouncement(A||S.settings.announcement||{});
     const win=announcementWindowStatus(live);
+    const exclusiveBit = live.exclusiveMode!=='with-full' ? ' · ΜΟΝΟ σπέσιαλ μενού (ο κανονικός κατάλογος κρύβεται).' : ' · banner πάνω στον κανονικό κατάλογο.';
     hint.textContent = !live.on
       ? 'Κατάσταση πελάτη: κρυφό (toggle OFF).'
       : (!win.active
         ? `Κατάσταση πελάτη: κρυφό — εκτός ημερομηνιών (σήμερα ${win.today}${win.from||win.to?`, παράθυρο ${win.from||'…'} → ${win.to||'…'}`:''}). Αφήστε Από/Έως κενά για μόνιμο banner.`
         : (win.from||win.to
-          ? `Κατάσταση πελάτη: εμφανές σήμερα (${win.today}), παράθυρο ${win.from||'…'} → ${win.to||'…'}.`
-          : `Κατάσταση πελάτη: εμφανές μόνιμα (χωρίς ημερομηνίες).`));
+          ? `Κατάσταση πελάτη: εμφανές σήμερα (${win.today}), παράθυρο ${win.from||'…'} → ${win.to||'…'}.`+exclusiveBit
+          : `Κατάσταση πελάτη: εμφανές μόνιμα (χωρίς ημερομηνίες).`+exclusiveBit));
   };
   const syncToggleUi=(A)=>{
     const tog=$('annOn'); if(tog) tog.classList.toggle('on', !!A.on);
@@ -3681,6 +3729,19 @@ function wireAnnouncementEditor(){
     toast('Το χρώμα καθαρίστηκε — πατήστε Αποθήκευση banner');
   };
   if(accentEl) accentEl.oninput=()=>{ accentEl.dataset.cleared='0'; };
+  const liveTog=document.getElementById('annLive');
+  if(liveTog) liveTog.onclick=()=>{ liveTog.classList.toggle('on');
+    toast(liveTog.classList.contains('on')?'Ζωντανή ένδειξη ON — πατήστε Αποθήκευση':'Ζωντανή ένδειξη OFF — πατήστε Αποθήκευση'); };
+  const exTog=document.getElementById('annExclusive');
+  if(exTog) exTog.onclick=()=>{
+    exTog.classList.toggle('on');
+    toast(exTog.classList.contains('on')
+      ? '⚠ Μόνο το σπέσιαλ μενού — ο υπόλοιπος κατάλογος θα κρυφτεί. Πατήστε Αποθήκευση'
+      : 'Ο πλήρης κατάλογος επιστρέφει — πατήστε Αποθήκευση');
+  };
+  const fxTog=document.getElementById('annFx');
+  if(fxTog) fxTog.onclick=()=>{ fxTog.classList.toggle('on');
+    toast(fxTog.classList.contains('on')?'Εφέ ON — πατήστε Αποθήκευση':'Εφέ OFF — πατήστε Αποθήκευση'); };
   const nudgeTog=document.getElementById('annNudge');
   if(nudgeTog) nudgeTog.onclick=()=>{
     /* Toggle in place only — never re-render, or the form is wiped mid-edit. */
@@ -3724,7 +3785,10 @@ function wireAnnouncementEditor(){
     const nTog=document.getElementById('annNudge');
     if(nTog) nTog.classList.toggle('on', FEAST_15AUG.nudge);
     const onTog=$('annOn'); if(onTog) onTog.classList.add('on');
-    S.settings.announcement=Object.assign({}, normalizeAnnouncement(S.settings.announcement||{}), {on:true});
+    const liveTogFill=document.getElementById('annLive'); if(liveTogFill) liveTogFill.classList.add('on');
+    const exTogFill=document.getElementById('annExclusive'); if(exTogFill) exTogFill.classList.add('on');
+    const fxTogFill=document.getElementById('annFx'); if(fxTogFill) fxTogFill.classList.add('on');
+    S.settings.announcement=Object.assign({}, normalizeAnnouncement(S.settings.announcement||{}), {on:true, exclusiveMode:'only', live:true, fx:true});
 
     /* A banner that opens an empty category is worse than no banner. The
        Σούβλες category and both its dishes were hidden, and κοκορέτσι did not

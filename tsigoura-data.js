@@ -344,7 +344,8 @@ const ZONES = {
    ──────────────────────────────────────────────────────────────────────── */
 const ANNOUNCE = {
   on:false, from:'2026-07-26', to:'2026-07-26', fromTime:'', toTime:'', nudge:true,
-  theme:'ember', accent:'',
+  theme:'ember', accent:'', riv:'', rivMachine:'',
+  exclusive:true, exclusiveMode:'only', live:true, liveLabel:'', fx:true,
   emoji:'🔥', targetCat:'spit', specialCats:['spit','meat'],
   t:{
     el:{ title:'Κυριακή 26 Ιουλίου · Σούβλες στη Τσιγγούρα', body:'Ειδική βραδιά με αρνί σούβλας και κοντοσούβλι. Πατήστε εδώ για να δείτε το σημερινό μενού.' },
@@ -583,10 +584,37 @@ function normalizeAnnouncement(a){
   out.toTime   = announcementTimeKey(Object.prototype.hasOwnProperty.call(a,'toTime')   ? a.toTime   : base.toTime);
   /* Guided nudge for guests who would not realise the banner is tappable. */
   out.nudge = Object.prototype.hasOwnProperty.call(a,'nudge') ? a.nudge !== false : base.nudge !== false;
+  /* Exclusive: while the window is open the guest sees ONLY the special menu —
+     no full catalogue, no way out. Powerful and easy to get wrong, so the guest
+     code refuses to honour it unless the chosen categories really have dishes.
+     exclusiveMode is the real switch: 'only' | 'with-full'. Older saves wrote
+     exclusive:false because the admin toggle did not exist yet — that is NOT
+     an opt-out. Opt-out is exclusiveMode==='with-full', written only by the
+     new editor. */
+  out.exclusiveMode = (String(a.exclusiveMode)==='with-full' || String(a.exclusiveMode)==='only')
+    ? String(a.exclusiveMode)
+    : 'only';
+  out.exclusive = out.exclusiveMode === 'only';
+  /* Live badge on the banner ("ΣΗΜΕΡΑ", "LIVE", …) with a breathing dot. */
+  out.live = Object.prototype.hasOwnProperty.call(a,'live') ? a.live === true : base.live !== false;
+  out.liveLabel = String(a.liveLabel == null ? (base.liveLabel||'') : a.liveLabel).trim().slice(0,24);
+  /* Ember particles / sheen on the special surface. Off = still special UI, quiet. */
+  out.fx = Object.prototype.hasOwnProperty.call(a,'fx') ? a.fx !== false : base.fx !== false;
   /* Look of the banner and the whole special menu, so each event can carry its
      own character (σούβλες fire, Δεκαπενταύγουστος blue-and-gold, …). */
   out.theme = ANNOUNCEMENT_THEMES[String(a.theme||base.theme||'')] ? String(a.theme||base.theme) : 'ember';
   out.accent = /^#[0-9a-f]{6}$/i.test(String(a.accent||'')) ? String(a.accent) : '';
+  /* Optional Rive animation layered over the banner. Only a .riv, and only
+     from our own files or an https host — this string ends up driving a
+     network fetch, so it is validated rather than trusted. */
+  out.riv = (()=>{
+    const v = String(a.riv == null ? (base.riv||'') : a.riv).trim().slice(0,300);
+    if(!v || !/\.riv(\?.*)?$/i.test(v)) return '';
+    if(/^https:\/\/[^\s"'<>]+$/i.test(v)) return v;
+    if(/^[A-Za-z0-9._\/-]+$/.test(v) && !v.includes('..')) return v;
+    return '';
+  })();
+  out.rivMachine = String(a.rivMachine||base.rivMachine||'').trim().slice(0,60);
   out.emoji = String(out.emoji||'').slice(0,8);
   out.targetCat = String(out.targetCat||base.targetCat).slice(0,32);
   out.specialCats = Array.isArray(out.specialCats) ? out.specialCats.map(x=>String(x).slice(0,32)).filter(Boolean).slice(0,8) : base.specialCats.slice();
@@ -596,7 +624,13 @@ function normalizeAnnouncement(a){
     const fallback=(base.t&&base.t[l.code]) || base.t.en || {title:'',body:''};
     out.t[l.code]={
       title:String(cur.title == null ? (fallback.title || '') : cur.title).slice(0,90),
-      body:String(cur.body == null ? (fallback.body || '') : cur.body).slice(0,220)
+      body:String(cur.body == null ? (fallback.body || '') : cur.body).slice(0,220),
+      /* Empty = guest falls back to the built-in UI string for that language. */
+      cta:String(cur.cta == null ? '' : cur.cta).slice(0,60),
+      nudge:String(cur.nudge == null ? '' : cur.nudge).slice(0,90),
+      kick:String(cur.kick == null ? '' : cur.kick).slice(0,32),
+      live:String(cur.live == null ? '' : cur.live).slice(0,24),
+      back:String(cur.back == null ? '' : cur.back).slice(0,40)
     };
   });
   return out;

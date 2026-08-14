@@ -53,3 +53,18 @@ Append-only. Newest entries at the bottom.
 **Suggested improvement:** For any "X doesn't appear/work" report where the artefact is reachable (a URL, a CLI command, a running process), observe the current behaviour FIRST — before reading code and before dispatching investigators. Then restate the symptom in terms of what was actually observed ("renders correctly but does not reflect new edits") and brief any subagents on the restated version.
 
 **Principle:** A bug report describes an experience, not a mechanism. Reproduce and characterise the failure against the running system before reading code — and especially before parallelising the investigation, since a wrong premise gets multiplied by every worker you dispatch.
+
+### Observation 3: An unused boolean default is not an opt-out
+
+**Status:** OPEN
+**Date:** 2026-08-14
+**Session context:** Owner asked that an enabled special menu show ONLY its categories. Exclusive mode already existed in the data model and guest helpers, but was never called from apply(), and admin wrote exclusive:false as the unused default.
+**Skill:** task-observer (product-flag migration)
+**Type:** open-source
+**Phase/Area:** Feature flags / backwards-compatible defaults
+
+**Issue:** Honouring `exclusive===true` would have left the live site on the full catalogue forever, because every saved announcement already contained exclusive:false from normalizeAnnouncement. Treating "field is present and false" as a deliberate opt-out is wrong when the field was written by a default the owner never saw.
+
+**Suggested improvement:** When introducing a powerful lock, give the opt-out a new explicit token (here exclusiveMode:'with-full') that only the new editor can write. Absent token = new product default. Do not reuse a boolean that old saves already persist as false.
+
+**Principle:** A stored false from an unused default is not a user choice. Opt-outs need a value that cannot appear in historical data.
