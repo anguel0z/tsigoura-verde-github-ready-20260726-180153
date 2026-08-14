@@ -3696,7 +3696,42 @@ function wireAnnouncementEditor(){
     if(nTog) nTog.classList.toggle('on', FEAST_15AUG.nudge);
     const onTog=$('annOn'); if(onTog) onTog.classList.add('on');
     S.settings.announcement=Object.assign({}, normalizeAnnouncement(S.settings.announcement||{}), {on:true});
-    await saveAnn('Το banner του Δεκαπενταύγουστου αποθηκεύτηκε σε 6 γλώσσες');
+
+    /* A banner that opens an empty category is worse than no banner. The
+       Σούβλες category and both its dishes were hidden, and κοκορέτσι did not
+       exist at all — so prepare the actual menu too, not just the copy. */
+    const notes=[];
+    const spitCat=(S.categories||[]).find(c=>String(c.id)==='spit');
+    if(spitCat && spitCat.hidden){ spitCat.hidden=false; notes.push('εμφανίστηκε η κατηγορία Σούβλες'); }
+    let unhidden=0;
+    (S.menu||[]).forEach(i=>{
+      if(String(i.cat)!=='spit') return;
+      if(i.hidden){ i.hidden=false; unhidden++; }
+      i.available=true;
+    });
+    if(unhidden) notes.push('εμφανίστηκαν '+unhidden+' πιάτα σούβλας');
+    const hasKok=(S.menu||[]).some(i=>/κοκορ|kokoret|кокоре/i.test(((i.t&&i.t.el&&i.t.el.n)||'')+((i.t&&i.t.en&&i.t.en.n)||'')));
+    if(!hasKok){
+      const nextId=String(Math.max(0,...(S.menu||[]).map(i=>Number(i.id)||0))+1);
+      S.menu.push({
+        id:nextId, cat:'spit', price:0, priceText:'', unit:'portion', icon:'skewer',
+        available:true, hidden:false, allergens:[], removable:[], ing:{},
+        veg:false, spicy:false, popular:false, chefPick:false, allergensReviewed:false,
+        prepMin:0, schedule:{enabled:false,from:'',to:''},
+        t:{
+          el:{n:'Κοκορέτσι', d:'παραδοσιακό, ψημένο στη σούβλα'},
+          en:{n:'Kokoretsi', d:'traditional, roasted on the spit'},
+          de:{n:'Kokoretsi', d:'traditionell, am Spieß gegart'},
+          ro:{n:'Kokoretsi', d:'tradițional, la proțap'},
+          sr:{n:'Кокорец', d:'традиционално, са ражња'},
+          bg:{n:'Кокорек', d:'традиционно, на шиш'}
+        }
+      });
+      notes.push('προστέθηκε Κοκορέτσι — ΒΑΛΤΕ ΤΙΜΗ');
+    }
+    await saveAnn('Έτοιμο σε 6 γλώσσες'+(notes.length?' · '+notes.join(' · '):''));
+    if(typeof renderMenuArea==='function') renderMenuArea();
+    if(!hasKok) setTimeout(()=>toast('Προσοχή: το Κοκορέτσι μπήκε χωρίς τιμή — ορίστε την στο Μενού'),2600);
   };
   $('annSave').onclick=()=>saveAnn('Το banner αποθηκεύτηκε');
   $('annHide').onclick=async()=>{
