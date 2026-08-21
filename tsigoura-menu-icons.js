@@ -110,6 +110,7 @@ const DISH_ART = {
   308:'26-chicken-souvlaki', 309:'27-pancetta', 310:'28-lamb-chops', 311:'29-mutton-ribs',
   312:'30-pork-shank', 313:'68-kontosouvli-clean', 314:'32-chicken-spit', 315:'67-lamb-spit-clean',
   316:'34-cod-skordalia', 317:'64-tomahawk-pork', 318:'65-gyros', 319:'66-chicken-nuggets',
+  530:'70-kokoretsi',
   /* Πίτσες */
   401:'35-margherita', 402:'36-special-pizza',
   /* Ποτά */
@@ -152,7 +153,7 @@ const GREEK_FOOD_ICON = {
   310:'28-lamb-chops.png', 311:'29-mutton-ribs.png', 312:'30-pork-shank.png',
   313:'68-kontosouvli-clean.png', 314:'32-chicken-spit.png', 315:'67-lamb-spit-clean.png',
   316:'34-cod-skordalia.png', 317:'64-tomahawk-pork.png', 318:'65-gyros.png',
-  319:'66-chicken-nuggets.png',
+  319:'66-chicken-nuggets.png', 530:'70-kokoretsi.png',
   401:'35-margherita.png', 402:'36-special-pizza.png',
   501:'37-cola.png', 502:'38-fanta-lemon.png', 503:'39-fanta-orange.png',
   504:'40-sprite.png', 505:'41-soda.png', 506:'42-tonic.png',
@@ -180,21 +181,19 @@ function svgFor(src){
   return PACK[src] || PACK.dish;
 }
 function pngIcon(file){
-  let v=safeMediaPath(file);
-  if(!v) return svgFor('dish');
-  /* KV/admin often store a full relative path (media/dishes/cat-spit.png).
-     The built-in maps store a filename only (01-tzatziki.png). Prefix the
-     latter — never both, or every icon 404s as media/dishes/media/dishes/… */
-  if(!/^https?:\/\//i.test(v) && v.indexOf('/')<0) v=GREEK_FOOD_BASE+v;
-  return `<span class="greek-ic" style="--food:url('${v}')" aria-hidden="true"></span>`;
+  /* Original contract: filename only, always prefixed with media/dishes/.
+     Live KV also stores full relative paths (media/dishes/cat-spit.png).
+     Take the basename so we never request media/dishes/media/dishes/… */
+  const name=String(file||'').trim().replace(/\\/g,'/').split('/').pop();
+  if(!name||name.includes('..')||/[<>'"]/.test(name)) return svgFor('dish');
+  return `<span class="greek-ic" style="--food:url('${GREEK_FOOD_BASE}${name}')" aria-hidden="true"></span>`;
 }
 function dishIcon(i){
-  if(i&&i.image) return pngIcon(i.image);
-  if(i&&GREEK_FOOD_ICON[i.id]&&!i.iconOverride) return pngIcon(GREEK_FOOD_ICON[i.id]);
+  /* GREEK_FOOD_ICON is the dish-icon wiring. Admin sets iconOverride on every
+     save (custom plate photo / line-icon key) — that must not blank the PNG. */
+  if(i&&GREEK_FOOD_ICON[i.id]) return pngIcon(GREEK_FOOD_ICON[i.id]);
   return svgFor(DISH_ICON[i&&i.icon] || i&&i.icon || 'dish');
 }
 function catIcon(c){
-  const file=(c&&(c.imageIcon||c.image)) || (c&&GREEK_CAT_ICON[c.id]);
-  if(file) return pngIcon(file);
-  return svgFor(DISH_ICON[c&&c.icon] || CAT_ICON[c&&c.id] || c&&c.icon || 'dish');
+  return (c&&c.imageIcon) ? pngIcon(c.imageIcon) : svgFor(DISH_ICON[c&&c.icon] || CAT_ICON[c&&c.id] || c&&c.icon || 'dish');
 }

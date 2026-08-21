@@ -427,6 +427,7 @@ function normalizeState(s){
     c.icon=c.icon||'bowl';
     c.hidden=c.hidden===true;
     c.image=cleanAssetPath(c.image);
+    if(c.imageIcon) c.imageIcon=cleanAssetPath(c.imageIcon);
     c.accent=/^#[0-9a-f]{6}$/i.test(String(c.accent||''))?c.accent:null;
     c.tint=/^#[0-9a-f]{6}$/i.test(String(c.tint||''))?c.tint:null;
     c.t=c.t&&typeof c.t==='object'?c.t:{};
