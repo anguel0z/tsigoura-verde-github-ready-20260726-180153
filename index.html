@@ -52,30 +52,62 @@ body.traditional-mode .wrap{padding-bottom:44px;}
 
 /* ═════════ SPLASH (first visit) ═════════ */
 .splash{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(120% 90% at 50% 0%,#2C4A4F 0%,#1D3438 55%,#142A2E 100%);color:#F3ECD6;
-  transition:opacity .5s ease, transform .5s ease;}
-.splash.gone{opacity:0;transform:scale(1.04);pointer-events:none;}
+  background:#142A2E;color:#F3ECD6;overflow:hidden;
+  transition:opacity .18s ease, visibility .18s ease;}
+.splash.gone{opacity:0;visibility:hidden;pointer-events:none;}
 .splash:not(.gone)~.wrap .head{display:none!important;}
-.sp-inner{text-align:center;padding:30px;max-width:420px;width:100%;}
+/* Ultra-fast pine→gold wash — color blooms, then the gate gets out of the way. */
+.sp-wash{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(120% 90% at 50% -10%,#4A7A72 0%,transparent 55%),
+    linear-gradient(155deg,#2F5550 0%,#1D3438 48%,#1A2E28 72%,#3D4A2E 100%);
+  opacity:0;
+  animation:spWash .42s cubic-bezier(.2,.75,.2,1) both;
+}
+@keyframes spWash{
+  0%{opacity:0;filter:saturate(.7) brightness(1.2);}
+  35%{opacity:1;filter:none;}
+  100%{opacity:1;filter:none;}
+}
+html.has-lang .splash{pointer-events:none;animation:spGateOut .34s ease forwards;}
+html.has-lang .splash .sp-inner{display:none;}
+html.has-lang .splash .sp-wash{animation:spWashFlash .34s cubic-bezier(.2,.8,.2,1) both;}
+@keyframes spWashFlash{
+  0%{opacity:0;filter:saturate(.85) brightness(1.25);}
+  28%{opacity:1;filter:none;}
+  100%{opacity:0;filter:saturate(1.05) brightness(1.05);}
+}
+@keyframes spGateOut{
+  0%,55%{opacity:1;visibility:visible;}
+  100%{opacity:0;visibility:hidden;}
+}
+.sp-inner{position:relative;z-index:1;text-align:center;padding:30px;max-width:420px;width:100%;}
 .sp-mark{width:110px;height:110px;margin:0 auto 22px;object-fit:contain;
-  opacity:0;transform:scale(.6) translateY(10px);animation:spMark .9s cubic-bezier(.2,.8,.2,1) .15s forwards;}
+  opacity:0;transform:scale(.92);animation:spMark .28s cubic-bezier(.2,.8,.2,1) .04s forwards;}
 @keyframes spMark{to{opacity:1;transform:none;}}
 .sp-name{font-family:Fraunces,serif;font-size:14px;letter-spacing:3px;color:rgba(243,236,214,.62);
-  margin-bottom:16px;opacity:0;animation:spFade .6s ease .4s forwards;}
+  margin-bottom:16px;opacity:0;animation:spFade .22s ease .08s forwards;}
 .sp-name b{color:var(--gold-lt);font-weight:700;letter-spacing:4px;}
 .sp-name i{font-style:italic;letter-spacing:2px;color:rgba(243,236,214,.8);}
 .sp-word{font-family:Fraunces,serif;font-size:32px;color:#F7F0DA;min-height:42px;
-  opacity:0;animation:spFade .6s ease .55s forwards;}
+  opacity:0;animation:spFade .22s ease .1s forwards;}
 .sp-sub{font-size:12.5px;color:rgba(243,236,214,.6);margin:22px 0 14px;letter-spacing:.3px;
-  opacity:0;animation:spFade .6s ease .9s forwards;}
+  opacity:0;animation:spFade .22s ease .12s forwards;}
 @keyframes spFade{to{opacity:1;}}
 .sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;max-width:340px;margin:0 auto;}
 .sp-lang{display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:14px;
   background:rgba(255,255,255,.06);border:1px solid rgba(211,186,130,.28);color:#F3ECD6;font-size:15px;font-weight:500;
-  opacity:0;transform:translateY(10px);animation:spBtn .5s cubic-bezier(.2,.8,.2,1) forwards;}
+  opacity:0;transform:translateY(6px);animation:spBtn .24s cubic-bezier(.2,.8,.2,1) forwards;}
+@keyframes spBtn{to{opacity:1;transform:none;}}
 .sp-lang .fl{font-size:20px;}
 .sp-lang:active{transform:scale(.96);}
 .sp-lang:hover{background:rgba(211,186,130,.16);}
+@media (prefers-reduced-motion:reduce){
+  .sp-wash,html.has-lang .splash .sp-wash,html.has-lang .splash,
+  .sp-mark,.sp-name,.sp-word,.sp-sub,.sp-lang{animation:none!important;opacity:1!important;transform:none!important;filter:none!important;}
+  html.has-lang .splash{opacity:0;visibility:hidden;}
+}
 
 /* ═════════ Brand transit (view / category changes) ═════════ */
 .brand-transit{
@@ -89,21 +121,22 @@ body.traditional-mode .wrap{padding-bottom:44px;}
 .brand-transit .bt-veil{
   position:absolute;inset:0;
   background:
-    radial-gradient(120% 90% at 50% 8%,#2F5256 0%,#1D3438 52%,#12262A 100%);
+    radial-gradient(120% 90% at 50% -8%,#4A7A72 0%,transparent 52%),
+    linear-gradient(155deg,#2F5550 0%,#1D3438 50%,#1A2E28 78%,#3D4A2E 100%);
   opacity:0;
 }
-.brand-transit.on .bt-veil{animation:btVeilIn .34s ease forwards;}
-.brand-transit.out .bt-veil{animation:btVeilOut .42s ease forwards;}
-@keyframes btVeilIn{from{opacity:0;}to{opacity:1;}}
+.brand-transit.on .bt-veil{animation:btVeilIn .16s ease forwards;}
+.brand-transit.out .bt-veil{animation:btVeilOut .2s ease forwards;}
+@keyframes btVeilIn{from{opacity:0;filter:saturate(.8) brightness(1.18);}to{opacity:1;filter:none;}}
 @keyframes btVeilOut{from{opacity:1;}to{opacity:0;}}
 .brand-transit .bt-inner{
   position:relative;z-index:1;text-align:center;padding:28px 24px;
-  opacity:0;transform:scale(.92) translateY(10px);
+  opacity:0;transform:scale(.96) translateY(4px);
 }
-.brand-transit.on .bt-inner{animation:btInnerIn .48s cubic-bezier(.2,.8,.2,1) .06s forwards;}
-.brand-transit.out .bt-inner{animation:btInnerOut .36s ease forwards;}
+.brand-transit.on .bt-inner{animation:btInnerIn .22s cubic-bezier(.2,.8,.2,1) .02s forwards;}
+.brand-transit.out .bt-inner{animation:btInnerOut .16s ease forwards;}
 @keyframes btInnerIn{to{opacity:1;transform:none;}}
-@keyframes btInnerOut{to{opacity:0;transform:scale(1.04) translateY(-6px);}}
+@keyframes btInnerOut{to{opacity:0;transform:scale(1.02) translateY(-4px);}}
 .brand-transit .bt-ring{
   position:absolute;left:50%;top:42px;width:118px;height:118px;
   margin-left:-59px;border-radius:50%;
@@ -112,33 +145,32 @@ body.traditional-mode .wrap{padding-bottom:44px;}
   opacity:0;
 }
 .brand-transit.play .bt-ring{
-  animation:btRing .78s cubic-bezier(.2,.8,.2,1) .12s both;
+  animation:btRing .36s cubic-bezier(.2,.8,.2,1) .04s both;
 }
 @keyframes btRing{
-  0%{opacity:0;transform:scale(.7);border-color:rgba(211,186,130,0);box-shadow:0 0 0 0 rgba(185,154,91,0);}
-  45%{opacity:1;transform:scale(1);border-color:rgba(211,186,130,.55);box-shadow:0 0 0 10px rgba(185,154,91,.12);}
-  100%{opacity:.55;transform:scale(1.08);border-color:rgba(211,186,130,.2);box-shadow:0 0 0 18px rgba(185,154,91,0);}
+  0%{opacity:0;transform:scale(.85);border-color:rgba(211,186,130,0);box-shadow:0 0 0 0 rgba(185,154,91,0);}
+  55%{opacity:1;transform:scale(1);border-color:rgba(211,186,130,.45);box-shadow:0 0 0 8px rgba(185,154,91,.1);}
+  100%{opacity:.4;transform:scale(1.04);border-color:rgba(211,186,130,.15);box-shadow:0 0 0 14px rgba(185,154,91,0);}
 }
 .brand-transit .bt-mark{
   width:92px;height:92px;object-fit:contain;display:block;margin:0 auto 18px;
   filter:drop-shadow(0 14px 28px rgba(0,0,0,.28));
-  opacity:0;transform:scale(.55) rotate(-8deg);
+  opacity:0;transform:scale(.82);
 }
 .brand-transit.play .bt-mark{
-  animation:btMark .72s cubic-bezier(.2,.85,.2,1) .08s forwards;
+  animation:btMark .28s cubic-bezier(.2,.85,.2,1) .02s forwards;
 }
 @keyframes btMark{
-  0%{opacity:0;transform:scale(.55) rotate(-8deg);}
-  70%{opacity:1;transform:scale(1.06) rotate(1deg);}
+  0%{opacity:0;transform:scale(.82);}
   100%{opacity:1;transform:none;}
 }
 .brand-transit .bt-name{
   font-family:Fraunces,serif;font-size:15px;letter-spacing:3.2px;
   color:rgba(247,240,218,.72);margin:0 auto 12px;
-  opacity:0;transform:translateY(8px);
+  opacity:0;transform:translateY(4px);
 }
 .brand-transit.play .bt-name{
-  animation:btName .55s ease .28s forwards;
+  animation:btName .22s ease .06s forwards;
 }
 .brand-transit .bt-name b{
   color:var(--gold-lt);font-weight:700;letter-spacing:4px;
@@ -152,9 +184,9 @@ body.traditional-mode .wrap{padding-bottom:44px;}
   font-style:normal;font-weight:600;letter-spacing:3.4px;color:#F7F0DA;
   display:inline-block;
 }
-.brand-transit.play .bt-name b{animation:btWord .5s cubic-bezier(.2,.8,.2,1) .32s both;}
-.brand-transit.play .bt-name i{animation:btWord .5s cubic-bezier(.2,.8,.2,1) .42s both;}
-.brand-transit.play .bt-name em{animation:btWord .5s cubic-bezier(.2,.8,.2,1) .52s both;}
+.brand-transit.play .bt-name b,
+.brand-transit.play .bt-name i,
+.brand-transit.play .bt-name em{animation:none;opacity:1;transform:none;filter:none;}
 @keyframes btName{to{opacity:1;transform:none;}}
 @keyframes btWord{
   from{opacity:0;transform:translateY(10px);filter:blur(3px);}
@@ -164,7 +196,7 @@ body.traditional-mode .wrap{padding-bottom:44px;}
   display:block;width:0;height:2px;margin:0 auto;border-radius:2px;
   background:linear-gradient(90deg,transparent,var(--gold-lt),transparent);
 }
-.brand-transit.play .bt-rule{animation:btRule .55s ease .48s forwards;}
+.brand-transit.play .bt-rule{animation:btRule .24s ease .08s forwards;}
 @keyframes btRule{to{width:132px;}}
 @media (prefers-reduced-motion:reduce){
   .brand-transit,.brand-transit *{animation:none!important;transition:opacity .2s ease!important;}
@@ -188,7 +220,6 @@ body.motion-off .brand-transit{display:none!important;}
 .crow{animation:rowIn .4s ease both;}
 @keyframes rowIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 .toast{will-change:transform;}
-@keyframes spBtn{to{opacity:1;transform:none;}}
 
 /* ═════════ header ═════════ */
 .head{--brand-2line:1;padding:26px 26px 14px;display:flex;align-items:center;gap:13px;}
@@ -693,12 +724,15 @@ body.motion-off .brand-transit{display:none!important;}
 .photo-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--olive);
   opacity:1;transition:opacity .16s ease;pointer-events:none;}
 .photo-fallback .ic{width:24px!important;height:24px!important;}
+.photo-fallback .greek-ic{width:34px!important;height:34px!important;}
 .dish-ic img,.gphoto img,.gthumb img,.cat-card .art img{position:relative;z-index:1;opacity:0;transition:opacity .16s ease;}
 .dish-ic.img-ready img,.gphoto.img-ready img,.gthumb.img-ready img,.cat-card .art.img-ready img{opacity:1;}
 .dish-ic.img-ready .photo-fallback,.gphoto.img-ready .photo-fallback,.gthumb.img-ready .photo-fallback,
 .cat-card .art.img-ready .photo-fallback{opacity:0;pointer-events:none;}
 .item .dish-ic.img-failed img,.gphoto.img-failed img,.gthumb.img-failed img,.cat-card .art.img-failed img{display:none!important;}
+.dish-ic.img-failed .photo-fallback,.gphoto.img-failed .photo-fallback,.gthumb.img-failed .photo-fallback{opacity:1!important;}
 .item .dish-ic .greek-ic{width:32px;height:32px;}
+.tab > .greek-ic{width:22px!important;height:22px!important;flex:0 0 auto;}
 .item.out .dish-ic.img-ready img{opacity:.45;filter:grayscale(.5);}
 .item .desc,.item .meta{margin-left:58px;}
 /* compact row layout */
@@ -3456,6 +3490,7 @@ body.kb-open .help{bottom:88px!important;}
 
 <!-- ═════════ SPLASH ═════════ -->
 <div class="splash" id="splash">
+  <div class="sp-wash" aria-hidden="true"></div>
   <div class="sp-inner">
     <img class="sp-mark" src="media/mark.png" alt="Tsigoura Verde Resort">
     <div class="sp-name"><b>TSIGOURA</b> <i>verde</i> RESORT</div>
@@ -3464,6 +3499,12 @@ body.kb-open .help{bottom:88px!important;}
     <div class="sp-grid" id="spGrid"></div>
   </div>
 </div>
+<script>
+/* Early return-path: flash gradient only — don't wait on network. */
+(function(){
+  try{ if(localStorage.getItem('tv_lang')) document.documentElement.classList.add('has-lang'); }catch(e){}
+})();
+</script>
 
 <!-- Brief brand veil when changing Κατάλογος / Κατηγορίες screens -->
 <div class="brand-transit" id="brandTransit" aria-hidden="true">
@@ -3733,7 +3774,7 @@ body.kb-open .help{bottom:88px!important;}
 
 <script src="tsigoura-data.js?v=20260912-classic-flip-special-v1"></script>
 <script src="menu-live.js?v=20260912-catalog-cats-motion-v1"></script>
-<script src="tsigoura-menu-icons.js?v=20260912-catalog-cats-motion-v1"></script>
+<script src="tsigoura-menu-icons.js?v=20260912-icons-everywhere-v1"></script>
 <script src="tsigoura-qr.js"></script>
 <script>
 "use strict";
@@ -4368,7 +4409,7 @@ function withMenuTransition(fn){
   void gate.offsetWidth;
   gate.classList.add('on','play');
   gate.setAttribute('aria-hidden','false');
-  /* Swap the screen once the veil covers the UI. */
+  /* Swap once the wash covers; keep the whole beat under ~0.4s. */
   brandTransitTimer=setTimeout(()=>{
     run();
     brandTransitOutTimer=setTimeout(()=>{
@@ -4377,9 +4418,9 @@ function withMenuTransition(fn){
         gate.classList.remove('on','play','out');
         gate.setAttribute('aria-hidden','true');
         brandTransitBusy=false;
-      }, 400);
-    }, 480);
-  }, 240);
+      }, 200);
+    }, 140);
+  }, 110);
 }
 
 /* ═══════════════ persistent cart (line-based) ═══════════════ */
@@ -4618,7 +4659,7 @@ function renderTabs(){
         scrollToCategory(c.id);
       };
     }else{
-      b.innerHTML=`<span class="ic">${catIcon(c)}</span><span>${esc(catName(c))}</span>`;
+      b.innerHTML=`${catIcon(c)}<span>${esc(catName(c))}</span>`;
       b.onclick=()=>scrollToCategory(c.id);
     }
     row.appendChild(b);
@@ -5153,7 +5194,7 @@ function guideSectionHTML(c,ix,cats){
 /* (pager controls moved to #catDock — see .dock-step) */
 function guideVisual(i,cls,large){
   const t=tx(i), art=(typeof dishArt==='function'&&dishArt(i)) ? dishArt(i) : '';
-  if(art) return `<button type="button" class="${cls}" data-admin-dish="${i.id}" data-photo="${i.id}" aria-label="${esc(T('guidePhoto'))}: ${esc(t.n)}"><span class="photo-fallback">${svgFor(DISH_ICON[i.icon]||i.icon||'dish')}</span><img src="${esc(art)}" alt="" loading="lazy" decoding="async" width="${large?180:120}" height="${large?180:120}" onload="this.parentElement.classList.remove('img-failed');this.parentElement.classList.add('img-ready')" onerror="this.parentElement.classList.add('img-failed')"></button>`;
+  if(art) return `<button type="button" class="${cls}" data-admin-dish="${i.id}" data-photo="${i.id}" aria-label="${esc(T('guidePhoto'))}: ${esc(t.n)}"><span class="photo-fallback">${dishIcon(i)}</span><img src="${esc(art)}" alt="" loading="lazy" decoding="async" width="${large?180:120}" height="${large?180:120}" onload="this.parentElement.classList.remove('img-failed');this.parentElement.classList.add('img-ready')" onerror="this.parentElement.classList.add('img-failed')"></button>`;
   return `<button type="button" class="${cls}" data-admin-dish="${i.id}" data-dish="${i.id}" aria-label="${esc(T('guideInfo'))}: ${esc(t.n)}">${dishIcon(i)}</button>`;
 }
 function guidePlateHTML(i){
@@ -5228,7 +5269,7 @@ function rowHTML(i){
     ${i.chefPick?`<div class="badge">★ ${esc(F('chef'))}</div>`:''}
     <div class="top">
       ${art
-        ? `<button type="button" class="dish-ic photo-b" data-photo="${i.id}" aria-label="${esc(t.n)}"><span class="photo-fallback">${svgFor(DISH_ICON[i.icon]||i.icon||'dish')}</span><img src="${esc(art)}" alt="" loading="lazy" decoding="async" width="144" height="144" onload="this.parentElement.classList.remove('img-failed');this.parentElement.classList.add('img-ready')" onerror="this.parentElement.classList.add('img-failed')"></button>`
+        ? `<button type="button" class="dish-ic photo-b" data-photo="${i.id}" aria-label="${esc(t.n)}"><span class="photo-fallback">${dishIcon(i)}</span><img src="${esc(art)}" alt="" loading="lazy" decoding="async" width="144" height="144" onload="this.parentElement.classList.remove('img-failed');this.parentElement.classList.add('img-ready')" onerror="this.parentElement.classList.add('img-failed')"></button>`
         : `<span class="dish-ic">${dishIcon(i)}</span>`}
       <span class="nm">${esc(t.n)}</span>
       <span class="lead"></span>
@@ -6281,15 +6322,34 @@ try{
 
 /* ═══════════════ splash (first visit) ═══════════════ */
 function buildSplash(){
+  document.documentElement.classList.remove('has-lang');
   const grid=document.getElementById('spGrid'); grid.innerHTML='';
   LANGUAGES.forEach((l,idx)=>{ const b=document.createElement('button'); b.className='sp-lang';
-    b.style.animationDelay=(1.0+idx*0.08)+'s';
+    b.style.animationDelay=(0.06+idx*0.03)+'s';
     b.dataset.c=l.code;
     b.innerHTML=`<span class="fl">${l.flag}</span>${esc(l.label)}`;
     b.onclick=()=>{ setLang(l.code); closeSplash(); };
     grid.appendChild(b); });
 }
-function closeSplash(){ const sp=document.getElementById('splash'); sp.classList.add('gone'); setTimeout(()=>sp.style.display='none',520); }
+function finishSplashHide(){
+  const sp=document.getElementById('splash');
+  if(!sp) return;
+  sp.classList.add('gone');
+  sp.style.display='none';
+  document.documentElement.classList.add('has-lang');
+}
+function closeSplash(){
+  const sp=document.getElementById('splash');
+  if(!sp) return;
+  sp.classList.add('gone');
+  setTimeout(finishSplashHide, 200);
+}
+function armReturningSplashFlash(){
+  const sp=document.getElementById('splash');
+  if(!sp) return;
+  document.documentElement.classList.add('has-lang');
+  setTimeout(finishSplashHide, 360);
+}
 
 /* ═══════════════ dish detail / customize (remove ingredients) ═══════════════ */
 /* Customer-facing strings for the beta/order flow and customization sheet. */
@@ -6817,6 +6877,10 @@ function apply(){
 async function boot(){
   window.__tvBootAt=Date.now();
   clearAnnounceSticky();
+  /* Don't hold the splash on network — flash wash or language pick immediately. */
+  const knownLang=!!safeLS.get('tv_lang');
+  if(knownLang) armReturningSplashFlash();
+  else buildSplash();
   await hydratePublicConfig();
   const remoteOk = await hydrateRemoteMenu();
   if(!remoteOk) applyEnvSettings();   /* fallback only — menu-live.js is the source of truth */
@@ -6828,9 +6892,6 @@ async function boot(){
     loadCart();
     apply();
     scheduleSocialAd();
-    /* first visit → splash + language pick; returning (saved lang) → skip */
-    if(safeLS.get('tv_lang')){ const sp=document.getElementById('splash'); sp.classList.add('gone'); sp.style.display='none'; }
-    else { buildSplash(); }
     setInterval(()=>{ checkScheduleDate(); checkLiveMenuUpdate(false); clearAnnounceSticky(); },45000);
   }
 }

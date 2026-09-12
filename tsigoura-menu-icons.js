@@ -198,13 +198,23 @@ function pngIcon(file){
 function dishIcon(i){
   /* GREEK_FOOD_ICON is the dish-icon wiring. Admin sets iconOverride on every
      save (custom plate photo / line-icon key) — that must not blank the PNG. */
-  if(i&&GREEK_FOOD_ICON[i.id]) return pngIcon(GREEK_FOOD_ICON[i.id]);
+  const id = i && (GREEK_FOOD_ICON[i.id] != null ? i.id : GREEK_FOOD_ICON[Number(i.id)] != null ? Number(i.id) : null);
+  if(id!=null && GREEK_FOOD_ICON[id]) return pngIcon(GREEK_FOOD_ICON[id]);
+  if(i&&i.imageIcon) return pngIcon(i.imageIcon);
   return svgFor(DISH_ICON[i&&i.icon] || i&&i.icon || 'dish');
 }
 function catIcon(c){
   /* Prefer the Greek plate PNGs everywhere (list tabs, section headers, dock).
-     Admin imageIcon still wins; otherwise GREEK_CAT_ICON; SVG only as last resort. */
+     Admin imageIcon still wins when set; otherwise GREEK_CAT_ICON; SVG last. */
   if(c&&c.imageIcon) return pngIcon(c.imageIcon);
   if(c&&GREEK_CAT_ICON[c.id]) return pngIcon(GREEK_CAT_ICON[c.id]);
+  /* Unknown / custom categories: try a sensible family match, then SVG. */
+  const id=String(c&&c.id||'');
+  if(/salad/i.test(id) && GREEK_CAT_ICON.salads) return pngIcon(GREEK_CAT_ICON.salads);
+  if(/appet|mezze|orekt/i.test(id) && GREEK_CAT_ICON.appetizers) return pngIcon(GREEK_CAT_ICON.appetizers);
+  if(/spit|souvl/i.test(id) && GREEK_CAT_ICON.spit) return pngIcon(GREEK_CAT_ICON.spit);
+  if(/meat|grill|kreat/i.test(id) && GREEK_CAT_ICON.meat) return pngIcon(GREEK_CAT_ICON.meat);
+  if(/pizza/i.test(id) && GREEK_CAT_ICON.pizza) return pngIcon(GREEK_CAT_ICON.pizza);
+  if(/drink|soft|beer|wine|spirit|retsina|pot/i.test(id) && GREEK_CAT_ICON.drinks) return pngIcon(GREEK_CAT_ICON.drinks);
   return svgFor(DISH_ICON[c&&c.icon] || CAT_ICON[c&&c.id] || c&&c.icon || 'dish');
 }
