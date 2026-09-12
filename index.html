@@ -3043,17 +3043,31 @@ body.guided-view > .guide-pager,
   overflow:visible;text-overflow:clip;
 }
 .dock-ind{
-  position:absolute;left:0;bottom:max(10px,var(--safe-b));
-  height:3px;width:28px;border-radius:999px;background:var(--gold);
-  pointer-events:none;z-index:3;opacity:0;
-  box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 18%,transparent);
-  transition:transform .38s cubic-bezier(.2,.8,.2,1), width .38s cubic-bezier(.2,.8,.2,1), opacity .22s ease;
+  /* Legacy floating underline — kept in DOM but unused; active tab owns the mark. */
+  display:none!important;
 }
 #catDock .tab.on{
   color:var(--gold)!important;
   background:transparent!important;
   border:0!important;box-shadow:none!important;
   transform:translateY(-2px);
+}
+#catDock .tab.on::after{
+  content:'';
+  position:absolute;
+  left:50%;
+  bottom:6px;
+  width:28px;height:3px;
+  margin-left:-14px;
+  border-radius:999px;
+  background:var(--gold);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 18%,transparent);
+  pointer-events:none;
+  animation:dockMarkIn .32s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes dockMarkIn{
+  from{opacity:0;transform:scaleX(.4);}
+  to{opacity:1;transform:scaleX(1);}
 }
 #catDock .tab.on .dock-ic{
   background:transparent!important;animation:none;
@@ -3067,8 +3081,9 @@ body.guided-view > .guide-pager,
 #catDock .tab.special-tab .sp-em{font-size:18px;line-height:1;}
 @media (prefers-reduced-motion:reduce){
   #catDock .tab{animation:none!important;transition:none!important;}
-  #catDock .tab .dock-ic,#catDock .tab .dock-ic .greek-ic,.dock-ind,.dock-step{transition:none!important;}
+  #catDock .tab .dock-ic,#catDock .tab .dock-ic .greek-ic,.dock-step{transition:none!important;}
   #catDock .tab.on,#catDock .tab.on .dock-ic{transform:none!important;}
+  #catDock .tab.on::after{animation:none!important;}
 }
 html.motion-off #catDock .tab,
 body.motion-off #catDock .tab,
@@ -3081,8 +3096,8 @@ html.motion-off #catDock .tab.on .dock-ic,
 body.motion-off #catDock .tab.on .dock-ic{
   transform:none!important;
 }
-html.motion-off .dock-ind,
-body.motion-off .dock-ind{transition:none!important;}
+html.motion-off #catDock .tab.on::after,
+body.motion-off #catDock .tab.on::after{animation:none!important;}
 /* ══ printed guided menu — solid dock, quiet chrome, no stacked motion ══ */
 html.guided-scroll,
 html.guided-scroll body{
@@ -4808,22 +4823,8 @@ function setActiveTab(){
   syncDockPager();
 }
 function placeDockIndicator(){
-  const dock=document.getElementById('catDock');
-  const row=document.getElementById('tabs');
   const ind=document.getElementById('dockInd');
-  const on=row && row.querySelector('.tab.on');
-  if(!dock||!ind||!on||document.body.classList.contains('no-category-tabs')){
-    if(ind) ind.style.opacity='0';
-    return;
-  }
-  const d=dock.getBoundingClientRect(), t=on.getBoundingClientRect();
-  const w=Math.max(22, Math.min(40, t.width*0.42));
-  const reduce=(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-    || document.body.classList.contains('motion-off');
-  ind.style.transition=reduce ? 'none' : 'transform .38s cubic-bezier(.2,.8,.2,1), width .38s cubic-bezier(.2,.8,.2,1), opacity .22s ease';
-  ind.style.width=w+'px';
-  ind.style.opacity='1';
-  ind.style.transform=`translateX(${t.left-d.left+(t.width-w)/2}px)`;
+  if(ind){ ind.style.opacity='0'; ind.style.display='none'; }
   syncDockScrollEdges();
 }
 
@@ -6151,11 +6152,10 @@ wireTopShortcut();
       requestAnimationFrame(()=>{
         ticking=false;
         syncDockScrollEdges();
-        placeDockIndicator();
       });
     };
     row.addEventListener('scroll', onScroll, {passive:true});
-    window.addEventListener('resize', ()=>{ syncDockScrollEdges(); placeDockIndicator(); }, {passive:true});
+    window.addEventListener('resize', ()=>{ syncDockScrollEdges(); }, {passive:true});
   }
 })();
 document.getElementById('bookForm').onsubmit=submitBooking;
