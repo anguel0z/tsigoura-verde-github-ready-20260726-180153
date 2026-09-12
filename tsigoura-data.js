@@ -233,7 +233,7 @@ const EVENT_MENU = [
   M(505,'drinks',     3.00,'portion','soda',     'Σόδα','Soda','Soda','Sifon','Сода','Сода'),
 
   M(510,'drinks',     4.00,'portion','mug',      'Μύθος βαρέλι 250ml','Draft Mythos 250ml','Mythos vom Fass 250ml','Mythos la halbă 250ml','Mythos точено 250ml','Mythos наливна 250ml'),
-  M(509,'drinks',     6.00,'portion','mug',      'Μύθος βαρέλι 500ml','Draft Mythos 500ml','Mythos vom Fass 500ml','Mythos la halbă 500ml','Mythos точено 500ml','Mythos наливна 500ml'),
+  M(509,'drinks',     6.00,'portion','mug',      'Μύθος βαρέλι 400ml','Draft Mythos 400ml','Mythos vom Fass 400ml','Mythos la halbă 400ml','Mythos точено 400ml','Mythos наливна 400ml'),
   M(511,'drinks',     5.00,'portion','beer',     'Βεργίνα','Vergina','Vergina','Vergina','Вергина','Вергина'),
 
   M(515,'drinks',     6.00,'portion','wine',     'Ρετσίνα Γεωργιάδη','Retsina Georgiadi','Retsina Georgiadi','Retsina Georgiadi','Рецина Георгијади','Рецина Георгиади'),
@@ -332,7 +332,7 @@ function localDateKey(at){
 function isEventCatalogueDay(at){ return localDateKey(at) === EVENT_CATALOGUE_DAY; }
 function activeCatalogVersion(at){
   return isEventCatalogueDay(at)
-    ? 'event-pricelist-2026-09-12-rembetika-v9'
+    ? 'event-pricelist-2026-09-12-rembetika-v10'
     : 'classic-catalog-2026-09-13-v1';
 }
 function activeDefaultCategories(at){
