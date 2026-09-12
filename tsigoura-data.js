@@ -1,7 +1,7 @@
 /* ============================================================================
    TSIGOURA VERDE RESORT — Shared data
    ----------------------------------------------------------------------------
-   ΠΗΓΗ: τα δύο έντυπα event pricelist (φαγητό + ποτά) — Σεπτέμβριος 2026.
+   ΠΗΓΗ: κλασικός κατάλογος + event pricelist (ημερομηνιακό) (φαγητό + ποτά) — Σεπτέμβριος 2026.
    Ο ψηφιακός κατάλογος ΔΕΙΧΝΕΙ ΜΟΝΟ ό,τι είναι γραμμένο εκεί (και τα
    χειρόγραφα στο ίδιο χαρτί). Τίποτα άλλο.
 
@@ -18,7 +18,7 @@
    not share the guest catalogue cache (that race hid the special banner). */
 const STORAGE_KEY = (typeof window !== 'undefined' && window.TV_STORAGE_KEY)
   ? String(window.TV_STORAGE_KEY)
-  : 'tsigoura_verde_v14';  /* bumped — Sep 2026 event pricelist only */
+  : 'tsigoura_verde_v15';  /* bumped — classic returns after rembetika day */
 const LIVE_REVISION_KEY = 'tsigoura_verde_live_rev';
 
 const VENUE = {
@@ -88,18 +88,18 @@ const ALLERGENS = {
   molluscs: { el:'Μαλάκια',         en:'Molluscs',      de:'Weichtiere',    ro:'Moluște',       sr:'Мекушци',       bg:'Мекотели' },
 };
 
-/* Κατηγορίες — ΕΛ/EN αυτολεξεί από τα έντυπα (Σούβλες χειρόγραφο στο φαγητό) */
-const DEFAULT_CATEGORIES = [
+const NORMAL_CATEGORIES = [
   { id:'appetizers', order:1, icon:'dip',   t:{ el:'Ορεκτικά', en:'Appetizers', de:'Vorspeisen', ro:'Aperitive', sr:'Предјела', bg:'Предястия' } },
   { id:'salads',     order:2, icon:'salad', t:{ el:'Σαλάτες',  en:'Salads',     de:'Salate',     ro:'Salate',    sr:'Салате',   bg:'Салати' } },
-  { id:'meat',       order:3, icon:'meat',  t:{ el:'Κρεατικά', en:'Meat dishes',de:'Fleischgerichte', ro:'Carne', sr:'Месна јела', bg:'Месни ястия' } },
-  { id:'spit',       order:4, icon:'skewer', accent:'#B4623A', tint:'#F6E6DC', image:'media/dishes/68-kontosouvli-clean.png', t:{ el:'Σούβλες', en:'Spit-roasts', de:'Vom Spieß', ro:'La proțap', sr:'Са ражња', bg:'На шиш' } },
+  { id:'spit',       order:3, icon:'skewer', hidden:true, accent:'#B4623A', tint:'#F6E6DC', image:'media/dishes/67-lamb-spit-clean.png', t:{ el:'Σούβλες', en:'Spit-roasts', de:'Vom Spieß', ro:'La proțap', sr:'Са ражња', bg:'На шиш' } },
+  { id:'meat',       order:4, icon:'meat',  t:{ el:'Κρεατικά', en:'Meat dishes',de:'Vom Grill', ro:'La grătar', sr:'Са роштиља', bg:'Скара' } },
   { id:'drinks',     order:5, icon:'wine',  t:{ el:'Ποτά',     en:'Drinks',     de:'Getränke',   ro:'Băuturi',   sr:'Пића',     bg:'Напитки' } },
+  { id:'pizza',      order:6, icon:'pizza', hidden:true, t:{ el:'Πίτσες',   en:'Pizzas',     de:'Pizzen',     ro:'Pizza',     sr:'Пице',     bg:'Пици' } },
 ];
 
 /* --------------------------------------------------------------------------
-   ΜΕΝΟΥ — κάθε γραμμή = γραμμή των δύο εντύπων (συμπ. χειρόγραφα).
-   allergens:[] και desc:'' ΕΠΙΤΗΔΕΣ ΚΕΝΑ.
+   ΜΕΝΟΥ — κάθε γραμμή αντιστοιχεί 1:1 σε γραμμή του έντυπου καταλόγου.
+   allergens:[] και desc:'' ΕΠΙΤΗΔΕΣ ΚΕΝΑ. Συμπληρώνονται από το Pro mode.
    -------------------------------------------------------------------------- */
 const M = (id,cat,price,unit,icon,el,en,de,ro,sr,bg) => ({
   id, cat, price, unit, icon,
@@ -107,7 +107,98 @@ const M = (id,cat,price,unit,icon,el,en,de,ro,sr,bg) => ({
   t:{ el:{n:el,d:''}, en:{n:en,d:''}, de:{n:de,d:''}, ro:{n:ro,d:''}, sr:{n:sr,d:''}, bg:{n:bg,d:''} }
 });
 
-const DEFAULT_MENU = [
+const NORMAL_MENU = [
+  /* --- Ορεκτικά / Appetizers --- */
+  M(101,'appetizers', 5.00,'portion','dip',      'Τζατζίκι χειροποίητο','Homemade Tzatziki','Hausgemachtes Tzatziki','Tzatziki de casă','Домаћи џаџики','Домашно дзадзики'),
+  M(102,'appetizers', 5.00,'portion','dip',      'Τυροσαλάτα','Tyrosalata','Tyrosalata','Tyrosalata','Тиросалата','Тиросалата'),
+  M(103,'appetizers', 5.00,'portion','cheese',   'Φέτα λαδορίγανη','Feta with Oil & Oregano','Feta mit Öl & Oregano','Feta cu ulei și oregano','Фета са уљем и ориганом','Фета със зехтин и риган'),
+  M(104,'appetizers', 5.00,'portion','dip',      'Μελιτζανοσαλάτα','Melitzanosalata','Melitzanosalata','Melitzanosalata','Мелицаносалата','Мелицаносалата'),
+  M(105,'appetizers', 8.00,'portion','pot',      'Μπουγιούρντι','Bougourdi','Bougourdi','Bougourdi','Бујурди','Буюрди'),
+  M(106,'appetizers', 9.00,'portion','cheese',   'Φέτα σουσάμι μέλι','Feta with Sesame & Honey','Feta mit Sesam & Honig','Feta cu susan și miere','Фета са сусамом и медом','Фета със сусам и мед'),
+  M(107,'appetizers', 5.00,'portion','fries',    'Πατάτες τηγανητές','French Fries','Pommes frites','Cartofi prăjiți','Помфрит','Пържени картофи'),
+  M(108,'appetizers', 9.00,'portion','zucchini', 'Κολοκυθάκια τηγανητά','Fried Zucchini','Frittierte Zucchini','Dovlecei prăjiți','Пржене тиквице','Пържени тиквички'),
+  M(109,'appetizers', 5.00,'portion','dip',      'Ταραμάς','Taramosalata','Taramosalata','Taramosalata','Тарамосалата','Тарамосалата'),
+  M(110,'appetizers', 3.00,'portion','pepper',   'Καυτερή πιπεριά','Green Chili Pepper','Scharfe grüne Paprika','Ardei iute verde','Љута зелена паприка','Люта зелена чушка'),
+  M(111,'appetizers', 7.50,'portion','pot',      'Φασόλες φούρνου','Baked Giant Beans','Gebackene Riesenbohnen','Fasole mare la cuptor','Печени крупни пасуљ','Печен едър боб'),
+  M(112,'appetizers', 7.50,'portion','potato',   'Πατάτες φούρνου','Oven Baked Potatoes','Ofenkartoffeln','Cartofi la cuptor','Печени кромпир','Печени картофи'),
+  M(113,'appetizers', 5.00,'portion','fish',     'Αντζούγιες','Salted Anchovies','Gesalzene Sardellen','Anșoa sărate','Слане инћуне','Солена аншоа'),
+
+  /* --- Σαλάτες / Salads --- */
+  M(201,'salads',    12.00,'portion','salad',    'Σαλάτα Τσιγγούρα','Tsigoura Salad','Tsigoura-Salat','Salată Tsigoura','Салата Цигура','Салата Цигура'),
+  M(202,'salads',     8.00,'portion','salad',    'Αγγουροντομάτα','Cucumber & Tomato','Gurken-Tomaten-Salat','Salată de castraveți și roșii','Салата краставац-парадајз','Салата краставици-домати'),
+  M(203,'salads',    10.00,'portion','salad',    'Χωριάτικη','Greek Salad','Griechischer Salat','Salată grecească','Грчка салата','Гръцка салата'),
+  M(204,'salads',     8.00,'portion','salad',    'Βραστή ανάμεικτη','Mixed Boiled Vegetables','Gemischtes gekochtes Gemüse','Legume fierte mixte','Мешано кувано поврће','Смесени варени зеленчуци'),
+  M(205,'salads',     7.00,'portion','salad',    'Λάχανο-καρότο','Cabbage-Carrot','Kohl-Karotte','Varză-morcov','Купус-шаргарепа','Зеле-морков'),
+
+  /* --- Κρεατικά / Meat --- */
+  M(301,'meat',      12.00,'portion','meat',     'Μπριζόλα χοιρινή','Pork Chop','Schweinekotelett','Cotlet de porc','Свињски котлет','Свинска пържола'),
+  M(302,'meat',      20.00,'kg',     'meat',     'Μπριζόλα μοσχαρίσια','Beef Chop','Rindersteak','Antricot de vită','Јунећи котлет','Телешка пържола'),
+  M(303,'meat',      10.00,'portion','burger',   'Μπιφτέκι','Beef Patty','Rindfleisch-Frikadelle','Chiftea de vită','Плескавица','Кюфте'),
+  M(304,'meat',      11.00,'portion','burger',   'Σουτζουκάκι','Soutzoukaki','Soutzoukaki','Chiftele picante','Ћуфте суџукице','Кюфтета суджук'),
+  M(305,'meat',      12.00,'portion','drumstick','Μπούτι κοτόπουλο ξεκοκαλισμένο','Boneless Chicken Thigh','Hähnchenschenkel o. Knochen','Pulpă de pui dezosată','Пилећи батак без кости','Обезкостено пилешко бутче'),
+  M(306,'meat',      12.00,'portion','drumstick','Φιλέτο κοτόπουλο','Chicken Fillet','Hähnchenfilet','File de pui','Пилећи филе','Пилешко филе'),
+  M(307,'meat',      13.00,'portion','skewer',   'Σουβλάκι χοιρινό','Pork Souvlaki','Schweine-Souvlaki','Souvlaki de porc','Свињски ражњић','Свинско сувлаки'),
+  M(308,'meat',      14.00,'portion','skewer',   'Σουβλάκι κοτόπουλο','Chicken Souvlaki','Hähnchen-Souvlaki','Souvlaki de pui','Пилећи ражњић','Пилешко сувлаки'),
+  M(309,'meat',      12.00,'portion','meat',     'Πανσέτες','Pork Belly','Schweinebauch','Piept de porc','Свињска потрбушина','Свински гърди'),
+  M(310,'meat',      15.00,'portion','chop',     'Παϊδάκια αρνήσια','Lamb Chops','Lammkoteletts','Cotlete de miel','Јагњећи котлети','Агнешки котлети'),
+  M(311,'meat',      12.00,'portion','chop',     'Παϊδάκια προβατίνα','Mutton Chops','Hammelkoteletts','Cotlete de oaie','Овчији котлети','Овнешки котлети'),
+  M(312,'meat',      15.00,'portion','shank',    'Κότσι','Pork Shank','Schweinshaxe','Ciolan de porc','Свињска коленица','Свински джолан'),
+  M(313,'spit',      15.00,'portion','skewer',   'Κοντοσούβλι','Kontosouvli','Kontosouvli','Kontosouvli','Контосувли','Контосувли'),
+  M(314,'meat',      12.00,'portion','drumstick','Κοτόπουλο σούβλας','Chicken on the Spit','Hähnchen vom Spieß','Pui la proțap','Пилетина на ражњу','Пиле на шиш'),
+  M(315,'spit',      55.00,'kg',     'meat',     'Αρνί σούβλας','Lamb on the Spit','Lamm vom Spieß','Miel la proțap','Јагње на ражњу','Агне на шиш'),
+  M(316,'meat',      15.00,'portion','fish',     'Μπακαλιάρος με σκορδαλιά','Cod with Garlic Paste','Kabeljau mit Knoblauchcreme','Cod cu pastă de usturoi','Бакалар са белим луком','Треска с чеснова паста'),
+  M(317,'meat',       0.00,'portion','meat',     'Tomahawk χοιρινή','Pork Tomahawk','Schweine-Tomahawk','Tomahawk de porc','Свињски tomahawk','Свински tomahawk'),
+  M(318,'meat',      12.00,'portion','meat',     'Γύρος','Gyros','Gyros','Gyros','Гирос','Гирос'),
+  M(319,'meat',      12.00,'portion','drumstick','Κοτομπουκιές','Chicken Nuggets','Chicken Nuggets','Nuggets de pui','Пилећи нагетси','Пилешки хапки'),
+
+  /* --- Πίτσες / Pizzas --- */
+  M(401,'pizza',     10.00,'portion','pizza',    'Μαργαρίτα','Margherita','Margherita','Margherita','Маргарита','Маргарита'),
+  M(402,'pizza',     12.00,'portion','pizza',    'Σπέσιαλ','Special','Spezial','Special','Специјал','Специал'),
+
+  /* --- Ποτά / Drinks --- */
+  M(501,'drinks',     4.00,'portion','soda',     'Coca-Cola','Coca-Cola','Coca-Cola','Coca-Cola','Кока-Кола','Кока-Кола'),
+  M(502,'drinks',     4.00,'portion','soda',     'Fanta Λεμονάδα','Fanta Lemon','Fanta Zitrone','Fanta Lămâie','Фанта лимун','Фанта лимон'),
+  M(503,'drinks',     4.00,'portion','soda',     'Fanta Πορτοκαλάδα','Fanta Orange','Fanta Orange','Fanta Portocală','Фанта поморанџа','Фанта портокал'),
+  M(504,'drinks',     4.00,'portion','soda',     'Sprite','Sprite','Sprite','Sprite','Спрајт','Спрайт'),
+  M(505,'drinks',     4.00,'portion','soda',     'Σόδα','Soda','Soda','Sifon','Сода','Сода'),
+  M(506,'drinks',     4.00,'portion','soda',     'Τόνικ','Tonic','Tonic','Apă tonică','Тоник','Тоник'),
+  M(507,'drinks',     5.00,'portion','soda',     'Ice Tea Lipton (ροδάκινο/λεμόνι)','Lipton Ice Tea (peach/lemon)','Lipton Eistee (Pfirsich/Zitrone)','Lipton Ice Tea (piersică/lămâie)','Lipton ледени чај (бресква/лимун)','Lipton студен чай (праскова/лимон)'),
+  M(508,'drinks',     8.00,'portion','juice',    'Λεμονάδα σπιτική','Homemade Lemonade','Hausgemachte Limonade','Limonadă de casă','Домаћа лимунада','Домашна лимонада'),
+  M(509,'drinks',     5.00,'portion','mug',      'Βαρέλι Mythos 400ml','Mythos Draught 400ml','Mythos vom Fass 400ml','Mythos la halbă 400ml','Mythos точено 400ml','Mythos наливна 400ml'),
+  M(510,'drinks',     3.50,'portion','mug',      'Βαρέλι Mythos 250ml','Mythos Draught 250ml','Mythos vom Fass 250ml','Mythos la halbă 250ml','Mythos точено 250ml','Mythos наливна 250ml'),
+  M(511,'drinks',     5.00,'portion','beer',     'Βεργίνα','Vergina','Vergina','Vergina','Вергина','Вергина'),
+  M(512,'drinks',     5.00,'portion','beer',     'Heineken','Heineken','Heineken','Heineken','Хајнекен','Хайнекен'),
+  M(513,'drinks',     5.00,'portion','beer',     'Amstel Free','Amstel Free','Amstel Free','Amstel Free','Amstel Free','Amstel Free'),
+  M(514,'drinks',     5.00,'portion','wine',     'Ρετσίνα Μαλαματίνα','Malamatina Retsina','Malamatina Retsina','Retsina Malamatina','Рецина Маламатина','Рецина Маламатина'),
+  M(515,'drinks',     5.00,'portion','wine',     'Ρετσίνα Γεωργιάδη','Georgiadi Retsina','Georgiadi Retsina','Retsina Georgiadi','Рецина Георгијади','Рецина Георгиади'),
+  M(516,'drinks',     6.00,'portion','wine',     'Χύμα ροζέ ημίγλυκο','House Rosé (semi-sweet)','Hausrosé (halbsüß)','Rosé de casă (demidulce)','Домаћи розе (полуслатко)','Домашно розе (полусладко)'),
+  M(517,'drinks',     6.00,'portion','wine',     'Χύμα κόκκινο ξηρό','House Red (dry)','Hausrot (trocken)','Roșu de casă (sec)','Домаће црно (суво)','Домашно червено (сухо)'),
+  M(518,'drinks',     6.00,'portion','wine',     'Χύμα λευκό ξηρό','House White (dry)','Hausweiß (trocken)','Alb de casă (sec)','Домаће бело (суво)','Домашно бяло (сухо)'),
+  M(519,'drinks',    20.00,'portion','wine',     'Ρήγας Κούπα (κόκκινο)','King of Hearts (red)','King of Hearts (rot)','King of Hearts (roșu)','King of Hearts (црвено)','King of Hearts (червено)'),
+  M(520,'drinks',    10.00,'portion','drink',    'Ούζο χύμα 200ml','House Ouzo 200ml','Haus-Ouzo 200ml','Ouzo de casă 200ml','Домаћи узо 200ml','Домашно узо 200ml'),
+  M(521,'drinks',    10.00,'portion','drink',    'Τσίπουρο χύμα 200ml','House Tsipouro 200ml','Haus-Tsipouro 200ml','Tsipouro de casă 200ml','Домаћи ципуро 200ml','Домашно ципуро 200ml'),
+  M(522,'drinks',    12.00,'portion','drink',    'Ηδονικό','Idoniko','Idoniko','Idoniko','Идонико','Идонико'),
+  M(523,'drinks',    70.00,'bottle', 'bottle',   'Φιάλη ουίσκι','Whiskey (bottle)','Whisky (Flasche)','Whiskey (sticlă)','Виски (флаша)','Уиски (бутилка)'),
+  M(524,'drinks',    70.00,'bottle', 'bottle',   'Φιάλη βότκα','Vodka (bottle)','Wodka (Flasche)','Vodcă (sticlă)','Вотка (флаша)','Водка (бутилка)'),
+  M(525,'drinks',    80.00,'bottle', 'bottle',   'Φιάλη ρούμι','Rum (bottle)','Rum (Flasche)','Rom (sticlă)','Рум (флаша)','Ром (бутилка)'),
+  M(526,'drinks',    70.00,'bottle', 'bottle',   'Φιάλη Campari','Campari (bottle)','Campari (Flasche)','Campari (sticlă)','Campari (флаша)','Campari (бутилка)'),
+  M(527,'drinks',     8.00,'portion','drink',    'Ποτό μερίδα','Spirits (portion)','Spirituosen (Portion)','Tărie (porție)','Жестоко пиће (порција)','Алкохол (порция)'),
+];
+
+const EVENT_CATEGORIES = [
+  { id:'appetizers', order:1, icon:'dip',   t:{ el:'Ορεκτικά', en:'Appetizers', de:'Vorspeisen', ro:'Aperitive', sr:'Предјела', bg:'Предястия' } },
+  { id:'salads',     order:2, icon:'salad', t:{ el:'Σαλάτες',  en:'Salads',     de:'Salate',     ro:'Salate',    sr:'Салате',   bg:'Салати' } },
+  { id:'meat',       order:3, icon:'meat',  t:{ el:'Κρεατικά', en:'Meat dishes',de:'Fleischgerichte', ro:'Carne', sr:'Месна јела', bg:'Месни ястия' } },
+  { id:'spit',       order:4, icon:'skewer', accent:'#B4623A', tint:'#F6E6DC', image:'media/dishes/68-kontosouvli-clean.png', t:{ el:'Σούβλες', en:'Spit-roasts', de:'Vom Spieß', ro:'La proțap', sr:'Са ражња', bg:'На шиш' } },
+  { id:'drinks',     order:5, icon:'drink', t:{ el:'Ποτά', en:'Drinks', de:'Getränke', ro:'Băuturi', sr:'Пића', bg:'Напитки' } },
+];
+
+/* --------------------------------------------------------------------------
+   ΜΕΝΟΥ — κάθε γραμμή = γραμμή των δύο εντύπων (συμπ. χειρόγραφα).
+   allergens:[] και desc:'' ΕΠΙΤΗΔΕΣ ΚΕΝΑ.
+   -------------------------------------------------------------------------- */
+
+const EVENT_MENU = [
   /* --- Ορεκτικά / Appetizers (σειρά εντύπου) --- */
   M(103,'appetizers', 5.00,'portion','cheese',   'Φέτα λαδορίγανη','Feta with Olive Oil & Oregano','Feta mit Öl & Oregano','Feta cu ulei și oregano','Фета са уљем и ориганом','Фета със зехтин и риган'),
   M(106,'appetizers', 8.00,'portion','cheese',   'Φέτα με μέλι-σουσάμι','Feta with Honey & Sesame','Feta mit Honig & Sesam','Feta cu miere și susan','Фета са медом и сусамом','Фета с мед и сусам'),
@@ -134,28 +225,24 @@ const DEFAULT_MENU = [
   M(313,'spit',      15.00,'portion','skewer',   'Κοντοσούβλι χοιρινό','Pork Kontosouvli','Schweine-Kontosouvli','Kontosouvli de porc','Свињски контосувли','Свинско контосувли'),
   M(314,'spit',      12.00,'portion','drumstick','Κοτόπουλο σούβλας','Spit-roasted Chicken','Hähnchen vom Spieß','Pui la proțap','Пилетина на ражњу','Пиле на шиш'),
 
-  /* --- Αναψυκτικά / Refreshments --- */
+  /* --- Ποτά / Drinks (αναψυκτικά → μπύρες → ρετσίνα → κρασί → ούζο/τσίπουρο) --- */
   M(503,'drinks',     3.00,'portion','soda',     'Πορτοκαλάδα','Orangeade','Orangenlimonade','Portocaladă','Поморанџада','Портокалата'),
   M(508,'drinks',     3.00,'portion','juice',    'Λεμονάδα','Lemonade','Limonade','Limonadă','Лимунада','Лимонада'),
   M(501,'drinks',     3.00,'portion','soda',     'Coca Cola','Coca Cola','Coca Cola','Coca Cola','Coca Cola','Coca Cola'),
   M(531,'drinks',     3.00,'portion','soda',     'Coca Cola Zero','Coca Cola Zero','Coca Cola Zero','Coca Cola Zero','Coca Cola Zero','Coca Cola Zero'),
   M(505,'drinks',     3.00,'portion','soda',     'Σόδα','Soda','Soda','Sifon','Сода','Сода'),
 
-  /* --- Μπύρες / Beers --- */
   M(510,'drinks',     4.00,'portion','mug',      'Μύθος βαρέλι 250ml','Draft Mythos 250ml','Mythos vom Fass 250ml','Mythos la halbă 250ml','Mythos точено 250ml','Mythos наливна 250ml'),
   M(509,'drinks',     6.00,'portion','mug',      'Μύθος βαρέλι 500ml','Draft Mythos 500ml','Mythos vom Fass 500ml','Mythos la halbă 500ml','Mythos точено 500ml','Mythos наливна 500ml'),
   M(511,'drinks',     5.00,'portion','beer',     'Βεργίνα','Vergina','Vergina','Vergina','Вергина','Вергина'),
 
-  /* --- Ρετσίνα / Retsina --- */
   M(515,'drinks',     6.00,'portion','wine',     'Ρετσίνα Γεωργιάδη','Retsina Georgiadi','Retsina Georgiadi','Retsina Georgiadi','Рецина Георгијади','Рецина Георгиади'),
   M(514,'drinks',     6.00,'portion','wine',     'Ρετσίνα Μαλαματίνα','Retsina Malamatina','Retsina Malamatina','Retsina Malamatina','Рецина Маламатина','Рецина Маламатина'),
 
-  /* --- Κρασί χύμα / House wine --- */
   M(518,'drinks',     7.00,'portion','wine',     'Λευκό ξηρό','White Dry','Weiß trocken','Alb sec','Бело суво','Бяло сухо'),
   M(517,'drinks',     7.00,'portion','wine',     'Κόκκινο ξηρό','Red Dry','Rot trocken','Roșu sec','Црвено суво','Червено сухо'),
   M(516,'drinks',     7.00,'portion','wine',     'Ροζέ ημίγλυκο','Rosé Semi Sweet','Rosé halbsüß','Rosé demidulce','Розе полуслатко','Розе полусладко'),
 
-  /* --- Ούζο - Τσίπουρο --- */
   M(520,'drinks',    12.00,'portion','drink',    'Ούζο','Ouzo','Ouzo','Ouzo','Узо','Узо'),
   M(522,'drinks',    12.00,'200ml',  'drink',    'Ηδονικό τσίπουρο 200ml','Tsipouro 200ml','Tsipouro 200ml','Tsipouro 200ml','Ципуро 200ml','Ципуро 200ml'),
 ];
@@ -182,7 +269,8 @@ const REMOVABLE = {
   202:['onion'],
   203:['onion','olives','pepper','feta'],
 };
-DEFAULT_MENU.forEach(i=>{
+
+NORMAL_MENU.forEach(i=>{
   if(PRICE_TEXT[i.id]) i.priceText = PRICE_TEXT[i.id];
   if(DESC[i.id]){
     LANGUAGES.forEach(l=>{ if(DESC[i.id][l.code]) i.t[l.code].d = DESC[i.id][l.code]; });
@@ -190,6 +278,18 @@ DEFAULT_MENU.forEach(i=>{
   if(INGREDIENTS[i.id]) i.ing = INGREDIENTS[i.id];
   if(REMOVABLE[i.id]) i.removable = REMOVABLE[i.id].map(k=>RM[k]);
 });
+EVENT_MENU.forEach(i=>{
+  if(PRICE_TEXT[i.id]) i.priceText = PRICE_TEXT[i.id];
+  if(DESC[i.id]){
+    LANGUAGES.forEach(l=>{ if(DESC[i.id][l.code]) i.t[l.code].d = DESC[i.id][l.code]; });
+  }
+  if(INGREDIENTS[i.id]) i.ing = INGREDIENTS[i.id];
+  if(REMOVABLE[i.id]) i.removable = REMOVABLE[i.id].map(k=>RM[k]);
+});
+/* Brand-new installs: hide Fanta on the classic catalogue only. */
+const DEFAULT_HIDDEN_MENU_IDS = new Set([502,503]);
+NORMAL_MENU.forEach(i=>{ i.hidden = DEFAULT_HIDDEN_MENU_IDS.has(Number(i.id)); });
+EVENT_MENU.forEach(i=>{ i.hidden = false; });
 
 const UNITS = {
   portion:{ el:'', en:'', de:'', ro:'', sr:'', bg:'' },
@@ -220,26 +320,71 @@ const ZONES = {
   b:{ el:'Ζώνη Β', en:'Zone B', de:'Zone B', ro:'Zona B', sr:'Зона Б', bg:'Зона Б' },
 };
 
-/* Banner off — το σημερινό μενού ΕΙΝΑΙ ο κατάλογος, όχι overlay σπέσιαλ. */
-const ANNOUNCE = {
-  on:false, from:'', to:'', fromTime:'', toTime:'', nudge:false,
-  theme:'ember', accent:'', riv:'', rivMachine:'',
-  exclusive:false, exclusiveMode:'with-full', live:false, liveLabel:'', fx:false,
+
+/* Rembetika event night — after this local calendar day the classic catalogue
+   returns automatically (banner window also ends on the same day). */
+const EVENT_CATALOGUE_DAY = '2026-09-12';
+function localDateKey(at){
+  const d = at instanceof Date ? at : new Date();
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+day;
+}
+function isEventCatalogueDay(at){ return localDateKey(at) === EVENT_CATALOGUE_DAY; }
+function activeCatalogVersion(at){
+  return isEventCatalogueDay(at)
+    ? 'event-pricelist-2026-09-12-rembetika-v9'
+    : 'classic-catalog-2026-09-13-v1';
+}
+function activeDefaultCategories(at){
+  return JSON.parse(JSON.stringify(isEventCatalogueDay(at) ? EVENT_CATEGORIES : NORMAL_CATEGORIES));
+}
+function activeDefaultMenu(at){
+  return JSON.parse(JSON.stringify(isEventCatalogueDay(at) ? EVENT_MENU : NORMAL_MENU));
+}
+
+/* Ρεμπέτικα — Σάββατο 12/09/26 μόνο. Από 13/09 ο κλασικός κατάλογος επιστρέφει μόνος του. */
+const REMBETIKA_ANNOUNCE = {
+  on:true, from:'2026-09-12', to:'2026-09-12', fromTime:'', toTime:'', nudge:false,
+  theme:'night', accent:'#B99A5B', riv:'', rivMachine:'',
+  exclusive:false, exclusiveMode:'with-full', live:true, liveLabel:'ΣΗΜΕΡΑ', fx:true,
   emoji:'', targetCat:'', specialCats:[],
+  image:'media/events/rembetika-banner.jpg',
+  photo:'media/events/rembetika-photo.jpg',
+  logo:'media/events/rembetika-tr.png',
+  partnerLogo:'',
+  phone:'6985856367',
+  entry:'5€',
+  doors:'20:30',
+  whenEl:'Σάββατο 12/09',
+  whenEn:'Sat 12/09',
   t:{
-    el:{ title:'', body:'' },
-    en:{ title:'', body:'' },
-    de:{ title:'', body:'' },
-    ro:{ title:'', body:'' },
-    sr:{ title:'', body:'' },
-    bg:{ title:'', body:'' },
+    el:{ title:'Ρεμπέτικα Άσματα', body:'Γαβρήλος Κοκώνας · Σωκράτης Κελαϊδής · Νικόλας Κουρτίδης · Μιχάλης Τζαβέλλας', cta:'Δες τον κατάλογο', kick:'Σήμερα', live:'ΣΗΜΕΡΑ' },
+    en:{ title:'Rembetika Songs', body:'Gavriilos Kokonas · Sokratis Kelaidis · Nikolas Kourtides · Michalis Tzavellas', cta:'View the menu', kick:'Tonight', live:'LIVE' },
+    de:{ title:'Rembetika Lieder', body:'Gavriilos Kokonas · Sokratis Kelaidis · Nikolas Kourtides · Michalis Tzavellas', cta:'Zur Speisekarte', kick:'Heute', live:'LIVE' },
+    ro:{ title:'Cântece rebetiko', body:'Gavriilos Kokonas · Sokratis Kelaidis · Nikolas Kourtides · Michalis Tzavellas', cta:'Vezi meniul', kick:'Azi', live:'LIVE' },
+    sr:{ title:'Ребетичка певања', body:'Gavriilos Kokonas · Sokratis Kelaidis · Nikolas Kourtides · Michalis Tzavellas', cta:'Погледај мени', kick:'Данас', live:'LIVE' },
+    bg:{ title:'Ребетико песни', body:'Gavriilos Kokonas · Sokratis Kelaidis · Nikolas Kourtides · Michalis Tzavellas', cta:'Виж менюто', kick:'Днес', live:'LIVE' },
   }
 };
+const CLASSIC_ANNOUNCE = {
+  on:false, from:'', to:'', fromTime:'', toTime:'', nudge:true,
+  theme:'ember', accent:'', riv:'', rivMachine:'',
+  exclusive:false, exclusiveMode:'with-full', live:true, liveLabel:'', fx:true,
+  emoji:'🔥', targetCat:'', specialCats:[],
+  image:'', photo:'', logo:'', partnerLogo:'', phone:'', entry:'', doors:'', whenEl:'', whenEn:'',
+  t:{ el:{title:'',body:'',cta:'',kick:'',live:'',nudge:'',back:''}, en:{title:'',body:'',cta:'',kick:'',live:'',nudge:'',back:''},
+      de:{title:'',body:'',cta:'',kick:'',live:'',nudge:'',back:''}, ro:{title:'',body:'',cta:'',kick:'',live:'',nudge:'',back:''},
+      sr:{title:'',body:'',cta:'',kick:'',live:'',nudge:'',back:''}, bg:{title:'',body:'',cta:'',kick:'',live:'',nudge:'',back:''} }
+};
+function activeDefaultAnnouncement(at){
+  return JSON.parse(JSON.stringify(isEventCatalogueDay(at) ? REMBETIKA_ANNOUNCE : CLASSIC_ANNOUNCE));
+}
+const ANNOUNCE = activeDefaultAnnouncement();
 const DEFAULT_ANNOUNCEMENT = JSON.parse(JSON.stringify(ANNOUNCE));
 
 const DEFAULT_SETTINGS = {
   serviceOpen:true, acceptOrders:true, currency:'€', defaultLang:'el',
-  catalogVersion:'event-pricelist-2026-09-12-only-v1',
+  catalogVersion: activeCatalogVersion(),
   cacheRevision:0,
   cacheSavedAt:0,
   traditionalMenuOnly:true,
@@ -249,13 +394,34 @@ const DEFAULT_SETTINGS = {
   eventPresets:[],
 };
 
+/* Compatibility aliases — most call sites still say DEFAULT_MENU / CATEGORIES */
+const DEFAULT_CATEGORIES = activeDefaultCategories();
+const DEFAULT_MENU = activeDefaultMenu();
+
+
 /* ---------------- state ---------------- */
 function defaultState(){
-  return { menu:JSON.parse(JSON.stringify(DEFAULT_MENU)),
-           categories:JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
+  return { menu:activeDefaultMenu(),
+           categories:activeDefaultCategories(),
            tables:JSON.parse(JSON.stringify(DEFAULT_TABLES)),
            settings:JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),
            orders:[], updatedAt:Date.now() };
+}
+/* Swap rembetika ↔ classic when the calendar day (or catalog bump) changes.
+   Keeps only owner-created dishes (id >= 9000). Mutates `state` in place. */
+function ensureCatalogueForToday(state, at){
+  if(!state || !state.settings) return false;
+  const want = activeCatalogVersion(at);
+  if(String(state.settings.catalogVersion||'') === want) return false;
+  const custom=(Array.isArray(state.menu)?state.menu:[]).filter(i=>{
+    const n=Number(i&&i.id);
+    return Number.isFinite(n) && n>=9000;
+  }).map(i=>JSON.parse(JSON.stringify(i)));
+  state.menu = activeDefaultMenu(at).concat(custom);
+  state.categories = activeDefaultCategories(at);
+  state.settings.catalogVersion = want;
+  state.settings.announcement = activeDefaultAnnouncement(at);
+  return true;
 }
 function loadState(){
   try{ const r=localStorage.getItem(STORAGE_KEY); if(!r) return defaultState();
@@ -264,18 +430,7 @@ function loadState(){
        merged.settings=Object.assign({}, base.settings, saved.settings||{});
        merged.settings.headerActions=Object.assign({}, base.settings.headerActions, (saved.settings&&saved.settings.headerActions)||{});
        merged.settings.design=Object.assign({}, base.settings.design, (saved.settings&&saved.settings.design)||{});
-       if((saved.settings||{}).catalogVersion !== DEFAULT_SETTINGS.catalogVersion){
-         /* This bump replaces the guest catalogue with the printed event list.
-            Keep only owner custom dishes (id >= 9000). */
-         const custom=(Array.isArray(saved.menu)?saved.menu:[]).filter(i=>{
-           const n=Number(i&&i.id);
-           return Number.isFinite(n) && n>=9000;
-         }).map(i=>JSON.parse(JSON.stringify(i)));
-         merged.menu=base.menu.concat(custom);
-         merged.categories=JSON.parse(JSON.stringify(base.categories));
-         merged.settings.catalogVersion=DEFAULT_SETTINGS.catalogVersion;
-         merged.settings.announcement=JSON.parse(JSON.stringify(base.settings.announcement));
-       }
+       ensureCatalogueForToday(merged);
        return normalizeState(merged); }catch(e){ return defaultState(); }
 }
 function normalizeState(s){
@@ -488,6 +643,23 @@ function normalizeAnnouncement(a){
   out.emoji = String(out.emoji||'').slice(0,8);
   out.targetCat = String(out.targetCat||base.targetCat).slice(0,32);
   out.specialCats = Array.isArray(out.specialCats) ? out.specialCats.map(x=>String(x).slice(0,32)).filter(Boolean).slice(0,8) : base.specialCats.slice();
+  /* Optional event media — local media/* paths or https only. */
+  const safeMedia=(v,fallback='')=>{
+    const s=String(v == null ? fallback : v).trim().slice(0,260);
+    if(!s) return '';
+    if(/^https:\/\/[^\s"'<>]+$/i.test(s)) return s;
+    if(/^(media\/|\/)?[A-Za-z0-9._\/-]+$/.test(s) && !s.includes('..')) return s;
+    return '';
+  };
+  out.image = safeMedia(a.image, base.image||'');
+  out.photo = safeMedia(a.photo, base.photo||'');
+  out.logo = safeMedia(a.logo, base.logo||'');
+  out.partnerLogo = safeMedia(a.partnerLogo, base.partnerLogo||'');
+  out.phone = String(a.phone == null ? (base.phone||'') : a.phone).replace(/[^\d+]/g,'').slice(0,20);
+  out.entry = String(a.entry == null ? (base.entry||'') : a.entry).trim().slice(0,16);
+  out.doors = String(a.doors == null ? (base.doors||'') : a.doors).trim().slice(0,8);
+  out.whenEl = String(a.whenEl == null ? (base.whenEl||'') : a.whenEl).trim().slice(0,48);
+  out.whenEn = String(a.whenEn == null ? (base.whenEn||'') : a.whenEn).trim().slice(0,48);
   out.t = (out.t && typeof out.t==='object') ? out.t : {};
   LANGUAGES.forEach(l=>{
     const cur=(out.t&&out.t[l.code]) || {};

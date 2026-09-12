@@ -759,6 +759,7 @@ body.is-saving button[data-save],body.is-saving .upload-pick{pointer-events:none
     <button data-tab="dash" class="on" data-ico="sparkle" data-testid="admin-tab-dashboard">Επισκόπηση</button>
     <button data-tab="tables" data-ico="table" data-advanced-service data-testid="admin-tab-tables">Τραπέζια</button>
     <button data-tab="menu" data-ico="bowl" data-testid="admin-tab-menu">Μενού</button>
+    <button data-tab="special" data-ico="star" data-testid="admin-tab-special">Σπέσιαλ μενού</button>
     <button data-tab="orders" data-ico="receipt" data-advanced-service data-testid="admin-tab-orders">Παραγγελίες</button>
     <button data-tab="qr" data-ico="qr" data-testid="admin-tab-qr">QR &amp; Σύνδεσμοι</button>
     <button data-tab="settings" data-ico="gear" data-testid="admin-tab-settings">Ρυθμίσεις</button>
@@ -858,6 +859,16 @@ body.is-saving button[data-save],body.is-saving .upload-pick{pointer-events:none
     <div class="grid two" id="qrGrid"></div>
   </section>
 
+  <!-- ---------- SPECIAL MENU ---------- -->
+  <section class="panel" id="panel-special">
+    <div class="panel-head">
+      <h2>Σπέσιαλ μενού</h2>
+      <p class="hint">Banner, ημερομηνίες, γραφικά, κείμενα, exclusive mode και event presets.
+        Μετά τις 12/09/2026 ο πελάτης επιστρέφει αυτόματα στον κανονικό κατάλογο — μπορείτε να αλλάξετε τις ημερομηνίες παρακάτω για το επόμενο event.</p>
+    </div>
+    <div id="specialArea"></div>
+  </section>
+
   <!-- ---------- SETTINGS ---------- -->
   <section class="panel" id="panel-settings">
     <div class="panel-head"><h2>Ρυθμίσεις</h2></div>
@@ -908,15 +919,15 @@ body.is-saving button[data-save],body.is-saving .upload-pick{pointer-events:none
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script>window.TV_STORAGE_KEY='tsigoura_verde_v13_admin';</script>
-<script src="tsigoura-data.js?v=20260813-banner-storage-v2"></script>
+<script>window.TV_STORAGE_KEY='tsigoura_verde_v15_admin';</script>
+<script src="tsigoura-data.js?v=20260912-classic-flip-special-v1"></script>
 <script src="tsigoura-menu-icons.js?v=20260727-owner-media-controls-v2"></script>
 <script src="tsigoura-icons.js"></script>
 <script>
 /* One-time migrate from the old shared guest/admin key so owners keep edits. */
 try{
   if(!localStorage.getItem(STORAGE_KEY)){
-    const legacy=localStorage.getItem('tsigoura_verde_v13');
+    const legacy=localStorage.getItem('tsigoura_verde_v13_admin')||localStorage.getItem('tsigoura_verde_v13');
     if(legacy) localStorage.setItem(STORAGE_KEY, legacy);
   }
 }catch(e){}
@@ -1533,9 +1544,23 @@ function readAnnouncementEditor(){
     emoji:$('annEmoji').value.trim().slice(0,8),
     targetCat:$('annTarget').value,
     specialCats:[...box.querySelectorAll('[data-ann-cat]')].filter(cb=>cb.checked).map(cb=>cb.value),
+    image:$('annImage')?$('annImage').value.trim():cur.image,
+    photo:$('annPhoto')?$('annPhoto').value.trim():cur.photo,
+    logo:$('annLogo')?$('annLogo').value.trim():cur.logo,
+    partnerLogo:$('annPartnerLogo')?$('annPartnerLogo').value.trim():cur.partnerLogo,
+    phone:$('annPhone')?$('annPhone').value.trim():cur.phone,
+    entry:$('annEntry')?$('annEntry').value.trim():cur.entry,
+    doors:$('annDoors')?$('annDoors').value.trim():cur.doors,
+    whenEl:$('annWhenEl')?$('annWhenEl').value.trim():cur.whenEl,
+    whenEn:$('annWhenEn')?$('annWhenEn').value.trim():cur.whenEn,
     t:Object.assign({}, cur.t||{})
   };
-  if(!next.specialCats.length) next.specialCats=[next.targetCat];
+  if(next.exclusiveMode==='with-full'){
+    /* Banner over the whole catalogue — never invent a special subset. */
+    next.specialCats=[];
+  }else if(!next.specialCats.length){
+    next.specialCats = next.targetCat ? [next.targetCat] : [];
+  }
   LANGUAGES.forEach(l=>{
     const ti=$(annFieldId('title',l.code)), bo=$(annFieldId('body',l.code));
     if(!ti && !bo) return;               /* language pane absent — keep stored value */
@@ -2227,6 +2252,7 @@ $('tabs').querySelectorAll('button').forEach(b=>{
     $('panel-'+b.dataset.tab).classList.add('on');
     if(b.dataset.tab==='qr') renderQR();
     if(b.dataset.tab==='dash') renderDash();
+    if(b.dataset.tab==='special') renderSpecial();
   };
 });
 
@@ -3032,7 +3058,7 @@ function openProCategory(id){
   });
 }
 function openAnnouncementSettings(){
-  switchAdminTab('settings');
+  switchAdminTab('special');
   requestAnimationFrame(()=>{
     const box=$('announceEditor');
     if(box){ box.scrollIntoView({block:'center',behavior:'smooth'}); box.animate([{transform:'scale(1)'},{transform:'scale(1.018)'},{transform:'scale(1)'}],{duration:420,easing:'ease-out'}); }
@@ -3340,7 +3366,7 @@ function wirePresetEditor(){
     if(!name){ $('presetName').focus(); toast('Γράψτε ένα όνομα preset'); return; }
     S.settings.eventPresets=list();
     S.settings.eventPresets.push(presetSnapshot(name));
-    persist(); renderSettings(); renderDash(); toast('Το preset αποθηκεύτηκε');
+    persist(); renderSpecial(); renderDash(); toast('Το preset αποθηκεύτηκε');
   };
   root.querySelectorAll('[data-preset-apply]').forEach(b=>b.onclick=()=>{
     const p=list().find(x=>x.id===b.dataset.presetApply); if(!p) return;
@@ -3356,13 +3382,13 @@ function wirePresetEditor(){
     const presets=list(), p=presets.find(x=>x.id===b.dataset.presetRename); if(!p) return;
     const name=prompt('Νέο όνομα preset:',p.name); if(name===null||!name.trim()) return;
     p.name=name.trim().slice(0,50); S.settings.eventPresets=presets;
-    persist(); renderSettings(); toast('Το preset μετονομάστηκε');
+    persist(); renderSpecial(); toast('Το preset μετονομάστηκε');
   });
   root.querySelectorAll('[data-preset-delete]').forEach(b=>b.onclick=()=>{
     const presets=list(), p=presets.find(x=>x.id===b.dataset.presetDelete); if(!p) return;
     if(!confirm(`Διαγραφή preset «${p.name}»;`)) return;
     S.settings.eventPresets=presets.filter(x=>x.id!==p.id);
-    persist(); renderSettings(); toast('Το preset διαγράφηκε');
+    persist(); renderSpecial(); toast('Το preset διαγράφηκε');
   });
 }
 function publicConfigValue(section,key){
@@ -3551,8 +3577,8 @@ function announcementEditorHTML(){
   const cats=S.categories.slice().sort((a,b)=>a.order-b.order);
   const chosen=new Set((Array.isArray(A.specialCats)&&A.specialCats.length?A.specialCats:[A.targetCat]).map(String));
   return `<div class="announce-editor" id="announceEditor">
-    <h3>${ICO.get('star')}Special announcement</h3>
-    <p class="hint">Banner πάνω από την αναζήτηση. Όταν είναι ON και «Μόνο το σπέσιαλ μενού» είναι ON, ο πελάτης βλέπει αποκλειστικά τις κατηγορίες που τσεκάρετε — τίποτα άλλο. Κάθε κείμενο, χρώμα και εφέ αλλάζει από εδώ.</p>
+    <h3>${ICO.get('star')}Σπέσιαλ banner &amp; event</h3>
+    <p class="hint">Όλα εδώ: ημερομηνίες, γραφικά, τίτλοι, exclusive mode. Όταν είναι ON και «Μόνο το σπέσιαλ μενού» είναι ON, ο πελάτης βλέπει αποκλειστικά τις κατηγορίες που τσεκάρετε. Αλλιώς το banner κάθεται πάνω στον κανονικό κατάλογο.</p>
     <div class="mini-preview"><span>${ioEsc(A.emoji||'')}</span><b>${ioEsc(el.title||'Κρυφό / χωρίς τίτλο')}</b><p>${ioEsc(el.body||'Δεν θα εμφανιστεί αν είναι κρυφό ή άδειο.')}</p></div>
     <div class="setting-row">
       <div class="txt"><div class="t">Εμφάνιση banner</div><div class="d">Όταν είναι off, εξαφανίζεται τελείως από το menu.</div></div>
@@ -3573,12 +3599,30 @@ function announcementEditorHTML(){
       <div><label>Χρώμα τόνου (προαιρετικό)</label><input type="color" id="annAccent" value="${ioEsc(A.accent||'#C98B3E')}"></div>
       <div><label>&nbsp;</label><button type="button" class="btn ghost sm pressable" id="annAccentClear">Καθαρισμός χρώματος</button></div>
     </div>
-    <p class="hint" style="margin:8px 0 0;">Το θέμα αλλάζει όλη την εμφάνιση του σπέσιαλ μενού — banner, κουμπί στις κατηγορίες και φόντο. Κάθε γιορτή μπορεί να έχει το δικό της.</p>
+    <p class="hint" style="margin:8px 0 0;">Το θέμα αλλάζει όλη την εμφάνιση του σπέσιαλ μενού — banner, κουμπί στις κατηγορίες και φόντο.</p>
+    <h4 style="margin:16px 0 6px;color:var(--forest);">Γραφικά &amp; στοιχεία event</h4>
+    <div class="fieldrow">
+      <div><label>Banner εικόνα</label><input id="annImage" value="${ioEsc(A.image||'')}" maxlength="260" placeholder="media/events/…"></div>
+      <div><label>Φωτογραφία hero</label><input id="annPhoto" value="${ioEsc(A.photo||'')}" maxlength="260" placeholder="media/events/…"></div>
+    </div>
+    <div class="fieldrow">
+      <div><label>Logo / crest</label><input id="annLogo" value="${ioEsc(A.logo||'')}" maxlength="260" placeholder="media/events/…"></div>
+      <div><label>Partner logo</label><input id="annPartnerLogo" value="${ioEsc(A.partnerLogo||'')}" maxlength="260" placeholder="media/…"></div>
+    </div>
+    <div class="fieldrow">
+      <div><label>Τηλέφωνο κρατήσεων</label><input id="annPhone" value="${ioEsc(A.phone||'')}" maxlength="20" placeholder="698…" inputmode="tel"></div>
+      <div><label>Ώρα έναρξης (doors)</label><input id="annDoors" value="${ioEsc(A.doors||'')}" maxlength="8" placeholder="20:30"></div>
+      <div><label>Είσοδος</label><input id="annEntry" value="${ioEsc(A.entry||'')}" maxlength="16" placeholder="5€"></div>
+    </div>
+    <div class="fieldrow">
+      <div><label>Ημερομηνία EL (στο hero)</label><input id="annWhenEl" value="${ioEsc(A.whenEl||'')}" maxlength="48" placeholder="Σάββατο 12/09"></div>
+      <div><label>Ημερομηνία EN</label><input id="annWhenEn" value="${ioEsc(A.whenEn||'')}" maxlength="48" placeholder="Sat 12/09"></div>
+    </div>
     <div class="fieldrow">
       <div><label>Rive animation (.riv) — προαιρετικό</label><input id="annRiv" value="${ioEsc(A.riv||'')}" maxlength="300" placeholder="media/rive/flame.riv"></div>
       <div><label>State machine (αν έχει)</label><input id="annRivMachine" value="${ioEsc(A.rivMachine||'')}" maxlength="60" placeholder="π.χ. Flame"></div>
     </div>
-    <p class="hint" style="margin:8px 0 0;">Κινούμενο γραφικό πάνω στο banner, φτιαγμένο στο rive.app. Αφήστε το κενό και δεν κατεβαίνει τίποτα επιπλέον. Δεν παίζει σε αργή σύνδεση ή αν ο πελάτης έχει «λιγότερη κίνηση» — τότε μένει το emoji.</p>
+    <p class="hint" style="margin:8px 0 0;">Κινούμενο γραφικό πάνω στο banner. Άδειο = δεν κατεβαίνει τίποτα επιπλέον.</p>
     <div class="setting-row">
       <div class="txt"><div class="t">Καθοδήγηση πελάτη</div><div class="d">Παλμός και μήνυμα «πατήστε εδώ» ώστε να καταλάβουν ότι το banner ανοίγει το σπέσιαλ μενού.</div></div>
       <div class="toggle ${A.nudge!==false?'on':''}" id="annNudge"></div>
@@ -3604,7 +3648,7 @@ function announcementEditorHTML(){
         <div class="ann-lang-h"><span class="fl">${l.flag}</span>${ioEsc(l.label)}${l.code==='el'?' <em>· κύρια γλώσσα</em>':''}</div>
         <div class="fieldrow">
           <div><label>Τίτλος</label><input id="${annFieldId('title',l.code)}" value="${ioEsc(tv.title||'')}" maxlength="90" placeholder="Τίτλος"></div>
-          <div><label>Κείμενο</label><textarea id="${annFieldId('body',l.code)}" rows="2" maxlength="220">${ioEsc(tv.body||'')}</textarea></div>
+          <div><label>Κείμενο / καλλιτέχνες</label><textarea id="${annFieldId('body',l.code)}" rows="2" maxlength="220">${ioEsc(tv.body||'')}</textarea></div>
         </div>
         <div class="fieldrow">
           <div><label>Κουμπί (CTA)</label><input id="${annFieldId('cta',l.code)}" value="${ioEsc(tv.cta||'')}" maxlength="60" placeholder="Δείτε το σπέσιαλ μενού"></div>
@@ -3628,7 +3672,7 @@ function announcementEditorHTML(){
       <button class="btn sm pressable" id="annSave" data-testid="announcement-save">${ICO.get('check')}Αποθήκευση banner</button>
       <button class="btn ghost sm pressable" id="annHide">${ICO.get('eye')}Κρύψιμο</button>
       <button class="btn danger sm pressable" id="annRemove">${ICO.get('trash')}Αφαίρεση κειμένου</button>
-      <button class="btn ghost sm pressable" id="annReset">${ICO.get('arrow')}Επαναφορά 26/7</button>
+      <button class="btn ghost sm pressable" id="annReset">${ICO.get('arrow')}Επαναφορά ρεμπέτικα</button>
     </div>
   </div>`;
 }
@@ -3851,16 +3895,27 @@ function wireAnnouncementEditor(){
        from the new state, or it would read the pre-reset DOM straight back in. */
     suppressAnnouncementFlush=true;
     try{
-      S.settings.announcement=normalizeAnnouncement(JSON.parse(JSON.stringify(DEFAULT_ANNOUNCEMENT)));
+      const sample=(typeof REMBETIKA_ANNOUNCE!=='undefined')
+        ? REMBETIKA_ANNOUNCE
+        : ((typeof DEFAULT_ANNOUNCEMENT!=='undefined')?DEFAULT_ANNOUNCEMENT:null);
+      S.settings.announcement=normalizeAnnouncement(JSON.parse(JSON.stringify(sample||{})));
       persist('announcement');
       await flushRemoteSave({silent:false});
-      renderSettings();
+      renderSpecial();
     }finally{
       suppressAnnouncementFlush=false;
     }
-    toast('Επανήλθε το banner 26/7 (κρυφό μέχρι να το ενεργοποιήσετε με νέες ημερομηνίες)');
+    toast('Επανήλθε το ρεμπέτικα banner — ελέγξτε ημερομηνίες πριν τη δημοσίευση');
   };
   paintAnnouncementHint(S.settings.announcement||{});
+}
+function renderSpecial(){
+  flushAnnouncementEditor();
+  const area=$('specialArea'); if(!area) return;
+  area.innerHTML = announcementEditorHTML() + presetEditorHTML();
+  wireAnnouncementEditor();
+  wirePresetEditor();
+  hydrateIcons(area);
 }
 function renderSettings(){
   /* Capture anything typed into the open banner editor before this rebuild
@@ -3905,7 +3960,7 @@ function renderSettings(){
         <button class="btn sm pressable" id="dbPush">${ICO.get('download')}Λήψη αντιγράφου</button>
         <button class="btn ghost sm pressable" id="dbCopy">${ICO.get('save')}Αντιγραφή</button>
       </div>
-    </div>` + ownerHistoryPanelHTML() + presetEditorHTML() + announcementEditorHTML() + `
+    </div>` + ownerHistoryPanelHTML() + `
 
     <div class="setting-row">
       <div class="txt"><div class="t" style="display:flex;align-items:center;gap:7px;">${ICO.get('star')}Πρόταση βραδιάς στο αρχικό</div><div class="d">Κρύβει το μεγάλο “Η πρόταση της βραδιάς” από την αρχική οθόνη του menu. Δεν διαγράφει πιάτα.</div></div>
@@ -3948,8 +4003,6 @@ function renderSettings(){
   wirePublicConfigEditor();
   wireDishOfDayEditor();
   wireOwnerHistory();
-  wirePresetEditor();
-  wireAnnouncementEditor();
 }
 $('resetBtn').onclick=()=>{ if(confirm('Επαναφορά όλων των demo δεδομένων;')){
   const before=JSON.stringify(S), next=normalizeState(defaultState());
@@ -3969,7 +4022,7 @@ function renderServicePill(){
 function renderAll(){
   probeSync(); refreshShowAllBtn();
   updateAdminFeatureVisibility();
-  renderTables(); renderMenuArea(); renderOrders(); renderSettings();
+  renderTables(); renderMenuArea(); renderOrders(); renderSpecial(); renderSettings();
   renderServicePill(); renderQR(); renderDash(); initScanPanel();
   hydrateIcons(); MOT.reveal();
 }
@@ -3979,7 +4032,7 @@ window.addEventListener('storage', e=>{
   if(e.key===STORAGE_KEY || e.key===STORAGE_KEY+'_ping'){
     flushOpenProForms();
     S=loadState();
-    renderOrders(); renderTables(); renderMenuArea(); renderSettings(); renderServicePill(); renderQR(); renderDash();
+    renderOrders(); renderTables(); renderMenuArea(); renderSpecial(); renderSettings(); renderServicePill(); renderQR(); renderDash();
   }
 });
 /* Flush AFTER the swap, not before. flushOpenProForms() copies the open forms
@@ -3988,7 +4041,7 @@ window.addEventListener('storage', e=>{
    anything typed in the seconds before a background refresh was silently lost.
    The DOM still holds those values, so flushing against the fresh state keeps
    them. */
-setInterval(()=>{ const fresh=loadState(); if(fresh.updatedAt!==S.updatedAt){ S=fresh; flushOpenProForms(); renderOrders(); renderTables(); renderMenuArea(); renderSettings(); renderServicePill(); renderQR(); renderDash(); } }, 4000);
+setInterval(()=>{ const fresh=loadState(); if(fresh.updatedAt!==S.updatedAt){ S=fresh; flushOpenProForms(); renderOrders(); renderTables(); renderMenuArea(); renderSpecial(); renderSettings(); renderServicePill(); renderQR(); renderDash(); } }, 4000);
 
 /* stay logged in across a QR scan during this browser session only */
 try{ if(sessionStorage.getItem('tv_admin_ok')==='1' && sessionStorage.getItem('tv_admin_pin')) unlock(); }catch(e){}

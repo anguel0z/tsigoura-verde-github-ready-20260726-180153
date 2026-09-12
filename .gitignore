@@ -12,3 +12,4 @@ test-results/
 *.zip
 .vercel
 .env*
+.env.vercel.local

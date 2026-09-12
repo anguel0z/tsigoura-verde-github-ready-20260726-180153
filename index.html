@@ -66,9 +66,8 @@ body.traditional-mode .wrap{padding-bottom:44px;}
 .sp-name i{font-style:italic;letter-spacing:2px;color:rgba(243,236,214,.8);}
 .sp-word{font-family:Fraunces,serif;font-size:32px;color:#F7F0DA;min-height:42px;
   opacity:0;animation:spFade .6s ease .55s forwards;}
-.sp-word span{display:inline-block;transition:opacity .35s ease, transform .35s ease;}
 .sp-sub{font-size:12.5px;color:rgba(243,236,214,.6);margin:22px 0 14px;letter-spacing:.3px;
-  opacity:0;animation:spFade .6s ease .9s forwards;transition:opacity .3s ease;}
+  opacity:0;animation:spFade .6s ease .9s forwards;}
 @keyframes spFade{to{opacity:1;}}
 .sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;max-width:340px;margin:0 auto;}
 .sp-lang{display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:14px;
@@ -77,10 +76,103 @@ body.traditional-mode .wrap{padding-bottom:44px;}
 .sp-lang .fl{font-size:20px;}
 .sp-lang:active{transform:scale(.96);}
 .sp-lang:hover{background:rgba(211,186,130,.16);}
-.sp-lang.lit{background:rgba(211,186,130,.20);border-color:var(--gold-lt);
-  box-shadow:0 0 0 1px rgba(211,186,130,.35),0 6px 18px rgba(0,0,0,.18);}
-.sp-mark{animation:spMark .9s cubic-bezier(.2,.8,.2,1) .15s forwards, float 5s ease-in-out 1.2s infinite;}
-@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+
+/* ═════════ Brand transit (view / category changes) ═════════ */
+.brand-transit{
+  position:fixed;inset:0;z-index:980;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;opacity:0;visibility:hidden;
+}
+.brand-transit.on{
+  pointer-events:auto;opacity:1;visibility:visible;
+}
+.brand-transit .bt-veil{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(120% 90% at 50% 8%,#2F5256 0%,#1D3438 52%,#12262A 100%);
+  opacity:0;
+}
+.brand-transit.on .bt-veil{animation:btVeilIn .34s ease forwards;}
+.brand-transit.out .bt-veil{animation:btVeilOut .42s ease forwards;}
+@keyframes btVeilIn{from{opacity:0;}to{opacity:1;}}
+@keyframes btVeilOut{from{opacity:1;}to{opacity:0;}}
+.brand-transit .bt-inner{
+  position:relative;z-index:1;text-align:center;padding:28px 24px;
+  opacity:0;transform:scale(.92) translateY(10px);
+}
+.brand-transit.on .bt-inner{animation:btInnerIn .48s cubic-bezier(.2,.8,.2,1) .06s forwards;}
+.brand-transit.out .bt-inner{animation:btInnerOut .36s ease forwards;}
+@keyframes btInnerIn{to{opacity:1;transform:none;}}
+@keyframes btInnerOut{to{opacity:0;transform:scale(1.04) translateY(-6px);}}
+.brand-transit .bt-ring{
+  position:absolute;left:50%;top:42px;width:118px;height:118px;
+  margin-left:-59px;border-radius:50%;
+  border:1px solid rgba(211,186,130,.0);
+  box-shadow:0 0 0 0 rgba(185,154,91,.0);
+  opacity:0;
+}
+.brand-transit.play .bt-ring{
+  animation:btRing .78s cubic-bezier(.2,.8,.2,1) .12s both;
+}
+@keyframes btRing{
+  0%{opacity:0;transform:scale(.7);border-color:rgba(211,186,130,0);box-shadow:0 0 0 0 rgba(185,154,91,0);}
+  45%{opacity:1;transform:scale(1);border-color:rgba(211,186,130,.55);box-shadow:0 0 0 10px rgba(185,154,91,.12);}
+  100%{opacity:.55;transform:scale(1.08);border-color:rgba(211,186,130,.2);box-shadow:0 0 0 18px rgba(185,154,91,0);}
+}
+.brand-transit .bt-mark{
+  width:92px;height:92px;object-fit:contain;display:block;margin:0 auto 18px;
+  filter:drop-shadow(0 14px 28px rgba(0,0,0,.28));
+  opacity:0;transform:scale(.55) rotate(-8deg);
+}
+.brand-transit.play .bt-mark{
+  animation:btMark .72s cubic-bezier(.2,.85,.2,1) .08s forwards;
+}
+@keyframes btMark{
+  0%{opacity:0;transform:scale(.55) rotate(-8deg);}
+  70%{opacity:1;transform:scale(1.06) rotate(1deg);}
+  100%{opacity:1;transform:none;}
+}
+.brand-transit .bt-name{
+  font-family:Fraunces,serif;font-size:15px;letter-spacing:3.2px;
+  color:rgba(247,240,218,.72);margin:0 auto 12px;
+  opacity:0;transform:translateY(8px);
+}
+.brand-transit.play .bt-name{
+  animation:btName .55s ease .28s forwards;
+}
+.brand-transit .bt-name b{
+  color:var(--gold-lt);font-weight:700;letter-spacing:4px;
+  display:inline-block;
+}
+.brand-transit .bt-name i{
+  font-style:italic;letter-spacing:2px;color:rgba(247,240,218,.92);
+  display:inline-block;
+}
+.brand-transit .bt-name em{
+  font-style:normal;font-weight:600;letter-spacing:3.4px;color:#F7F0DA;
+  display:inline-block;
+}
+.brand-transit.play .bt-name b{animation:btWord .5s cubic-bezier(.2,.8,.2,1) .32s both;}
+.brand-transit.play .bt-name i{animation:btWord .5s cubic-bezier(.2,.8,.2,1) .42s both;}
+.brand-transit.play .bt-name em{animation:btWord .5s cubic-bezier(.2,.8,.2,1) .52s both;}
+@keyframes btName{to{opacity:1;transform:none;}}
+@keyframes btWord{
+  from{opacity:0;transform:translateY(10px);filter:blur(3px);}
+  to{opacity:1;transform:none;filter:none;}
+}
+.brand-transit .bt-rule{
+  display:block;width:0;height:2px;margin:0 auto;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--gold-lt),transparent);
+}
+.brand-transit.play .bt-rule{animation:btRule .55s ease .48s forwards;}
+@keyframes btRule{to{width:132px;}}
+@media (prefers-reduced-motion:reduce){
+  .brand-transit,.brand-transit *{animation:none!important;transition:opacity .2s ease!important;}
+  .brand-transit.on{opacity:1;}
+  .brand-transit.on .bt-veil,.brand-transit.on .bt-inner,.brand-transit.on .bt-mark,.brand-transit.on .bt-name{opacity:1;transform:none;filter:none;}
+  .brand-transit.on .bt-rule{width:132px;}
+}
+body.motion-off .brand-transit{display:none!important;}
 
 /* app-wide motion polish */
 .head .mark{animation:markIn .7s cubic-bezier(.2,.8,.2,1) both;}
@@ -818,7 +910,9 @@ body.traditional-mode .wrap{padding-bottom:44px;}
   :root{--maxw:100vw;}
   .wrap{max-width:100%;overflow-x:clip;}
   .head,.search,.sec{padding-left:16px;padding-right:16px;}
-  .hero,.visual-rail,.quick-flow,.cat-mosaic,.updates,.intro,.announce,.strip{margin-left:16px;margin-right:16px;}
+  .hero,.visual-rail,.quick-flow,.cat-mosaic,.intro,.strip{margin-left:16px;margin-right:16px;}
+  /* Event banner fills #announceSlot — no side gutters (search/nav keep --gut). */
+  .updates,.announce,#announceGo{margin-left:0;margin-right:0;}
   .hero{padding:20px 18px 18px;border-radius:18px;}
   .hero h2{font-size:24px;line-height:1.08;}
   .hero p{max-width:100%;}
@@ -1187,7 +1281,7 @@ body.special-menu::after{content:'';position:fixed;inset:0;pointer-events:none;z
 body.special-menu .wrap,body.special-menu main{position:relative;z-index:1;}
 /* one way out, not two — the list/categories switch silently dropped you out
    of the special menu from a second, unrelated place */
-body.special-menu #viewSwitch{display:none!important;}
+body.special-menu #viewSwitch{display:grid!important;grid-template-columns:1fr 1fr!important;}
 .special-back{display:inline-flex;align-items:center;gap:8px;margin:2px 0 12px;
   min-height:42px;padding:0 16px 0 13px;border-radius:999px;
   background:linear-gradient(122deg,var(--a1),var(--a2) 60%,var(--a3));
@@ -1260,9 +1354,209 @@ body.special-only .guide-pick.on{background:linear-gradient(135deg,var(--a2),var
   background:radial-gradient(circle at 30% 30%,#FFE7B0,var(--a3) 58%,transparent 74%);
   animation:emberRise 4.8s linear infinite;}
 body.special-only .guide-landing.is-special .guide-menu-card::before{
-  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.18) 50%,transparent 62%);
-  background-size:220% 100%;animation:cardSheen 5.8s ease-in-out infinite;}
+  content:'';position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.18),transparent 70%);
+  background-size:220% 100%;animation:kickShine 5.5s ease-in-out infinite;
+}
+
+/* ══ Ρεμπέτικα event banners (poster assets) ══════════════════════════════ */
+@keyframes rembCrestIn{from{opacity:0;transform:scale(.92);}to{opacity:1;transform:none;}}
+@keyframes rembRise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+@keyframes rembKen{0%{transform:scale(1.02);}100%{transform:scale(1.08);}}
+@keyframes rembLine{from{transform:scaleX(0);opacity:0;}to{transform:scaleX(1);opacity:1;}}
+
+/* Dead feature — never show the floating sticky CTA again. */
+#announceSticky,
+.announce-sticky{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  opacity:0!important;
+  height:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+
+/* Sticky under fixed chrome so the banner never clips mid-scroll into junk */
+body.guided-view #announceSlot:not(:empty){
+  position:relative!important;
+  top:auto!important;
+  z-index:1!important;
+  margin:0 var(--gut,16px) 10px!important;
+  padding:0!important;
+  background:transparent!important;
+}
+body.guided-view .search{
+  background:var(--paper)!important;
+  box-shadow:0 10px 18px color-mix(in srgb,var(--paper) 92%,transparent)!important;
+}
+
+/* Light paper event banner — big photo, then copy + view CTA.
+   Full-bleed in #announceSlot (parent); no card gutters. */
+.announce.is-event,
+#announceGo.announce.is-event{
+  display:block!important;
+  width:100%!important;max-width:100%!important;
+  min-height:0!important;padding:0!important;overflow:hidden!important;
+  margin:0!important;
+  border-radius:0!important;
+  background:linear-gradient(180deg,#FFFDF8 0%,#F4EBDA 100%)!important;
+  border:0!important;
+  border-bottom:1px solid color-mix(in srgb,var(--gold) 46%,var(--line))!important;
+  box-shadow:none!important;
+  box-sizing:border-box!important;
+}
+.announce.is-event::before,
+.announce.is-event::after{content:none!important;display:none!important;background:none!important;animation:none!important;}
+.announce.is-event .ann-inner{
+  position:relative;z-index:2;display:flex;flex-direction:column;gap:0;
+  padding:0;text-align:left;
+}
+.announce.is-event .ann-thumb{
+  width:100%;height:168px;border-radius:0;overflow:hidden;
+  border:0;border-bottom:1px solid color-mix(in srgb,var(--gold) 28%,transparent);
+  background:#1a1c20;flex:0 0 auto;
+}
+.announce.is-event .ann-thumb img{
+  width:100%;height:100%;object-fit:cover;object-position:center 38%;
+  display:block;
+}
+.announce.is-event .ann-mono{display:none!important;}
+.announce.is-event .ann-copy{
+  min-width:0;display:flex;flex-direction:column;gap:3px;
+  padding:12px 14px 6px;
+}
+.announce.is-event .kick{
+  margin:0 0 2px!important;padding:2px 8px!important;align-self:flex-start;
+  font-size:10px!important;color:var(--pine)!important;
+  background:color-mix(in srgb,var(--gold) 16%,transparent)!important;
+  border:1px solid color-mix(in srgb,var(--gold) 40%,transparent)!important;
+}
+.announce.is-event .kick .livedot{background:#2F9E5B!important;}
+.announce.is-event .ttl{
+  color:var(--pine)!important;font-family:Fraunces,serif!important;
+  font-size:clamp(20px,5.5vw,24px)!important;font-weight:700!important;
+  line-height:1.05!important;letter-spacing:-.3px!important;
+  margin:0!important;padding:0!important;text-shadow:none!important;filter:none!important;
+  background:none!important;background-image:none!important;
+  -webkit-background-clip:border-box!important;background-clip:border-box!important;
+  -webkit-text-fill-color:var(--pine)!important;
+  white-space:normal!important;overflow:visible!important;
+  -webkit-line-clamp:unset!important;display:block!important;
+}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .announce.is-event .ttl{
+    background:none!important;background-image:none!important;
+    -webkit-background-clip:border-box!important;background-clip:border-box!important;
+    -webkit-text-fill-color:var(--pine)!important;color:var(--pine)!important;filter:none!important;
+  }
+}
+.announce.is-event .bd{
+  color:color-mix(in srgb,var(--pine) 68%,transparent)!important;
+  font-size:12.5px!important;line-height:1.4!important;margin:2px 0 0!important;padding:0!important;
+  white-space:normal!important;overflow-wrap:anywhere!important;
+}
+.announce.is-event .ann-credit{
+  margin:6px 0 0!important;padding:0!important;
+  font-size:11px!important;line-height:1.35!important;font-weight:650!important;
+  color:color-mix(in srgb,var(--gold) 55%,var(--pine))!important;
+}
+.announce.is-event .ann-cta{
+  display:inline-flex!important;align-items:center;justify-content:center;gap:8px;
+  align-self:stretch;margin:8px 12px 12px!important;min-height:44px;padding:0 14px!important;
+  border-radius:12px!important;
+  background:var(--pine)!important;color:#F5F0E3!important;
+  border:0!important;box-shadow:none!important;
+  font-size:13.5px!important;font-weight:750!important;letter-spacing:.15px;
+}
+.announce.is-event .ann-cta b{
+  color:#E8C987!important;font-size:18px;line-height:1;font-weight:700;
+  animation:none!important;
+}
+.announce.is-event .em,.announce.is-event .tap-cue{display:none!important;}
+.ann-nudge{display:none!important;}
+
+/* Special hero — compact strip, not a poster dump */
+.event-hero{
+  position:relative;margin:0 0 14px;border-radius:18px;overflow:hidden;
+  background:#121418;border:1px solid color-mix(in srgb,var(--gold) 34%,transparent);
+  box-shadow:0 12px 26px rgba(20,22,26,.14);
+  animation:rembRise .5s var(--ez-out) both;
+}
+.event-hero .eh-stage{position:relative;min-height:148px;overflow:hidden;}
+.event-hero .eh-stage img.eh-photo{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 38%;
+  animation:rembKen 24s ease-in-out infinite alternate;
+}
+.event-hero .eh-stage::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(10,12,16,.2) 0%,rgba(10,12,16,.08) 40%,rgba(10,12,16,.88) 100%);
+}
+.event-hero .eh-mono{
+  position:absolute;top:10px;right:10px;z-index:2;
+  width:34px;height:34px;border-radius:50%;
+  display:grid;place-items:center;
+  background:#182326;border:1.5px solid #C4A46A;
+  font-family:Fraunces,serif;font-weight:700;font-size:11px;letter-spacing:-.4px;
+  color:#D4B57A;line-height:1;
+}
+.event-hero .eh-crest{display:none!important;}
+.event-hero .eh-overlay{
+  position:relative;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;
+  min-height:148px;padding:14px 14px 12px;
+}
+.event-hero .eh-kicker{
+  display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin:0 0 6px;
+  padding:3px 8px;border-radius:999px;
+  font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:#F3E6C4;background:rgba(0,0,0,.35);border:1px solid rgba(185,154,91,.4);
+}
+.event-hero h3{
+  margin:0;max-width:16ch;font-family:Fraunces,serif;font-weight:700;
+  font-size:clamp(24px,7vw,30px);line-height:.94;color:#FFF8E8;letter-spacing:-.35px;
+}
+.event-hero .eh-rule{
+  width:36px;height:2px;margin:8px 0 6px;border-radius:2px;background:var(--a3,#B99A5B);
+  transform-origin:left center;animation:rembLine .5s var(--ez-out) .12s both;
+}
+.event-hero .eh-when{
+  margin:0;color:rgba(255,244,220,.86);font-size:12px;line-height:1.35;font-weight:600;
+}
+.event-hero .eh-foot{
+  padding:10px 14px 12px;border-top:1px solid rgba(185,154,91,.16);
+  background:#16181C;
+}
+.event-hero .eh-artists{
+  margin:0;color:rgba(243,230,196,.68);font-size:11px;line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.event-hero .eh-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.event-hero .eh-chip{
+  display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;
+  background:rgba(185,154,91,.16);border:1px solid rgba(185,154,91,.38);color:#F3E6C4;
+  font-size:12px;font-weight:700;text-decoration:none;
+}
+.event-hero .eh-credit{
+  margin-top:10px;padding-top:9px;border-top:1px solid rgba(185,154,91,.12);
+}
+.event-hero .eh-credit b{
+  display:block;font-family:Fraunces,serif;font-weight:650;font-size:14px;
+  color:#F3E6C4;line-height:1.1;
+}
+.event-hero .eh-credit span{
+  display:block;margin-top:3px;font-size:10px;line-height:1.3;letter-spacing:.06em;
+  text-transform:uppercase;color:rgba(243,230,196,.52);font-weight:600;
+}
+body.guided-view .event-hero{margin:2px 0 12px;}
+body.guided-view.special-menu .special-back{
+  margin:0 0 8px!important;min-height:34px!important;padding:0 12px 0 10px!important;
+  background:transparent!important;border:1px solid color-mix(in srgb,var(--gold) 40%,var(--line))!important;
+  color:var(--pine)!important;box-shadow:none!important;font-weight:700!important;
+  animation:none!important;
+}
+@media (prefers-reduced-motion:reduce){
+  .event-hero .eh-stage img.eh-photo,.event-hero .eh-rule,.event-hero{animation:none!important;}
+}
 .guide-menu-icon,.guide-menu-card b,.guide-menu-card i{position:relative;z-index:1;}
 .gicon,.sic,.dish-ic{z-index:1;}
 .special-fx{z-index:0;}
@@ -1455,7 +1749,7 @@ body.searching #announceSlot{display:none!important;}
 .nav{position:sticky!important;top:0!important;z-index:18!important;background:rgba(250,246,236,.96)!important;border-top:1px solid rgba(211,186,130,.22)!important;border-bottom:1px solid rgba(211,186,130,.34)!important;backdrop-filter:blur(14px)!important;}
 .nav .row{display:flex!important;gap:8px!important;align-items:center!important;padding:10px 20px 12px!important;overflow-x:auto!important;overflow-y:hidden!important;scroll-snap-type:x proximity!important;scroll-padding-inline:20px!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior-x:contain!important;}
 .nav .row::-webkit-scrollbar{display:none!important;}
-.tab{flex:0 0 auto!important;min-height:44px!important;min-width:max-content!important;border-radius:999px!important;padding:10px 14px!important;gap:8px!important;scroll-snap-align:center!important;background:#FFFDF8!important;border:1px solid rgba(211,186,130,.48)!important;color:#5E584E!important;font-size:14px!important;font-weight:650!important;box-shadow:0 5px 14px rgba(20,40,42,.05)!important;}
+.tab{flex:0 0 auto!important;min-height:46px!important;min-width:max-content!important;border-radius:999px!important;padding:10px 14px!important;gap:8px!important;scroll-snap-align:center!important;background:#FFFDF8!important;border:1px solid rgba(211,186,130,.48)!important;color:#5E584E!important;font-size:14px!important;font-weight:650!important;box-shadow:0 5px 14px rgba(20,40,42,.05)!important;}
 .tab span{align-items:center!important;}
 .tab .ic{width:17px!important;height:17px!important;color:var(--tab-acc,var(--olive))!important;}
 .tab .greek-ic{width:22px!important;height:22px!important;}
@@ -1527,6 +1821,27 @@ body.special-menu .announce{box-shadow:0 0 0 3px rgba(211,186,130,.22),0 18px 40
 .guide-progress{height:4px;margin:0 20px 8px;border-radius:999px;background:rgba(211,186,130,.24);overflow:hidden;}
 .guide-progress span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--olive));transition:width .42s cubic-bezier(.2,.8,.2,1);}
 .guide-home{position:relative;z-index:2;min-height:34px;border-radius:999px;padding:0 12px;margin-bottom:10px;background:rgba(255,253,248,.78);border:1px solid rgba(211,186,130,.38);color:var(--pine);font-size:12px;font-weight:850;}
+.guide-kicker-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  width:100%;
+}
+.guide-kicker-row h2{
+  flex:1 1 auto;min-width:0;margin:0;text-align:center;
+  font-family:Fraunces,serif;font-size:clamp(26px,7vw,34px);line-height:1.05;color:var(--pine);
+}
+.guide-step{
+  flex:0 0 auto;width:44px;height:44px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid color-mix(in srgb,var(--gold) 42%,var(--line));
+  background:#FFFDF8;color:var(--pine);font-size:28px;line-height:1;
+  box-shadow:0 6px 14px rgba(34,53,57,.08);
+}
+.guide-step:disabled{opacity:.28;box-shadow:none;}
+.guide-step:not(:disabled):active{transform:scale(.94);}
+.guide-kicker-meta{
+  margin:6px 0 0;text-align:center;font-size:12px;font-weight:700;
+  color:color-mix(in srgb,var(--pine) 55%,transparent);font-variant-numeric:tabular-nums;
+}
 .guide-sec{padding-top:16px!important;padding-bottom:28px!important;scroll-margin-top:98px!important;}
 .guide-chapter{position:relative;min-height:132px;border-radius:24px;padding:22px 22px 20px;overflow:hidden;color:var(--pine);background:radial-gradient(circle at 88% 24%,color-mix(in srgb,var(--acc) 18%,transparent),transparent 28%),linear-gradient(135deg,#FFFDF8 0%,var(--accbg,#E7EEEA) 100%);border:1px solid rgba(211,186,130,.5);box-shadow:0 18px 42px rgba(20,40,42,.10);animation:guideChapterIn .68s cubic-bezier(.2,.8,.2,1) both;}
 .guide-chapter::before{content:'';position:absolute;inset:auto -40px -70px auto;width:170px;height:170px;border-radius:50%;background:color-mix(in srgb,var(--acc) 18%,transparent);filter:blur(1px);animation:guideHalo 6s ease-in-out infinite alternate;}
@@ -2354,17 +2669,74 @@ body.searching .search-clear{transform:none!important;}
    lined up down the left edge. These rules run last so one gutter wins. */
 :root{--gut:16px;}
 @media(min-width:601px){:root{--gut:20px;}}
-.updates,#viewSwitch{
-  width:auto!important;
-  max-width:calc(100% - (var(--gut) * 2))!important;
-  margin-left:var(--gut)!important;
-  margin-right:var(--gut)!important;
+/* Event banner sits above search, full safe width of the content column. */
+.below-head{
+  width:min(100%,var(--maxw))!important;
+  max-width:var(--maxw)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  box-sizing:border-box!important;
+  padding-top:0!important;
+  padding-left:max(0px,env(safe-area-inset-left,0px))!important;
+  padding-right:max(0px,env(safe-area-inset-right,0px))!important;
 }
-.updates .announce,.ann-nudge,#viewSwitch .view-switch{
-  width:auto!important;
+body.guided-view .below-head{
+  min-height:0!important;
+}
+body.guided-view #updatesSlot{
+  display:none!important;
+}
+#updatesSlot.updates{
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  display:block!important;
+  box-sizing:border-box!important;
+}
+#updatesSlot.updates:not(:has(#announceSlot:not(:empty))){
+  display:none!important;
+}
+#announceSlot{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+}
+/* Fill parent (#announceSlot) edge-to-edge — beat older .announce margins. */
+#announceSlot > .announce,
+#announceGo,
+.updates .announce,
+.announce.is-event{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  border-radius:0!important;
+  border-left:0!important;
+  border-right:0!important;
+  border-top:0!important;
+  box-shadow:none!important;
+}
+#viewSwitch{
+  width:calc(100% - (var(--gut) * 2))!important;
+  max-width:calc(100% - (var(--gut) * 2))!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  align-items:stretch;
+}
+.ann-nudge,#viewSwitch .view-switch{
+  width:100%!important;
   max-width:100%!important;
   margin-left:0!important;
   margin-right:0!important;
+  box-sizing:border-box!important;
 }
 body.special-only .search,
 body.special-only #viewSwitch,
@@ -2380,73 +2752,337 @@ body.special-only .special-exit{display:none!important;}
   --ez-dock:cubic-bezier(.22,.9,.28,1);
 }
 #q{font-size:16px!important;} /* iOS Safari zooms inputs under 16px */
+/* Classic list: top category rail. Guided category focus: bottom dock. */
 .nav{display:none!important;}
-#viewSwitch{display:none!important;}
-.guide-picker,.guide-progress,.guide-home,.guide-nav,.guide-pager{display:none!important;}
+body:not(.guided-view):not(.no-category-tabs):not(.searching) #listNav.nav{
+  display:block!important;
+  position:sticky!important;
+  top:0!important;
+  z-index:40!important;
+  margin:0 0 8px!important;
+  background:rgba(245,240,227,.96)!important;
+  border-top:1px solid rgba(211,186,130,.22)!important;
+  border-bottom:1px solid rgba(211,186,130,.34)!important;
+  backdrop-filter:blur(14px)!important;
+  -webkit-backdrop-filter:blur(14px)!important;
+}
+body:not(.guided-view) .cat-dock,
+body.searching .cat-dock,
+body.no-category-tabs .cat-dock{
+  opacity:0!important;pointer-events:none!important;visibility:hidden!important;
+}
+/* Guided Κατηγορίες: bottom dock is the category navigation. */
+body.guided-view:not(.searching):not(.no-category-tabs) .cat-dock{
+  opacity:1!important;pointer-events:auto!important;visibility:visible!important;
+}
+body.guided-view #listNav{display:none!important;}
+/* Live classic: Κατάλογος / Κατηγορίες switch stays visible — side by side */
+#viewSwitch{display:grid!important;grid-template-columns:1fr 1fr!important;align-items:stretch;}
+/* Dock replaces the sticky top picker in guided mode. */
+body.guided-view .guide-picker,
+body.guided-view .guide-progress{display:none!important;}
+/* Fixed top chrome removed — back lives in the category menu; search is icon-only. */
+body.guided-view:has(.guide-stage) #viewSwitch{display:none!important;}
+.guide-chrome{display:none!important;}
+/* Categories dish view: floating search icon under the head. */
+body.guided-view:has(.guide-stage) .search,
+html body.guided-view:has(.guide-stage) .search{
+  top:calc(var(--head-h,56px) + 8px)!important;
+  left:max(0px, calc(50% - min(50vw, var(--maxw) / 2)))!important;
+  right:auto!important;
+  transform:none!important;
+  width:40px!important;
+  max-width:40px!important;
+  height:40px!important;
+  min-height:40px!important;
+  padding:0!important;
+  margin:0 0 0 var(--gut,16px)!important;
+  z-index:120!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+  background:linear-gradient(180deg,#FFFDF8,#F3ECD8)!important;
+  border:1px solid rgba(211,186,130,.42)!important;
+  border-radius:999px!important;
+  box-shadow:0 6px 14px rgba(20,40,42,.06)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  box-sizing:border-box!important;
+  cursor:pointer;
+}
+body.guided-view:has(.guide-stage) .search > svg{
+  width:18px!important;height:18px!important;flex:0 0 auto;
+  stroke:var(--olive)!important;
+  pointer-events:none;
+}
+/* Collapsed: only the magnifier shows — input opens on tap/type. */
+body.guided-view:has(.guide-stage):not(.guide-search-open) .search > #q{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  margin:-1px!important;
+  padding:0!important;
+  opacity:0!important;
+  border:0!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  pointer-events:none!important;
+}
+body.guided-view:has(.guide-stage) .search > .search-clear{
+  display:none!important;
+}
+/* Expanded search: full-width under head, X closes. */
+body.guided-view.guide-search-open:has(.guide-stage) .search,
+html body.guided-view.guide-search-open:has(.guide-stage) .search{
+  top:var(--head-h,56px)!important;
+  left:0!important;
+  right:0!important;
+  transform:none!important;
+  width:min(100%,var(--maxw))!important;
+  max-width:var(--maxw)!important;
+  height:var(--guide-tool-h,56px)!important;
+  min-height:var(--guide-tool-h,56px)!important;
+  margin:0 auto!important;
+  padding:8px var(--gut,16px)!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  border-radius:0 0 18px 18px!important;
+  background:rgba(255,253,248,.97)!important;
+  border:0!important;
+  border-bottom:1px solid rgba(211,186,130,.42)!important;
+  box-shadow:0 10px 24px rgba(20,40,42,.10)!important;
+  backdrop-filter:blur(14px)!important;
+  -webkit-backdrop-filter:blur(14px)!important;
+  z-index:121!important;
+  cursor:text;
+}
+body.guided-view.guide-search-open:has(.guide-stage) .search > #q{
+  position:static!important;
+  flex:1 1 auto!important;
+  width:auto!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  opacity:1!important;
+  clip:auto!important;
+  overflow:visible!important;
+  pointer-events:auto!important;
+  font-size:16px!important;
+  background:transparent!important;
+}
+body.guided-view.guide-search-open:has(.guide-stage) .search > .search-clear{
+  display:flex!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  transform:none!important;
+}
+.guide-shell:has(.guide-stage){
+  padding-top:8px!important;
+}
+/* In-menu back — sits above the category chapter card. */
+.guide-stage > .guide-back{
+  position:relative!important;
+  top:auto!important;left:auto!important;right:auto!important;
+  transform:none!important;
+  display:inline-flex!important;
+  width:auto!important;
+  max-width:100%!important;
+  min-height:40px!important;
+  height:auto!important;
+  margin:0 0 12px!important;
+  padding:0 14px!important;
+  border-radius:999px;
+  border:1px solid rgba(211,186,130,.42);
+  background:linear-gradient(180deg,#FFFDF8,#F3ECD8);
+  color:var(--pine);
+  font-weight:820;
+  font-size:14px;
+  box-shadow:0 6px 14px rgba(20,40,42,.06);
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  white-space:nowrap;
+}
+.guide-stage > .guide-back span{font-size:20px;line-height:1;font-weight:500;}
+.guide-stage > .guide-back:active{transform:scale(.97);}
+/* Hide any leftover floating pager outside the dock. */
+body.guided-view > .guide-pager,
+.guide-shell > .guide-pager,
+.guide-chrome .guide-pager{display:none!important;}
+.guide-nav{
+  display:grid!important;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:20px 0 8px;
+}
+.guide-nav .guide-prev,
+.guide-nav .guide-next{
+  min-height:48px;
+}
 #root{view-transition-name:none;}
 .cat-dock{
   position:fixed;left:50%;bottom:0;z-index:88;
   width:100%;max-width:var(--maxw);
   overflow:visible;
   transform:translateX(-50%);
-  padding:10px 10px max(12px,var(--safe-b));
-  background:var(--paper);
-  -webkit-backdrop-filter:none;
-  backdrop-filter:none;
+  display:block;
+  padding:12px 0 max(14px,var(--safe-b));
+  background:linear-gradient(180deg,rgba(255,253,248,.92) 0%,var(--paper) 28%);
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
   border-top:1px solid color-mix(in srgb,var(--gold) 38%,var(--line));
-  box-shadow:0 -8px 24px rgba(34,53,57,.06);
+  box-shadow:0 -12px 28px rgba(34,53,57,.08);
   opacity:1;
-  animation:none;
-  padding-left:max(10px,env(safe-area-inset-left,0px));
-  padding-right:max(10px,env(safe-area-inset-right,0px));
+  box-sizing:border-box;
 }
+/* Soft edge fades when the rail can scroll past the side steppers. */
+.cat-dock.has-pager::before,
+.cat-dock.has-pager::after{
+  content:'';
+  position:absolute;top:0;bottom:0;width:56px;z-index:3;
+  pointer-events:none;
+}
+.cat-dock.has-pager::before{
+  left:0;
+  background:linear-gradient(90deg,var(--paper) 35%,transparent);
+  opacity:.95;
+}
+.cat-dock.has-pager::after{
+  right:0;
+  background:linear-gradient(270deg,var(--paper) 35%,transparent);
+  opacity:.95;
+}
+.cat-dock.dock-at-start::before{opacity:.35;}
+.cat-dock.dock-at-end::after{opacity:.35;}
 .cat-dock-row{
-  display:flex;align-items:flex-end;justify-content:space-between;gap:2px;
+  display:flex;align-items:flex-end;justify-content:flex-start;gap:6px;
   overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;scrollbar-width:none;touch-action:pan-x;
+  overscroll-behavior-x:contain;scrollbar-width:none;touch-action:pan-x;
+  width:100%;min-width:0;
+  padding:2px max(12px,env(safe-area-inset-right,0px)) 6px max(12px,env(safe-area-inset-left,0px));
+  scroll-snap-type:x mandatory;
+  scroll-padding-inline:56px;
+  mask-image:linear-gradient(90deg,transparent 0, #000 18px, #000 calc(100% - 18px), transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0, #000 18px, #000 calc(100% - 18px), transparent);
 }
+.cat-dock.has-pager .cat-dock-row{
+  padding-left:52px;
+  padding-right:52px;
+  scroll-padding-inline:56px;
+}
+.cat-dock.dock-fit .cat-dock-row{
+  justify-content:space-evenly;
+  mask-image:none;
+  -webkit-mask-image:none;
+}
+.dock-step{
+  display:none;
+  position:absolute;
+  bottom:calc(max(14px,var(--safe-b)) + 22px);
+  align-items:center;justify-content:center;
+  width:42px;height:42px;border-radius:50%;
+  border:1px solid rgba(211,186,130,.35);padding:0;margin:0;
+  background:var(--pine);color:#FFF8EA;
+  font-size:22px;line-height:1;font-weight:500;
+  box-shadow:0 8px 18px rgba(34,53,57,.16);
+  z-index:5;
+  transition:transform .22s cubic-bezier(.2,.8,.2,1), background .2s ease, box-shadow .2s ease, opacity .2s ease;
+}
+.cat-dock.has-pager .dock-step{display:inline-flex;}
+.dock-step:disabled{
+  opacity:.55;background:#E8E2D4;color:#8A8274;box-shadow:none;border-color:rgba(211,186,130,.22);
+}
+.dock-step:not(:disabled):hover{transform:translateY(-1px);}
+.dock-step:not(:disabled):active{transform:scale(.92);}
+.dock-prev{left:max(8px,env(safe-area-inset-left,0px));}
+.dock-next{right:max(8px,env(safe-area-inset-right,0px));}
 .cat-dock-row::-webkit-scrollbar{display:none;}
 #catDock .tab{
-  flex:1 1 0;min-width:68px;max-width:none!important;min-height:64px!important;
+  flex:0 0 auto;min-width:76px;max-width:none!important;min-height:68px!important;
   display:flex!important;flex-direction:column;align-items:center;justify-content:flex-end;
-  gap:6px;padding:4px 4px 10px!important;border-radius:0!important;
+  gap:6px;padding:6px 10px 10px!important;border-radius:18px!important;
   background:transparent!important;border:0!important;box-shadow:none!important;
   color:var(--pine)!important;font-family:Fraunces,serif!important;
-  font-size:12px!important;font-weight:600!important;letter-spacing:0;
-  line-height:1.1;white-space:nowrap!important;
+  font-size:12.5px!important;font-weight:600!important;letter-spacing:0;
+  line-height:1.15;white-space:nowrap!important;
   overflow:visible!important;text-overflow:clip!important;
   position:relative;
-  animation:none;
-  transition:none!important;
+  scroll-snap-align:center;
+  scroll-snap-stop:normal;
+  animation:dockTabIn .48s cubic-bezier(.2,.8,.2,1) both;
+  transition:color .28s ease, transform .28s cubic-bezier(.2,.8,.2,1)!important;
+}
+#catDock .tab:nth-child(1){animation-delay:0ms;}
+#catDock .tab:nth-child(2){animation-delay:40ms;}
+#catDock .tab:nth-child(3){animation-delay:80ms;}
+#catDock .tab:nth-child(4){animation-delay:120ms;}
+#catDock .tab:nth-child(5){animation-delay:160ms;}
+#catDock .tab:nth-child(6){animation-delay:200ms;}
+#catDock .tab:nth-child(7){animation-delay:240ms;}
+#catDock .tab:nth-child(8){animation-delay:280ms;}
+#catDock .tab:nth-child(9){animation-delay:320ms;}
+@keyframes dockTabIn{
+  from{opacity:0;transform:translateY(12px) scale(.92);}
+  to{opacity:1;transform:none;}
 }
 #catDock .tab .dock-ic{
   display:flex;align-items:center;justify-content:center;
-  width:52px;height:52px;border-radius:0;background:transparent!important;
+  width:52px;height:52px;border-radius:16px;background:transparent!important;
+  transition:transform .35s cubic-bezier(.2,.8,.2,1), filter .35s ease;
 }
 #catDock .tab .dock-ic .greek-ic{
   width:50px!important;height:50px!important;
   filter:drop-shadow(0 6px 10px rgba(34,53,57,.14))!important;
+  transition:filter .35s ease, transform .35s cubic-bezier(.2,.8,.2,1);
 }
 #catDock .tab .dock-ic .ic{width:28px!important;height:28px!important;color:var(--pine)!important;}
 #catDock .tab .dock-lb{
-  display:block;max-width:100%;text-align:center;
+  display:block;max-width:none;text-align:center;
   font-family:Fraunces,serif;
+  overflow:visible;text-overflow:clip;
 }
 .dock-ind{
-  position:absolute;left:0;bottom:max(8px,var(--safe-b));
-  height:2px;width:28px;border-radius:2px;background:var(--gold);
+  position:absolute;left:0;bottom:max(10px,var(--safe-b));
+  height:3px;width:28px;border-radius:999px;background:var(--gold);
   pointer-events:none;z-index:3;opacity:0;
-  transition:none;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 18%,transparent);
+  transition:transform .38s cubic-bezier(.2,.8,.2,1), width .38s cubic-bezier(.2,.8,.2,1), opacity .22s ease;
 }
 #catDock .tab.on{
   color:var(--gold)!important;
   background:transparent!important;
   border:0!important;box-shadow:none!important;
+  transform:translateY(-2px);
 }
-#catDock .tab.on .dock-ic{background:transparent!important;animation:none;transform:none;}
-#catDock .tab:active{transform:none!important;}
+#catDock .tab.on .dock-ic{
+  background:transparent!important;animation:none;
+  transform:translateY(-2px) scale(1.08);
+}
+#catDock .tab.on .dock-ic .greek-ic{
+  filter:drop-shadow(0 10px 14px rgba(160,126,60,.28))!important;
+}
+#catDock .tab:active{transform:scale(.96)!important;}
 #catDock .tab.special-tab{color:var(--gold)!important;}
 #catDock .tab.special-tab .sp-em{font-size:18px;line-height:1;}
+@media (prefers-reduced-motion:reduce){
+  #catDock .tab{animation:none!important;transition:none!important;}
+  #catDock .tab .dock-ic,#catDock .tab .dock-ic .greek-ic,.dock-ind,.dock-step{transition:none!important;}
+  #catDock .tab.on,#catDock .tab.on .dock-ic{transform:none!important;}
+}
+html.motion-off #catDock .tab,
+body.motion-off #catDock .tab,
+html.motion-soft #catDock .tab{
+  animation:none!important;
+}
+html.motion-off #catDock .tab.on,
+body.motion-off #catDock .tab.on,
+html.motion-off #catDock .tab.on .dock-ic,
+body.motion-off #catDock .tab.on .dock-ic{
+  transform:none!important;
+}
+html.motion-off .dock-ind,
+body.motion-off .dock-ind{transition:none!important;}
 /* ══ printed guided menu — solid dock, quiet chrome, no stacked motion ══ */
 html.guided-scroll,
 html.guided-scroll body{
@@ -2463,39 +3099,43 @@ body.guided-view .closing{
   overflow-anchor:none!important;
 }
 .cat-dock{
-  background:var(--paper)!important;
-  -webkit-backdrop-filter:none!important;
-  backdrop-filter:none!important;
+  background:linear-gradient(180deg,rgba(255,253,248,.92) 0%,var(--paper) 28%)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+  backdrop-filter:blur(12px)!important;
   border-top:1px solid color-mix(in srgb,var(--gold) 38%,var(--line))!important;
-  box-shadow:0 -8px 24px rgba(34,53,57,.06)!important;
+  box-shadow:0 -12px 28px rgba(34,53,57,.08)!important;
   opacity:1!important;
-  padding-top:8px!important;
+  padding-top:12px!important;
 }
-/* Five categories: keep dock labels readable without horizontal clip */
+/* Keep dock tabs roomy — never crush labels under a max-width. */
 #catDock .tab{
-  min-width:0!important;
-  min-height:58px!important;
-  gap:4px!important;
-  padding:2px 2px 8px!important;
-  font-size:11px!important;
+  flex:0 0 auto!important;
+  min-width:76px!important;
+  max-width:none!important;
+  min-height:68px!important;
+  gap:6px!important;
+  padding:6px 10px 10px!important;
+  font-size:12.5px!important;
 }
-#catDock .tab .dock-ic{width:40px!important;height:40px!important;}
-#catDock .tab .dock-ic .greek-ic{width:38px!important;height:38px!important;}
+#catDock .tab .dock-ic{width:52px!important;height:52px!important;}
+#catDock .tab .dock-ic .greek-ic{width:50px!important;height:50px!important;}
 #catDock .tab .dock-lb{
-  max-width:100%;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  max-width:none!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
 }
 body.guided-view .head,
 body.guided-view.head,
 html body.guided-view .head{
   position:fixed!important;
   top:0!important;
-  left:50%!important;
-  right:auto!important;
-  transform:translateX(-50%)!important;
-  width:100%!important;
+  left:0!important;
+  right:0!important;
+  width:min(100%,var(--maxw))!important;
   max-width:var(--maxw)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  transform:none!important;
   z-index:120!important;
   display:flex!important;
   flex-wrap:nowrap!important;
@@ -2530,17 +3170,25 @@ body.guided-view .langbtn{
   padding:0 8px!important;background:transparent!important;border-color:transparent!important;
   animation:none!important;opacity:1!important;transform:none!important;
 }
-/* Search pinned under head — never scrolls under the crest */
-body.guided-view .search{
+/* Search pinned under head — same column as .head, no translateX
+   (motion-off / reduced-motion force transform:none and used to shove it mid-screen).
+   Lives outside .wrap so overflow-x:hidden cannot trap position:fixed on scroll. */
+body.guided-view .search,
+html body.guided-view .search{
   position:fixed!important;
   top:var(--head-h,56px)!important;
-  left:50%!important;
-  transform:translateX(-50%)!important;
-  width:100%!important;
+  left:0!important;
+  right:0!important;
+  width:min(100%,var(--maxw))!important;
   max-width:var(--maxw)!important;
+  margin:0 auto!important;
+  transform:none!important;
   z-index:119!important;
-  margin:0!important;
   padding:8px var(--gut,16px) 10px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  justify-content:flex-start!important;
+  align-items:center!important;
   background:var(--paper)!important;
   border:0!important;
   border-bottom:1px solid color-mix(in srgb,var(--gold) 28%,transparent)!important;
@@ -2549,7 +3197,30 @@ body.guided-view .search{
 }
 body.guided-view .wrap{
   padding-top:calc(var(--head-h,56px) + var(--search-h,44px) + 6px)!important;
-  padding-bottom:calc(var(--dock-h,88px) + 72px + var(--safe-b,0px))!important;
+  padding-bottom:calc(var(--dock-h,88px) + 36px + var(--safe-b,0px))!important;
+}
+/* List view: search sits under the full-bleed banner (or under head if none). */
+body:not(.guided-view) .search{
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  transform:none!important;
+  width:auto!important;
+  max-width:100%!important;
+  margin:10px var(--gut,16px) 8px!important;
+  z-index:1!important;
+}
+body:not(.guided-view) .wrap{
+  padding-top:0!important;
+  padding-bottom:calc(88px + var(--safe-b,0px))!important;
+}
+body:not(.guided-view) .sec-h{cursor:pointer;}
+body:not(.guided-view) .sec-h .t::after{
+  content:' ›';
+  font-weight:500;
+  color:color-mix(in srgb,var(--gold) 70%,var(--pine));
+  letter-spacing:0;
 }
 /* No forced empty gap on short categories — that pushed legal into the first viewport */
 body.guided-view .guide-shell,
@@ -2586,15 +3257,13 @@ body.guided-view .motion-progress,body.guided-view .motion-ripple{display:none!i
 body.guided-view .guide-sec{padding-top:4px!important;padding-bottom:12px!important;}
 body.guided-view .updates:empty,
 body.guided-view #announceSlot:empty,
-body.guided-view #stripSlot:empty,
-body.guided-view #viewSwitch{display:none!important;}
-.guide-kicker{padding:6px 2px 4px;animation:none!important;}
+body.guided-view #stripSlot:empty{display:none!important;}
+/* Keep the Κατάλογος / Κατηγορίες switch in guided mode (live behaviour). */
+body.guided-view #viewSwitch{display:grid!important;grid-template-columns:1fr 1fr!important;margin:8px auto 10px!important;}
+.guide-kicker{padding:6px 2px 4px;}
 .guide-kicker h2{
   margin:0;font-family:Fraunces,serif;font-weight:700;
   font-size:clamp(32px,9vw,46px);line-height:.92;color:var(--pine);letter-spacing:-.6px;
-}
-.guide-stage,.guide-stage[data-travel],.guide-stage[data-travel="next"],.guide-stage[data-travel="prev"]{
-  animation:none!important;opacity:1!important;transform:none!important;
 }
 .guide-list{display:flex;flex-direction:column;gap:0;margin-top:6px;}
 .g-row{
@@ -2674,21 +3343,21 @@ body.guided-view #root .g-plate img{
 }
 .g-add:active{transform:scale(.92);color:var(--pine);}
 .g-add.on{background:transparent;color:var(--pine);}
+/* Restore live chapter / card chrome (was flattened for the printed dock flow). */
 body.guided-view .guide-chapter{
-  min-height:0!important;padding:10px 2px 4px!important;margin:0!important;
-  background:none!important;border:0!important;box-shadow:none!important;
-  animation:none!important;opacity:1!important;transform:none!important;clip-path:none!important;
+  min-height:132px!important;
 }
 body.guided-view .guide-chapter::before,
-body.guided-view .guide-chapter .gicon{display:none!important;}
+body.guided-view .guide-chapter .gicon{display:flex!important;}
+body.guided-view .guide-chapter::before{display:block!important;}
 body.guided-view .guide-chapter small{
   color:var(--gold)!important;letter-spacing:2.6px!important;margin-bottom:4px!important;
 }
 body.guided-view .guide-chapter h2{
-  max-width:100%!important;font-size:clamp(34px,10vw,48px)!important;color:var(--pine)!important;
+  max-width:70%!important;font-size:clamp(34px,10vw,48px)!important;color:var(--pine)!important;
 }
-body.guided-view .guide-chapter p{max-width:92%!important;margin-top:8px!important;}
-/* Kill leftover entrance / splash / reveal stacks that still overlapped the dock */
+body.guided-view .guide-chapter p{max-width:68%!important;margin-top:8px!important;}
+/* Keep chrome calm; let category cards / hero plates animate like production */
 html.motion-on body.guided-view .head .brand h1,
 html.motion-on body.guided-view .head .brand .sub,
 html.motion-on body.guided-view .head #bookBtn,
@@ -2696,17 +3365,10 @@ html.motion-on body.guided-view .head #socialBtn,
 html.motion-on body.guided-view .head #wifiBtn,
 html.motion-on body.guided-view .head .carticon,
 html.motion-on body.guided-view .head .langbtn,
-html.motion-on body.guided-view .search,
 html.motion-on body.guided-view .strip,
-html.motion-on body.guided-view .view-switch,
-html.motion-on body.guided-view #viewSwitch,
 html.motion-on body.guided-view .closing,
 html.motion-on body.guided-view .empty,
 html.motion-on body.guided-view .okmark,
-html.motion-on body.guided-view .guide-chapter,
-html.motion-on body.guided-view .g-row,
-html.motion-on body.guided-view .guide-kicker,
-html.motion-on body.guided-view .guide-stage,
 html.motion-on body.guided-view .announce,
 html.motion-on body.guided-view .cbadge{
   animation:none!important;opacity:1!important;transform:none!important;
@@ -2788,32 +3450,44 @@ body.kb-open .help{bottom:88px!important;}
   </div>
 </div>
 
-<div class="wrap">
+<!-- Brief brand veil when changing Κατάλογος / Κατηγορίες screens -->
+<div class="brand-transit" id="brandTransit" aria-hidden="true">
+  <div class="bt-veil" aria-hidden="true"></div>
+  <div class="bt-inner">
+    <span class="bt-ring" aria-hidden="true"></span>
+    <img class="bt-mark" src="media/mark.png" alt="">
+    <div class="bt-name"><b>TSIGOURA</b> <i>verde</i> <em>RESORT</em></div>
+    <i class="bt-rule" aria-hidden="true"></i>
+  </div>
+</div>
 
-  <header class="head">
-    <button type="button" class="mark-link" id="topMarkBtn" aria-label="Πάνω στην αρχή" data-testid="back-to-top">
-      <img class="mark" src="media/mark.png" alt="Tsigoura Verde Resort">
-    </button>
-    <div class="brand">
-      <h1 id="venueName">Tsigoura Verde</h1>
-      <div class="sub" id="venueSub"></div>
-    </div>
-    <button type="button" class="wifibtn" id="bookBtn" aria-label="book a table">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3 10h18"/><path d="M9 14.5h2.5"/></svg>
-    </button>
-    <button type="button" class="wifibtn" id="socialBtn" aria-label="Κοινωνικά δίκτυα" data-testid="social-open">
-      <img class="social-img" src="media/social/social.svg" alt="" aria-hidden="true">
-    </button>
-    <button type="button" class="wifibtn" id="wifiBtn" aria-label="Στοιχεία Wi-Fi" data-testid="wifi-open">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.5a15 15 0 0 1 20 0"/><path d="M5 12a10 10 0 0 1 14 0"/><path d="M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/></svg>
-    </button>
-    <button type="button" class="carticon" id="cartIcon" aria-label="cart">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h7.6a1.5 1.5 0 0 0 1.5-1.2L20 7H6.3"/><circle cx="9.5" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg>
-      <span class="cbadge" id="cBadge">0</span>
-    </button>
-    <button type="button" class="langbtn" id="langBtn" aria-label="Επιλογή γλώσσας" data-testid="language-open"><span id="lFlag">🇬🇷</span> <span id="lCode">EL</span> ▾</button>
-  </header>
+<!-- Fixed chrome lives outside .wrap — overflow-x:hidden on .wrap turns
+     position:fixed into scroll-trapped junk on iOS / embedded previews. -->
+<header class="head">
+  <button type="button" class="mark-link" id="topMarkBtn" aria-label="Πάνω στην αρχή" data-testid="back-to-top">
+    <img class="mark" src="media/mark.png" alt="Tsigoura Verde Resort">
+  </button>
+  <div class="brand">
+    <h1 id="venueName">Tsigoura Verde</h1>
+    <div class="sub" id="venueSub"></div>
+  </div>
+  <button type="button" class="wifibtn" id="bookBtn" aria-label="book a table">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3 10h18"/><path d="M9 14.5h2.5"/></svg>
+  </button>
+  <button type="button" class="wifibtn" id="socialBtn" aria-label="Κοινωνικά δίκτυα" data-testid="social-open">
+    <img class="social-img" src="media/social/social.svg" alt="" aria-hidden="true">
+  </button>
+  <button type="button" class="wifibtn" id="wifiBtn" aria-label="Στοιχεία Wi-Fi" data-testid="wifi-open">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.5a15 15 0 0 1 20 0"/><path d="M5 12a10 10 0 0 1 14 0"/><path d="M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/></svg>
+  </button>
+  <button type="button" class="carticon" id="cartIcon" aria-label="cart">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h7.6a1.5 1.5 0 0 0 1.5-1.2L20 7H6.3"/><circle cx="9.5" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg>
+    <span class="cbadge" id="cBadge">0</span>
+  </button>
+  <button type="button" class="langbtn" id="langBtn" aria-label="Επιλογή γλώσσας" data-testid="language-open"><span id="lFlag">🇬🇷</span> <span id="lCode">EL</span> ▾</button>
+</header>
 
+<div class="below-head" id="belowHead">
   <section class="updates" id="updatesSlot">
     <div id="announceSlot"></div>
   </section>
@@ -2823,10 +3497,17 @@ body.kb-open .help{bottom:88px!important;}
     <input id="q" type="text" autocomplete="off" maxlength="40" enterkeyhint="search" inputmode="search" data-testid="menu-search">
     <button type="button" class="search-clear" id="clearSearch" aria-label="Καθαρισμός αναζήτησης" data-testid="search-clear">×</button>
   </div>
+</div>
+
+<div class="wrap">
 
   <div class="guest-filters" id="guestFilters" hidden></div>
 
   <div id="viewSwitch"></div>
+
+  <nav class="nav" id="listNav" aria-label="Κατηγορίες">
+    <div class="row" id="listTabs"></div>
+  </nav>
 
   <div id="stripSlot"></div>
   <main id="root"></main>
@@ -2834,7 +3515,9 @@ body.kb-open .help{bottom:88px!important;}
 </div>
 
 <nav class="cat-dock" id="catDock" aria-label="Κατηγορίες">
+  <button type="button" class="dock-step dock-prev" id="dockPrev" data-guide-step="-1" data-testid="guide-prev" aria-label="Προηγούμενη" disabled>‹</button>
   <div class="cat-dock-row" id="tabs"></div>
+  <button type="button" class="dock-step dock-next" id="dockNext" data-guide-step="1" data-testid="guide-next" aria-label="Επόμενη" disabled>›</button>
   <i class="dock-ind" id="dockInd" aria-hidden="true"></i>
 </nav>
 
@@ -3033,14 +3716,24 @@ body.kb-open .help{bottom:88px!important;}
 
 <div class="toast" id="toast"></div>
 
-<script src="tsigoura-data.js?v=20260813-banner-storage-v2"></script>
-<script src="menu-live.js?v=20260813-banner-storage-v2"></script>
-<script src="tsigoura-menu-icons.js?v=20260813-banner-storage-v2"></script>
+<script src="tsigoura-data.js?v=20260912-classic-flip-special-v1"></script>
+<script src="menu-live.js?v=20260912-catalog-cats-motion-v1"></script>
+<script src="tsigoura-menu-icons.js?v=20260912-catalog-cats-motion-v1"></script>
 <script src="tsigoura-qr.js"></script>
 <script>
 "use strict";
 /* ─── venue config: WiFi + optional media ─── */
-const MEDIA = { hero:'media/hero.jpg', souvles:'media/souvles.jpg', logo:'media/logo-full.jpg', logoFull:'media/logo-full.jpg', mark:'media/mark.png' };
+const MEDIA = {
+  hero:'media/hero.jpg',
+  souvles:'media/souvles.jpg',
+  logo:'media/logo-full.jpg',
+  logoFull:'media/logo-full.jpg',
+  mark:'media/mark.png',
+  rembetikaBanner:'media/events/rembetika-banner.jpg',
+  rembetikaPhoto:'media/events/rembetika-photo.jpg',
+  rembetikaTr:'media/events/rembetika-tr.png',
+  rembetikaPoster:'media/events/rembetika-poster.jpg'
+};
 const WIFI = { ssid:'TSIGOURA 5G', pass:'Tsigoura2023', enc:'WPA' };  /* QR details + copy */
 function normalizeWifiConfig(){
   if(/^TSIGOURA$/i.test(String(WIFI.ssid||'').trim())) WIFI.ssid='TSIGOURA 5G';
@@ -3095,16 +3788,6 @@ function applyModeOverride(){
     S.settings.traditionalMenuOnly=true;
   }
 }
-/* iPhone-style welcome carousel — ONLY the languages we actually offer,
-   word + subtitle always in the SAME language. */
-const WELCOME_CYCLE = [
-  {c:'el', w:'Καλώς ήρθατε',  s:'Διάλεξε γλώσσα για να ξεκινήσεις'},
-  {c:'en', w:'Welcome',       s:'Choose your language to start'},
-  {c:'de', w:'Willkommen',    s:'Sprache wählen zum Starten'},
-  {c:'ro', w:'Bine ați venit',s:'Alege limba pentru a începe'},
-  {c:'sr', w:'Добро дошли',   s:'Изабери језик за почетак'},
-  {c:'bg', w:'Добре дошли',   s:'Избери език, за да започнеш'},
-];
 /* tiny QR → returns an SVG string (offline, no network) */
 function qrSVG(text, size){
   try{
@@ -3269,6 +3952,9 @@ function usePublishedFile(){
     const published = (typeof window!=='undefined') ? window.TV_MENU_STATE : null;
     if(!published || !Array.isArray(published.menu) || !published.menu.length) return false;
     S = normalizeState(JSON.parse(JSON.stringify(published)));
+    if(typeof ensureCatalogueForToday==='function' && ensureCatalogueForToday(S)){
+      S = normalizeState(S);
+    }
     const publishedAt=Date.parse(window.TV_MENU_PUBLISHED_AT||'')||Date.now();
     if(S.settings){
       S.settings.cacheRevision=publishedAt;
@@ -3296,6 +3982,9 @@ function menuApiUrl(revision){
 function applyRemoteMenuState(data){
   if(!data || !data.ok || !data.state || !Array.isArray(data.state.menu) || !data.state.menu.length) return false;
   S=normalizeState(data.state);
+  if(typeof ensureCatalogueForToday==='function' && ensureCatalogueForToday(S)){
+    S=normalizeState(S);
+  }
   const revision=Number(data.revision)||0;
   if(revision){
     liveMenuRevision=revision;
@@ -3411,15 +4100,24 @@ function NU(){ return annCopy('nudge') || NUDGE_UI[lang] || NUDGE_UI.en; }
 /* Call to action shown INSIDE the banner, so it reads as a button even to
    someone who never taps a banner. Always present, not only while nudging. */
 const CTA_UI = {
-  el:'Δείτε το σπέσιαλ μενού',
-  en:'See the special menu',
-  de:'Zum Spezialmenü',
-  ro:'Vezi meniul special',
-  sr:'Погледајте посебан мени',
-  bg:'Вижте специалното меню'
+  el:'Δες τον κατάλογο',
+  en:'View the menu',
+  de:'Zur Speisekarte',
+  ro:'Vezi meniul',
+  sr:'Погледај мени',
+  bg:'Виж менюто'
 };
 function CTA(){ return annCopy('cta') || CTA_UI[lang] || CTA_UI.en; }
 function liveWord(){ return annCopy('live') || LIVE_UI[lang] || LIVE_UI.en; }
+function scrollToMenuFromAnnounce(){
+  dismissNudge();
+  const target=document.getElementById('listNav')
+    || document.querySelector('#root .sec')
+    || document.getElementById('root');
+  if(!target) return;
+  const top=window.scrollY+target.getBoundingClientRect().top-12;
+  window.scrollTo({top:Math.max(0,top),behavior:scrollBehavior()});
+}
 /* Paint the chosen palette onto the whole special-menu surface: the banner,
    the category chip and card, and the ambient wash. Themes are plain CSS
    variables, so this is one attribute plus an optional accent override. */
@@ -3542,6 +4240,7 @@ function openSpecialMenu(){
   activeCat=null;
   document.body.classList.remove('searching');
   document.body.classList.add('guided-view','special-menu');
+  clearAnnounceSticky(); /* after special-menu class so CSS + observer both kill it */
   applyAnnouncementTheme(activeAnnouncement());
   syncSpecialFx();
   renderStrip(); renderAnnounce(); renderViewSwitch(); renderTabs(); renderList();
@@ -3552,6 +4251,8 @@ function exitSpecialMenu(){
      strand the guest between two states. */
   if(specialIsExclusive()) return;
   specialMenuActive=false; activeCat=null; document.body.classList.remove('special-menu');
+  safeLS.set(VIEW_KEY,'list');
+  document.body.classList.remove('guided-view');
   renderAnnounce(); renderViewSwitch(); renderTabs(); renderList(); scrollMenuTop();
 }
 /* Drop the guest straight into the special menu when the owner has made it
@@ -3584,7 +4285,8 @@ function enforceExclusiveSpecial(){
 function syncSpecialFx(){
   const box=document.getElementById('specialFx');
   const A=activeAnnouncement()||{};
-  const want=specialIsExclusive() && A.fx!==false && typeof richMotionAllowed==='function' && richMotionAllowed();
+  /* Event-night ambience on the single catalogue — not only exclusive mode. */
+  const want=announcementIsLive() && A.on!==false && A.fx!==false && typeof richMotionAllowed==='function' && richMotionAllowed();
   if(!want){ if(box) box.remove(); return; }
   if(box) return;
   const fx=document.createElement('div');
@@ -3595,22 +4297,74 @@ function syncSpecialFx(){
   document.body.appendChild(fx);
 }
 const VIEW_KEY = 'tv_menu_view';
-const CLASSIC_UI_VERSION = 'guided-overhaul-2026-09-12';
+const CLASSIC_UI_VERSION = 'catalog-categories-motion-2026-09-12';
 if(safeLS.get('tv_ui_version')!==CLASSIC_UI_VERSION){
-  safeLS.set(VIEW_KEY,'guide');
+  safeLS.set(VIEW_KEY,'list');
   safeLS.set('tv_ui_version',CLASSIC_UI_VERSION);
 }
-function menuView(){ return safeLS.get(VIEW_KEY)==='list' ? 'list' : 'guide'; }
+function menuView(){ return safeLS.get(VIEW_KEY)==='guide' ? 'guide' : 'list'; }
 function setMenuView(v){
-  if(specialIsExclusive()) v='guide';
-  safeLS.set(VIEW_KEY, v==='guide' ? 'guide' : 'list');
-  document.body.classList.toggle('guided-view', menuView()==='guide' && !cleanSearch(searchValue()));
-  if(v==='list' && !specialIsExclusive()) specialMenuActive=false;
+  withMenuTransition(()=>{
+    if(specialIsExclusive()) v='guide';
+    safeLS.set(VIEW_KEY, v==='guide' ? 'guide' : 'list');
+    if(v==='list') activeCat=null;
+    if(v==='guide') activeCat=null; /* land on category picker like production */
+    document.body.classList.toggle('guided-view', menuView()==='guide' && !cleanSearch(searchValue()));
+    if(v==='list' && !specialIsExclusive()) specialMenuActive=false;
+    document.body.classList.toggle('special-menu', specialMenuActive);
+    renderHead();renderViewSwitch();renderTabs();renderList();scrollMenuTop();
+  });
+}
+function enterCategoryFocus(id){
+  if(!id || specialIsExclusive()) return;
+  const cats=guideCategories();
+  if(!cats.some(c=>c.id===id)) return;
+  safeLS.set(VIEW_KEY,'guide');
+  document.body.classList.add('guided-view');
   document.body.classList.toggle('special-menu', specialMenuActive);
-  renderHead();renderViewSwitch();renderTabs();renderList();scrollMenuTop();
+  setGuideCategory(id);
+  renderHead();renderViewSwitch();renderTabs();
+  requestAnimationFrame(()=>{ setStickyMetrics(); scrollGuideStage(); });
+}
+function exitCategoryFocus(){
+  if(specialIsExclusive()){ scrollMenuTop(); return; }
+  if(specialMenuActive){ exitSpecialMenu(); return; }
+  setMenuView('list');
+}
+let brandTransitBusy=false;
+let brandTransitTimer=0;
+let brandTransitOutTimer=0;
+function prefersQuietMotion(){
+  if(document.body.classList.contains('motion-off')) return true;
+  try{ return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  catch(e){ return false; }
 }
 function withMenuTransition(fn){
-  fn();
+  const gate=document.getElementById('brandTransit');
+  const run=()=>{ try{ fn(); }catch(e){} };
+  if(!gate || prefersQuietMotion() || brandTransitBusy){
+    run();
+    return;
+  }
+  brandTransitBusy=true;
+  clearTimeout(brandTransitTimer);
+  clearTimeout(brandTransitOutTimer);
+  gate.classList.remove('out','play','on');
+  void gate.offsetWidth;
+  gate.classList.add('on','play');
+  gate.setAttribute('aria-hidden','false');
+  /* Swap the screen once the veil covers the UI. */
+  brandTransitTimer=setTimeout(()=>{
+    run();
+    brandTransitOutTimer=setTimeout(()=>{
+      gate.classList.add('out');
+      setTimeout(()=>{
+        gate.classList.remove('on','play','out');
+        gate.setAttribute('aria-hidden','true');
+        brandTransitBusy=false;
+      }, 400);
+    }, 480);
+  }, 240);
 }
 
 /* ═══════════════ persistent cart (line-based) ═══════════════ */
@@ -3812,13 +4566,24 @@ function renderViewSwitch(){
 }
 function renderTabs(){
   resetPinnedNav();
-  const row=document.getElementById('tabs');
-  if(!row) return;
-  row.innerHTML='';
+  const dockRow=document.getElementById('tabs');
+  const listRow=document.getElementById('listTabs');
+  if(dockRow) dockRow.innerHTML='';
+  if(listRow) listRow.innerHTML='';
   const cats=activeMenuCats().filter(c=>!c.hidden && S.menu.some(i=>i.cat===c.id&&isGuestVisible(i)&&matches(i)));
-  const shouldShow=!cleanSearch(searchValue()) && cats.length > 1 && !document.body.classList.contains('sheet-open');
+  const searching=!!cleanSearch(searchValue());
+  const guided=menuView()==='guide' && !searching;
+  /* List → top rail. Guided Κατηγορίες → bottom dock. Hide both while searching. */
+  const shouldShow=!searching && cats.length > 1 && !document.body.classList.contains('sheet-open');
   document.body.classList.toggle('no-category-tabs', !shouldShow);
-  if(!shouldShow){ requestAnimationFrame(setStickyMetrics); return; }
+  if(!shouldShow){
+    const dock=document.getElementById('catDock');
+    if(dock) dock.classList.remove('has-pager');
+    requestAnimationFrame(setStickyMetrics);
+    return;
+  }
+  const row=guided ? dockRow : listRow;
+  if(!row){ requestAnimationFrame(setStickyMetrics); return; }
   cats.forEach((c,ix)=>{
     const b=document.createElement('button');
     b.className='tab'+(activeCat===c.id?' on':'');
@@ -3826,13 +4591,51 @@ function renderTabs(){
     b.dataset.cat=c.id; b.dataset.adminCat=c.id;
     b.setAttribute('aria-current', activeCat===c.id?'page':'false');
     const acc=CAT_ACC[ix%CAT_ACC.length]; b.style.setProperty('--tab-acc',acc[0]);
-    const dockPng=({appetizers:'cat-appetizers.png',salads:'cat-salads.png',spit:'cat-spit.png',meat:'cat-meat.png',pizza:'cat-pizza.png',drinks:'cat-drinks.png'})[c.id]
-      || (typeof GREEK_CAT_ICON!=='undefined'&&GREEK_CAT_ICON[c.id]);
-    b.innerHTML=`<span class="dock-ic">${dockPng&&typeof pngIcon==='function'?pngIcon(dockPng):catIcon(c)}</span><span class="dock-lb">${esc(catName(c))}</span>`;
-    b.onclick=()=>scrollToCategory(c.id);
+    if(guided){
+      b.innerHTML=`<span class="dock-ic">${catIcon(c)}</span><span class="dock-lb">${esc(catName(c))}</span>`;
+      b.onclick=()=>{
+        /* Second tap on the open category = escape to the category list. */
+        if(String(activeCat)===String(c.id) && document.querySelector('.guide-stage')){
+          activeCat=null;
+          withMenuTransition(()=>{ renderTabs(); renderList(); scrollMenuTop(); });
+          return;
+        }
+        scrollToCategory(c.id);
+      };
+    }else{
+      b.innerHTML=`<span class="ic">${catIcon(c)}</span><span>${esc(catName(c))}</span>`;
+      b.onclick=()=>scrollToCategory(c.id);
+    }
     row.appendChild(b);
   });
-  requestAnimationFrame(()=>{ setStickyMetrics(); centerActiveTab(); placeDockIndicator(); });
+  requestAnimationFrame(()=>{ setStickyMetrics(); centerActiveTab(); placeDockIndicator(); syncDockPager(); });
+}
+function syncDockPager(){
+  const dock=document.getElementById('catDock');
+  const prev=document.getElementById('dockPrev');
+  const next=document.getElementById('dockNext');
+  if(!dock || !prev || !next) return;
+  const searching=!!cleanSearch(searchValue());
+  const guided=menuView()==='guide' && !searching;
+  const cats=(guided && typeof guideCategories==='function') ? guideCategories() : [];
+  const inStage=guided && !!document.querySelector('.guide-stage') && cats.length>1;
+  dock.classList.toggle('has-pager', inStage);
+  const ix=inStage ? cats.findIndex(c=>String(c.id)===String(activeCat)) : -1;
+  prev.disabled=!inStage || ix<=0;
+  next.disabled=!inStage || ix<0 || ix>=cats.length-1;
+  prev.setAttribute('aria-label', T('guidePrev'));
+  next.setAttribute('aria-label', T('guideNext'));
+  syncDockScrollEdges();
+}
+function syncDockScrollEdges(){
+  const dock=document.getElementById('catDock');
+  const row=document.getElementById('tabs');
+  if(!dock || !row) return;
+  const max=Math.max(0, row.scrollWidth - row.clientWidth);
+  const fits=max < 4;
+  dock.classList.toggle('dock-fit', fits);
+  dock.classList.toggle('dock-at-start', fits || row.scrollLeft <= 2);
+  dock.classList.toggle('dock-at-end', fits || row.scrollLeft >= max - 2);
 }
 function ICO(n){ return `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20Z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>`; }
 let manualCatUntil=0;
@@ -3844,11 +4647,14 @@ function stickyNavOffset(){
   setStickyMetrics();
   const head=document.querySelector('.head');
   const guide=document.querySelector('.guide-picker');
+  const listNav=document.getElementById('listNav');
   const extra=12;
   const headH=head ? head.getBoundingClientRect().height : 0;
   const guideStyle=guide ? getComputedStyle(guide) : null;
   const guideH=(document.body.classList.contains('guided-view') && guide && guideStyle && /^(sticky|fixed)$/.test(guideStyle.position)) ? guide.getBoundingClientRect().height : 0;
-  return Math.ceil(headH+guideH+extra);
+  const listStyle=listNav ? getComputedStyle(listNav) : null;
+  const listH=(!document.body.classList.contains('guided-view') && listNav && listStyle && listStyle.display!=='none' && /^(sticky|fixed)$/.test(listStyle.position)) ? listNav.getBoundingClientRect().height : 0;
+  return Math.ceil(headH+guideH+listH+extra);
 }
 function setStickyMetrics(){
   const head=document.querySelector('.head');
@@ -3856,13 +4662,26 @@ function setStickyMetrics(){
   const dock=document.getElementById('catDock');
   pinDockToVisualViewport();
   const headH=head ? Math.ceil(head.getBoundingClientRect().height) : 96;
-  const searchFixed=document.body.classList.contains('guided-view') && search && getComputedStyle(search).position==='fixed';
-  const searchH=searchFixed ? Math.ceil(search.getBoundingClientRect().height) : 0;
-  const dockHidden=document.body.classList.contains('no-category-tabs')||document.body.classList.contains('sheet-open')||document.body.classList.contains('kb-open');
-  const dockH=(!dockHidden && dock && getComputedStyle(dock).display!=='none') ? Math.ceil(dock.getBoundingClientRect().height) : 0;
+  const guided=document.body.classList.contains('guided-view');
+  const inStage=!!(guided && document.querySelector('.guide-stage'));
+  const searchFixed=guided && search && getComputedStyle(search).position==='fixed';
+  let searchH=searchFixed ? Math.ceil(search.getBoundingClientRect().height) : 0;
+  /* Dish-stage: icon search (or expanded field) under the head. */
+  if(inStage){
+    const toolH=document.body.classList.contains('guide-search-open')
+      ? Math.max(searchH, 56)
+      : Math.max(searchH, 48);
+    document.documentElement.style.setProperty('--guide-tool-h', toolH+'px');
+    searchH=toolH;
+  }else{
+    document.documentElement.style.setProperty('--guide-tool-h', '56px');
+  }
+  const dockHidden=!guided || document.body.classList.contains('no-category-tabs')||document.body.classList.contains('sheet-open')||document.body.classList.contains('kb-open');
+  const dockH=(!dockHidden && dock && getComputedStyle(dock).display!=='none' && getComputedStyle(dock).visibility!=='hidden') ? Math.ceil(dock.getBoundingClientRect().height) : 0;
   document.documentElement.style.setProperty('--head-h', headH+'px');
   document.documentElement.style.setProperty('--search-h', searchH+'px');
   document.documentElement.style.setProperty('--dock-h', Math.max(dockH, dockHidden?0:96)+'px');
+  document.documentElement.style.setProperty('--guide-chrome-h', '0px');
   placeDockIndicator();
 }
 function pinDockToVisualViewport(){
@@ -3950,13 +4769,17 @@ function previewScroller(){
   return null;
 }
 function centerActiveTab(){
-  const row=document.querySelector('#tabs');
-  const on=document.querySelector('#tabs .tab.on');
+  const guided=document.body.classList.contains('guided-view');
+  const row=document.querySelector(guided ? '#tabs' : '#listTabs');
+  const on=row && row.querySelector('.tab.on');
   if(!row || !on || !row.scrollTo) return;
   const x=on.offsetLeft-(row.clientWidth-on.offsetWidth)/2;
-  /* Guided: never smooth-scroll the dock while the list already swapped — that desync is the “bad animation”. */
-  const behavior=document.body.classList.contains('guided-view') ? 'auto' : scrollBehavior();
+  const reduce=(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+    || document.body.classList.contains('motion-off');
+  /* Horizontal dock scroll can be smooth; page jump elsewhere stays auto. */
+  const behavior=reduce ? 'auto' : 'smooth';
   row.scrollTo({left:Math.max(0,x),behavior});
+  syncDockScrollEdges();
 }
 function scrollToCategory(id){
   if(menuView()==='guide' && !cleanSearch(searchValue())){ setGuideCategory(id); return; }
@@ -3975,10 +4798,14 @@ function scrollToCategory(id){
   setTimeout(()=>{ activeCat=id; setActiveTab(); },520);
 }
 function setActiveTab(){
-  document.querySelectorAll('#tabs .tab').forEach(t=>t.classList.toggle('on', t.dataset.cat===activeCat));
-  document.querySelectorAll('#tabs .tab').forEach(t=>t.setAttribute('aria-current', t.dataset.cat===activeCat?'page':'false'));
+  document.querySelectorAll('#tabs .tab, #listTabs .tab').forEach(t=>{
+    const on=t.dataset.cat===activeCat;
+    t.classList.toggle('on', on);
+    t.setAttribute('aria-current', on?'page':'false');
+  });
   centerActiveTab();
   placeDockIndicator();
+  syncDockPager();
 }
 function placeDockIndicator(){
   const dock=document.getElementById('catDock');
@@ -3990,12 +4817,14 @@ function placeDockIndicator(){
     return;
   }
   const d=dock.getBoundingClientRect(), t=on.getBoundingClientRect();
-  const w=Math.max(22, Math.min(36, t.width*0.38));
-  /* Snap with the active tab — never tween behind an already-changed list. */
-  ind.style.transition='none';
+  const w=Math.max(22, Math.min(40, t.width*0.42));
+  const reduce=(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+    || document.body.classList.contains('motion-off');
+  ind.style.transition=reduce ? 'none' : 'transform .38s cubic-bezier(.2,.8,.2,1), width .38s cubic-bezier(.2,.8,.2,1), opacity .22s ease';
   ind.style.width=w+'px';
   ind.style.opacity='1';
   ind.style.transform=`translateX(${t.left-d.left+(t.width-w)/2}px)`;
+  syncDockScrollEdges();
 }
 
 /* ═══════════════ list ═══════════════ */
@@ -4043,15 +4872,44 @@ function syncSearch(force){
   document.body.classList.toggle('searching', searching);
   document.body.classList.toggle('guided-view', menuView()==='guide' && !searching);
   document.body.classList.toggle('special-menu', specialMenuActive);
+  if(!document.body.classList.contains('guided-view') || !document.querySelector('.guide-stage')){
+    document.body.classList.remove('guide-search-open');
+  }
   renderStrip();renderAnnounce();renderGuestFilters();renderViewSwitch();renderTabs();renderList();
+  setStickyMetrics();
+}
+function closeGuideSearch(){
+  document.body.classList.remove('guide-search-open');
+  const el=document.getElementById('q');
+  if(el && document.activeElement===el) el.blur();
+  setStickyMetrics();
 }
 function clearSearch(ev){
   if(ev){ ev.preventDefault(); ev.stopPropagation(); }
   const el=document.getElementById('q');
+  const closingGuide=document.body.classList.contains('guide-search-open');
   if(el) el.value='';
   q='__force_reset__';
   syncSearch(true);
-  if(el) el.focus();
+  if(closingGuide){
+    closeGuideSearch();
+  }else if(el){
+    el.focus();
+  }
+}
+let guideSearchHoldUntil=0;
+function openGuideSearch(ev){
+  if(!document.body.classList.contains('guided-view') || !document.querySelector('.guide-stage')) return;
+  /* Keep the icon tap from stealing focus back off #q (open→instant blur). */
+  if(ev && ev.cancelable && !document.body.classList.contains('guide-search-open')) ev.preventDefault();
+  document.body.classList.add('guide-search-open');
+  guideSearchHoldUntil=Date.now()+450;
+  setStickyMetrics();
+  const el=document.getElementById('q');
+  if(!el) return;
+  requestAnimationFrame(()=>{
+    try{ el.focus({preventScroll:true}); }catch(e){ el.focus(); }
+  });
 }
 function wireMenuRootActions(root){
   root.querySelectorAll('[data-add]').forEach(b=>b.onclick=e=>{e.stopPropagation();add(+b.dataset.add,b);});
@@ -4059,10 +4917,28 @@ function wireMenuRootActions(root){
   root.querySelectorAll('[data-dish]').forEach(b=>b.onclick=e=>{e.stopPropagation();openDish(+b.dataset.dish);});
   root.querySelectorAll('[data-guide-pick]').forEach(b=>b.onclick=()=>setGuideCategory(b.dataset.guidePick));
   root.querySelectorAll('[data-guide-jump]').forEach(b=>b.onclick=()=>setGuideCategory(b.dataset.guideJump));
-  root.querySelectorAll('[data-guide-home]').forEach(b=>b.onclick=()=>{ activeCat=null; renderTabs(); renderList(); scrollMenuTop(); });
+  root.querySelectorAll('[data-guide-home]').forEach(b=>b.onclick=()=>{
+    withMenuTransition(()=>{
+      activeCat=null;
+      renderTabs();
+      renderList();
+      scrollMenuTop();
+    });
+  });
   root.querySelectorAll('[data-special-exit]').forEach(b=>b.onclick=exitSpecialMenu);
   root.querySelectorAll('[data-clear-filters]').forEach(b=>b.onclick=clearGuestFilters);
   root.querySelectorAll('[data-guide-step]').forEach(b=>b.onclick=()=>stepGuideCategory(Number(b.dataset.guideStep)));
+  /* Classic list: tap a category title to open that category with the bottom dock. */
+  root.querySelectorAll('.sec:not(.guide-sec) .sec-h').forEach(h=>{
+    h.setAttribute('role','button');
+    h.setAttribute('tabindex','0');
+    const id=(h.closest('.sec')||{}).id||'';
+    const cat=id.replace(/^sec-/,'');
+    if(!cat) return;
+    const go=()=>enterCategoryFocus(cat);
+    h.onclick=e=>{ e.preventDefault(); go(); };
+    h.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } };
+  });
   wireGuideSwipe(root);
 }
 function guideCategories(){
@@ -4087,6 +4963,7 @@ function setGuideCategory(id,dir){
   activeCat=c.id;
   manualCatUntil=Date.now()+900;
   withMenuTransition(()=>{
+    renderTabs();
     renderList();
     scrollGuideStage();
     requestAnimationFrame(()=>{ setStickyMetrics(); scrollGuideStage(); });
@@ -4157,33 +5034,56 @@ function renderGuidedList(){
   const root=document.getElementById('root');
   const cats=guideCategories();
   if(!cats.length){ root.innerHTML=emptyMenuHTML(); wireMenuRootActions(root); return; }
-  if(!activeCat || !cats.some(c=>c.id===activeCat)) activeCat=cats[0].id;
-  const ix=Math.max(0,cats.findIndex(c=>c.id===activeCat));
-  const c=cats[ix];
-  const items=S.menu.filter(i=>isGuestVisible(i)&&i.cat===c.id&&matches(i));
-  const stage=root.querySelector('.guide-stage');
-  const list=root.querySelector('.guide-list');
-  const title=root.querySelector('.guide-kicker h2');
-  /* In-place swap: never wipe #root (that flash reads as fade-out/fade-in). */
-  if(stage && list && title){
-    stage.id='sec-'+c.id;
-    stage.className='sec guide-sec guide-stage '+c.id;
-    stage.dataset.adminCat=c.id;
-    stage.removeAttribute('data-travel');
-    stage.style.setProperty('--stage', String(ix));
-    title.textContent=catName(c);
-    list.innerHTML=items.map((i,k)=>guideRowHTML(i,k)).join('');
+  if(!activeCat){
+    root.innerHTML=guideLandingHTML(cats);
     wireMenuRootActions(root);
     setActiveTab();
     return;
   }
+  if(!cats.some(c=>c.id===activeCat)) activeCat=cats[0].id;
+  const ix=Math.max(0,cats.findIndex(c=>c.id===activeCat));
+  const c=cats[ix];
   root.innerHTML=`<div class="guide-shell">
+    ${specialMenuActive && !specialIsExclusive()?`<button class="special-back" type="button" data-special-exit><span aria-hidden="true">←</span>${esc(SU('full'))}</button>`:''}
+    ${specialMenuActive?eventHeroHTML():''}
     ${guideSectionHTML(c,ix,cats)}
   </div>`;
-  const fresh=root.querySelector('.guide-stage');
-  if(fresh) fresh.removeAttribute('data-travel');
   wireMenuRootActions(root);
   setActiveTab();
+}
+function eventHeroHTML(){
+  const A=activeAnnouncement();
+  if(!A || !announcementIsLive()) return '';
+  if(!(A.image || A.photo || A.logo)) return '';
+  const t=announceText() || {};
+  const photo=(A.photo && String(A.photo)) || (A.image && String(A.image)) || '';
+  const phone=String(A.phone||'').replace(/[^\d+]/g,'');
+  const doors=String(A.doors||'').trim();
+  const entry=String(A.entry||'').trim();
+  const kick=annCopy('kick') || A.liveLabel || SU('special');
+  const whenBaseEl=String(A.whenEl||'').trim();
+  const whenBaseEn=String(A.whenEn||whenBaseEl||'').trim();
+  const whenEl=[whenBaseEl, doors, entry?(lang==='el'?`Είσοδος ${entry}`:`Entry ${entry}`):''].filter(Boolean).join(' · ');
+  const whenEn=[whenBaseEn, doors, entry?`Entry ${entry}`:''].filter(Boolean).join(' · ');
+  const artists=String((t&&t.body)||'').trim();
+  return `<section class="event-hero" aria-label="${esc(t.title||SU('special'))}">
+    <div class="eh-stage">
+      ${photo?`<img class="eh-photo" src="${esc(photo)}" alt="" decoding="async">`:''}
+      <span class="eh-mono" aria-hidden="true">TR</span>
+      <div class="eh-overlay">
+        <div class="eh-kicker">${A.live!==false?`<i class="livedot" aria-hidden="true"></i>`:''}${esc(kick)}</div>
+        <h3>${esc(t.title||'')}</h3>
+        <i class="eh-rule" aria-hidden="true"></i>
+        <p class="eh-when">${esc(lang==='el'?whenEl:whenEn)}</p>
+      </div>
+    </div>
+    <div class="eh-foot">
+      ${artists?`<p class="eh-artists">${esc(artists)}</p>`:''}
+      <div class="eh-actions">
+        ${phone?`<a class="eh-chip" href="tel:${esc(phone)}">${lang==='el'?'Κρατήσεις':'Book'} ${esc(phone)}</a>`:''}
+      </div>
+    </div>
+  </section>`;
 }
 function guideLandingHTML(cats){
   const ann=announceText();
@@ -4191,6 +5091,7 @@ function guideLandingHTML(cats){
   const body=specialMenuActive && ann ? ann.body : T('guidePickSub');
   return `<section class="guide-landing${specialMenuActive?' is-special':''}" aria-label="${esc(T('viewGuided'))}">
     ${specialMenuActive && !specialIsExclusive()?`<button class="special-back" type="button" data-special-exit><span aria-hidden="true">←</span>${esc(SU('full'))}</button>`:''}
+    ${specialMenuActive?eventHeroHTML():''}
     <div class="guide-landing-copy">
       <small>${specialMenuActive && (activeAnnouncement()||{}).live!==false?`<i class="livedot" aria-hidden="true"></i>`:''}${esc(specialMenuActive?SU('special'):T('viewGuided'))}</small>
       <h2>${esc(title)}</h2>
@@ -4226,28 +5127,29 @@ function guidePickerHTML(cats,current,ix){
 }
 function guideSectionHTML(c,ix,cats){
   const items=S.menu.filter(i=>isGuestVisible(i)&&i.cat===c.id&&matches(i));
+  const pick=items.find(i=>i.chefPick&&i.available&&i.price>0) || items.find(i=>i.available&&i.price>0) || items[0];
+  const rest=items.filter(i=>i!==pick);
+  const acc=[c.accent||CAT_ACC[ix%CAT_ACC.length][0], c.tint||CAT_ACC[ix%CAT_ACC.length][1]];
+  const prev=cats[ix-1], next=cats[ix+1];
   return `<section class="sec guide-sec guide-stage ${esc(c.id)}" id="sec-${c.id}" data-admin-cat="${esc(c.id)}" style="--stage:${ix}">
-    <header class="guide-kicker">
+    <button type="button" class="guide-back" data-guide-home="1" data-testid="guide-back">
+      <span aria-hidden="true">‹</span>${esc(T('guideBackCats'))}
+    </button>
+    <div class="guide-chapter" data-admin-cat="${esc(c.id)}" style="--acc:${acc[0]};--accbg:${acc[1]}">
+      <span class="gicon">${catIcon(c)}</span>
+      <small>${esc(T('guideBadge'))}</small>
       <h2>${esc(catName(c))}</h2>
-    </header>
-    <div class="guide-list">
-      ${items.map((i,k)=>guideRowHTML(i,k)).join('')}
+      <p>${esc(T('guideIntro'))}</p>
+    </div>
+    ${pick?guideHeroDishHTML(pick):''}
+    ${rest.length?`<div class="guide-dishes">${rest.map((i,k)=>guideCardHTML(i,k)).join('')}</div>`:''}
+    <div class="guide-nav">
+      <button type="button" class="guide-prev" ${prev?`data-guide-jump="${esc(prev.id)}"`:'disabled'} aria-label="${esc(T('guidePrev'))}">‹ ${esc(prev?catName(prev):T('guidePrev'))}</button>
+      <button type="button" class="guide-next" ${next?`data-guide-jump="${esc(next.id)}"`:'disabled'} aria-label="${esc(T('guideNext'))}">${esc(next?catName(next):T('guideNext'))} ›</button>
     </div>
   </section>`;
 }
-/* Always-visible pager: where you are, how many pages, and a tap target either
-   side. Sits above the thumb, so scrubbing never needs a scroll to the bottom. */
-function guidePagerHTML(cats,ix){
-  if(!cats || cats.length<2) return '';
-  return `<nav class="guide-pager" aria-label="${esc(T('viewGuided'))}">
-    <button type="button" class="gp-arrow" data-guide-step="-1" ${ix<=0?'disabled':''} aria-label="${esc(T('guidePrev'))}">‹</button>
-    <div class="gp-dots">
-      ${cats.map((c,k)=>`<button type="button" class="gp-dot${k===ix?' on':''}" data-guide-jump="${esc(c.id)}" aria-label="${esc(catName(c))}" aria-current="${k===ix?'true':'false'}"><i></i></button>`).join('')}
-    </div>
-    <span class="gp-count">${ix+1}/${cats.length}</span>
-    <button type="button" class="gp-arrow" data-guide-step="1" ${ix>=cats.length-1?'disabled':''} aria-label="${esc(T('guideNext'))}">›</button>
-  </nav>`;
-}
+/* (pager controls moved to #catDock — see .dock-step) */
 function guideVisual(i,cls,large){
   const t=tx(i), art=(typeof dishArt==='function'&&dishArt(i)) ? dishArt(i) : '';
   if(art) return `<button type="button" class="${cls}" data-admin-dish="${i.id}" data-photo="${i.id}" aria-label="${esc(T('guidePhoto'))}: ${esc(t.n)}"><span class="photo-fallback">${svgFor(DISH_ICON[i.icon]||i.icon||'dish')}</span><img src="${esc(art)}" alt="" loading="lazy" decoding="async" width="${large?180:120}" height="${large?180:120}" onload="this.parentElement.classList.remove('img-failed');this.parentElement.classList.add('img-ready')" onerror="this.parentElement.classList.add('img-failed')"></button>`;
@@ -4258,21 +5160,38 @@ function guidePlateHTML(i){
   if(art) return `<span class="g-plate" aria-hidden="true">${dishIcon(i)}<img src="${esc(art)}" alt="" loading="eager" decoding="async" width="48" height="48"></span>`;
   return `<span class="g-plate" aria-hidden="true">${dishIcon(i)}</span>`;
 }
-function guideHeroDishHTML(i){ return guideRowHTML(i,0); }
-function guideCardHTML(i,k){ return guideRowHTML(i,k); }
-function guideRowHTML(i,k){
-  const t=tx(i);
-  const add=i.available&&canAdd(i);
-  return `<div class="g-row ${i.available?'':'out'}" data-admin-dish="${i.id}">
-    ${guidePlateHTML(i)}
-    <button type="button" class="g-copy" data-dish="${i.id}">
-      <b>${esc(t.n)}</b>
-      <span class="g-dots" aria-hidden="true"></span>
-      <span class="g-pr">${priceDisp(i)}</span>
-    </button>
-    ${add?`<button type="button" class="g-add" data-add="${i.id}" aria-label="${esc(T('add'))}: ${esc(t.n)}">+</button>`:''}
-  </div>`;
+function guideHeroDishHTML(i){
+  const t=tx(i), desc=t.d||'';
+  return `<article class="guide-hero-dish ${i.available?'':'out'}" data-admin-dish="${i.id}">
+    ${guideVisual(i,'gphoto',true)}
+    <div>
+      <h3>${esc(t.n)}</h3>
+      ${desc?`<p class="gdesc">${esc(desc)}</p>`:''}
+      <div class="guide-price">${priceDisp(i)}</div>
+      <div class="guide-actions">
+        <button type="button" data-dish="${i.id}">${esc(T('guideInfo'))}</button>
+        ${i.available&&canAdd(i)?`<button type="button" class="primary" data-add="${i.id}">${esc(T('add'))} +</button>`:''}
+        ${i.available?'':`<button type="button" disabled>${esc(T('soldOut'))}</button>`}
+      </div>
+    </div>
+  </article>`;
 }
+function guideCardHTML(i,k){
+  const t=tx(i), desc=t.d||'';
+  return `<article class="guide-card ${i.available?'':'out'}" data-admin-dish="${i.id}" style="animation-delay:${Math.min(k,8)*38}ms">
+    ${guideVisual(i,'gthumb',false)}
+    <div>
+      <h3>${esc(t.n)}</h3>
+      ${desc?`<p>${esc(desc)}</p>`:''}
+    </div>
+    <div class="guide-price">${priceDisp(i)}</div>
+    <div class="mini-actions">
+      <button type="button" data-dish="${i.id}">${esc(T('guideInfo'))}</button>
+      ${i.available&&canAdd(i)?`<button type="button" data-add="${i.id}">${esc(T('add'))} +</button>`:''}
+    </div>
+  </article>`;
+}
+function guideRowHTML(i,k){ return guideCardHTML(i,k); }
 function renderList(){
   if(menuView()==='guide' && !cleanSearch(searchValue())) return renderGuidedList();
   const root=document.getElementById('root'); let html='',any=false,num=0;
@@ -4623,11 +5542,18 @@ function openPhoto(id){
   openSheet('photoSheet');
 }
 document.addEventListener('click', e=>{
+  const scrollMenu=e.target.closest('[data-scroll-menu]');
+  if(scrollMenu){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    scrollToMenuFromAnnounce();
+    return;
+  }
   const special=e.target.closest('[data-special-open]');
   if(special){
     e.preventDefault();
     e.stopImmediatePropagation();
-    openSpecialMenu();
+    scrollToMenuFromAnnounce();
     return;
   }
   const b=e.target.closest('[data-photo]');
@@ -5047,8 +5973,15 @@ function wireTopShortcut(){
     el.setAttribute('role','button');
     el.setAttribute('tabindex','0');
     el.setAttribute('aria-label','Back to top');
-    el.onclick=scrollMenuTop;
-    el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); scrollMenuTop(); } };
+    const go=()=>{
+      if(document.body.classList.contains('guided-view') && !specialIsExclusive()){
+        exitCategoryFocus();
+        return;
+      }
+      scrollMenuTop();
+    };
+    el.onclick=go;
+    el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } };
   });
 }
 
@@ -5203,11 +6136,51 @@ document.getElementById('langBtn').onclick=()=>{renderLang();openSheet('langShee
   if(sb) sb.onclick=()=>{ renderSocial(); openSheet('socialSheet'); };
 })();
 wireTopShortcut();
+(function wireDockPager(){
+  const prev=document.getElementById('dockPrev');
+  const next=document.getElementById('dockNext');
+  const row=document.getElementById('tabs');
+  if(prev) prev.onclick=()=>stepGuideCategory(-1);
+  if(next) next.onclick=()=>stepGuideCategory(1);
+  if(row && !row.dataset.dockScrollWired){
+    row.dataset.dockScrollWired='1';
+    let ticking=false;
+    const onScroll=()=>{
+      if(ticking) return;
+      ticking=true;
+      requestAnimationFrame(()=>{
+        ticking=false;
+        syncDockScrollEdges();
+        placeDockIndicator();
+      });
+    };
+    row.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('resize', ()=>{ syncDockScrollEdges(); placeDockIndicator(); }, {passive:true});
+  }
+})();
 document.getElementById('bookForm').onsubmit=submitBooking;
 {
   const qInput=document.getElementById('q');
-  ['input','change','search','keyup','keydown','paste','blur','compositionend'].forEach(ev=>qInput.addEventListener(ev,()=>setTimeout(()=>syncSearch(true),0)));
+  const searchBox=document.querySelector('.search');
+  /* blur is intentionally omitted — it was re-rendering the menu and snapping search shut. */
+  ['input','change','search','keyup','keydown','paste','compositionend'].forEach(ev=>qInput.addEventListener(ev,()=>setTimeout(()=>syncSearch(true),0)));
   setInterval(()=>syncSearch(false),250);
+  qInput.addEventListener('focus',()=>openGuideSearch());
+  if(searchBox){
+    searchBox.addEventListener('pointerdown',e=>{
+      if(e.target.closest('.search-clear')) return;
+      openGuideSearch(e);
+    });
+  }
+  qInput.addEventListener('blur',()=>{
+    setTimeout(()=>{
+      if(Date.now()<guideSearchHoldUntil) return;
+      if(document.activeElement===qInput) return;
+      if(document.activeElement && document.activeElement.closest('.search')) return;
+      if(cleanSearch(searchValue())) return;
+      if(document.body.classList.contains('guide-search-open')) closeGuideSearch();
+    },220);
+  });
   const clearBtn=document.getElementById('clearSearch');
   clearBtn.onclick=clearSearch;
   clearBtn.onpointerdown=clearSearch;
@@ -5244,12 +6217,18 @@ function announcementIsLive(){
 }
 function checkScheduleDate(){
   const today=localDateKey();
+  /* Overnight / catalog day flip: rembetika → classic (and the reverse) without reload. */
+  let catalogFlipped=false;
+  if(typeof ensureCatalogueForToday==='function' && ensureCatalogueForToday(S)){
+    catalogFlipped=true;
+    try{ saveState(S); }catch(e){}
+  }
   /* The banner can also open/close on a TIME boundary (e.g. σούβλες from 14:00),
      which no date comparison would ever catch. Re-render on either change. */
   const annLive=announcementIsLive();
   const annFlipped = renderedAnnounceActive!==null && annLive!==renderedAnnounceActive;
   renderedAnnounceActive=annLive;
-  if(today===renderedScheduleDate && !annFlipped) return false;
+  if(today===renderedScheduleDate && !annFlipped && !catalogFlipped) return false;
   renderedScheduleDate=today;
   cart=cart.filter(l=>{ const i=itemOf(l.id); return i&&isGuestVisible(i)&&i.available&&i.price>0; });
   saveCart(); apply();
@@ -5309,19 +6288,8 @@ function buildSplash(){
     b.innerHTML=`<span class="fl">${l.flag}</span>${esc(l.label)}`;
     b.onclick=()=>{ setLang(l.code); closeSplash(); };
     grid.appendChild(b); });
-  // iPhone-style: welcome word + subtitle cycle TOGETHER, same language, and the
-  // matching language button glows in sync.
-  let k=0; const wEl=document.getElementById('spWord'); const subEl=document.getElementById('spSub');
-  const paint=()=>{ const cur=WELCOME_CYCLE[k];
-    wEl.textContent=cur.w; subEl.textContent=cur.s;
-    grid.querySelectorAll('.sp-lang').forEach(b=>b.classList.toggle('lit', b.dataset.c===cur.c)); };
-  paint();
-  splashTimer=setInterval(()=>{ k=(k+1)%WELCOME_CYCLE.length;
-    wEl.style.opacity='0'; wEl.style.transform='translateY(-8px)'; subEl.style.opacity='0';
-    setTimeout(()=>{ paint(); wEl.style.opacity='1'; wEl.style.transform='none'; subEl.style.opacity='1'; },190); }, 1600);
 }
-let splashTimer=null;
-function closeSplash(){ clearInterval(splashTimer); const sp=document.getElementById('splash'); sp.classList.add('gone'); setTimeout(()=>sp.style.display='none',520); }
+function closeSplash(){ const sp=document.getElementById('splash'); sp.classList.add('gone'); setTimeout(()=>sp.style.display='none',520); }
 
 /* ═══════════════ dish detail / customize (remove ingredients) ═══════════════ */
 /* Customer-facing strings for the beta/order flow and customization sheet. */
@@ -5633,7 +6601,8 @@ function renderAnnounce(){
   const slot=document.getElementById('announceSlot'); if(!slot) return;
   const A=activeAnnouncement();
   const isOn = !!(A && (A.on===true || A.on===1 || A.on==='true'));
-  if(q.trim() || !A || !isOn){ slot.innerHTML=''; return; }
+  /* Inside special menu the event hero carries the same story — avoid double banners. */
+  if(q.trim() || !A || !isOn || specialMenuActive){ slot.innerHTML=''; clearAnnounceSticky(); return; }
   /* Empty from/to = always visible. Otherwise compare YYYY-MM-DD in local venue time
      (not UTC) so Greece does not lose a day to timezone shift. */
   const win=(typeof announcementWindowStatus==='function')
@@ -5661,29 +6630,46 @@ function renderAnnounce(){
             || (typeof LANGUAGES!=='undefined' ? LANGUAGES.map(l=>annText(l.code)).find(Boolean) : null)
             || null;
   if(!t){ slot.innerHTML=''; return; }
-  const img = (typeof MEDIA!=='undefined' && (MEDIA.souvles||MEDIA.hero)) ? `url('${MEDIA.souvles||MEDIA.hero}')` : 'none';
-  const locked=specialIsExclusive();
-  const nudging = !locked && A.nudge!==false && !specialMenuActive && !nudgeDismissed();
+  const photoSrc = (A.photo && String(A.photo)) || (A.image && String(A.image)) || (typeof MEDIA!=='undefined' && (MEDIA.rembetikaPhoto||MEDIA.rembetikaBanner||MEDIA.souvles||MEDIA.hero)) || '';
+  const isEvent = !!(A.image || A.logo || A.photo);
+  /* Single event catalogue — banner is info + scroll cue, never a second menu. */
+  const locked=false;
+  const nudging = A.nudge!==false && !nudgeDismissed();
   applyAnnouncementTheme(A);
+  syncSpecialFx();
   const kickTxt=annCopy('kick') || A.liveLabel || SU('special');
   const liveOn=A.live!==false;
-  slot.innerHTML=`<button class="announce${nudging?' nudging':''}${locked?' is-locked':''}" type="button" id="announceGo" ${locked?'':'data-special-open'} data-admin-announcement="1" style="--ann-img:${img}" ${locked?'aria-disabled="true"':''}>
+  slot.innerHTML=`<button class="announce${isEvent?' is-event':''}${nudging?' nudging':''}" type="button" id="announceGo" data-scroll-menu="1" data-admin-announcement="1">
     ${A.riv?`<canvas class="ann-riv" id="annRive" aria-hidden="true"></canvas>`:''}
-    ${A.emoji?`<span class="em">${A.emoji}</span>`:''}
+    ${isEvent?`<span class="ann-inner">
+      <span class="ann-thumb">${photoSrc?`<img src="${esc(photoSrc)}" alt="" decoding="async">`:''}</span>
+      <span class="ann-copy">
+        <span class="kick">${liveOn?`<i class="livedot" aria-hidden="true"></i>`:''}${esc(kickTxt)}</span>
+        <div class="ttl">${esc(t.title||'')}</div>
+        ${t.body?`<div class="bd">${esc(t.body)}</div>`:''}
+      </span>
+      <span class="ann-cta">${esc(CTA())} <b aria-hidden="true">↓</b></span>
+    </span>`:`${A.emoji?`<span class="em">${A.emoji}</span>`:''}
     <span class="kick">${liveOn?`<i class="livedot" aria-hidden="true"></i>`:''}${esc(kickTxt)}</span>
     <div class="ttl">${esc(t.title||'')}</div>
     ${t.body?`<div class="bd">${esc(t.body)}</div>`:''}
-    ${locked?'':`<span class="ann-cta">${esc(CTA())} <b aria-hidden="true">→</b></span>`}
+    <span class="ann-cta">${esc(CTA())} <b aria-hidden="true">↓</b></span>`}
     ${nudging?`<span class="tap-cue" aria-hidden="true">👆</span>`:''}
   </button>${nudging?`<div class="ann-nudge" role="status">${esc(NU())}</div>`:''}`;
   const go=document.getElementById('announceGo');
-  if(go && !locked) go.onclick=()=>{ dismissNudge(); openSpecialMenu(); };
+  if(go) go.onclick=()=>scrollToMenuFromAnnounce();
   mountRive(A);
+  clearAnnounceSticky();
   /* Stop nagging on its own — the cue has done its job after a while. */
   if(nudging){
     clearTimeout(renderAnnounce._nudgeTimer);
     renderAnnounce._nudgeTimer=setTimeout(dismissNudge, 25000);
   }
+}
+
+function clearAnnounceSticky(){
+  document.querySelectorAll('#announceSticky,.announce-sticky').forEach(el=>el.remove());
+  document.body.classList.remove('announce-docked');
 }
 
 /* ─── smart QR handoff ───
@@ -5820,15 +6806,17 @@ function handleHandoff(){
 /* ═══════════════ init ═══════════════ */
 function apply(){
   forceCloseFloatingUI();
+  clearAnnounceSticky();
   /* Settle exclusivity BEFORE painting, so this render already reflects it. */
   enforceExclusiveSpecial();
   renderHead();renderStrip();renderAnnounce();renderGuestFilters();renderViewSwitch();renderTabs();renderList();
   setStickyMetrics();
   renderCartSheet();updateCart();renderLang();renderClosing();resetHelp();initCookie();
-  requestAnimationFrame(()=>{ setStickyMetrics(); syncPinnedNav(); forceCloseFloatingUI(); });
+  requestAnimationFrame(()=>{ clearAnnounceSticky(); setStickyMetrics(); syncPinnedNav(); forceCloseFloatingUI(); });
 }
 async function boot(){
   window.__tvBootAt=Date.now();
+  clearAnnounceSticky();
   await hydratePublicConfig();
   const remoteOk = await hydrateRemoteMenu();
   if(!remoteOk) applyEnvSettings();   /* fallback only — menu-live.js is the source of truth */
@@ -5836,13 +6824,14 @@ async function boot(){
   if(!handleHandoff()){
     
     forceCloseFloatingUI();
+    clearAnnounceSticky();
     loadCart();
     apply();
     scheduleSocialAd();
     /* first visit → splash + language pick; returning (saved lang) → skip */
     if(safeLS.get('tv_lang')){ const sp=document.getElementById('splash'); sp.classList.add('gone'); sp.style.display='none'; }
     else { buildSplash(); }
-    setInterval(()=>{ checkScheduleDate(); checkLiveMenuUpdate(false); },45000);
+    setInterval(()=>{ checkScheduleDate(); checkLiveMenuUpdate(false); clearAnnounceSticky(); },45000);
   }
 }
 boot();

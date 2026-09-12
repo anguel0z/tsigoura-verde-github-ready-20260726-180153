@@ -85,7 +85,8 @@ const FALLBACK = {
 };
 
 const CAT_ICON = {
-  appetizers:'@catApp', salads:'@catSalad', meat:'@catMeat', pizza:'@catPizza', drinks:'@catDrink',
+  appetizers:'@catApp', salads:'@catSalad', meat:'@catMeat', spit:'@lamb',
+  pizza:'@catPizza', drinks:'@catDrink',
 };
 
 /* ---------------------------------------------------------------------------
@@ -167,13 +168,14 @@ const GREEK_FOOD_ICON = {
   525:'61-rum-bottle.png', 526:'62-campari-bottle.png', 527:'63-spirits-portion.png',
   531:'37-cola.png',
 };
+/* Category chips / dock / section headers — same PNG family as dish rows. */
 const GREEK_CAT_ICON = {
-  appetizers:'05-bougiourdi.png',
-  salads:'16-horiatiki-salad.png',
-  spit:'67-lamb-spit-clean.png',
-  meat:'65-gyros.png',
-  pizza:'35-margherita.png',
-  drinks:'50-retsina-malamatina.png',
+  appetizers:'cat-appetizers.png',
+  salads:'cat-salads.png',
+  spit:'cat-spit.png',
+  meat:'cat-meat.png',
+  pizza:'cat-pizza.png',
+  drinks:'cat-drinks.png',
 };
 
 function svgFor(src){
@@ -196,5 +198,9 @@ function dishIcon(i){
   return svgFor(DISH_ICON[i&&i.icon] || i&&i.icon || 'dish');
 }
 function catIcon(c){
-  return (c&&c.imageIcon) ? pngIcon(c.imageIcon) : svgFor(DISH_ICON[c&&c.icon] || CAT_ICON[c&&c.id] || c&&c.icon || 'dish');
+  /* Prefer the Greek plate PNGs everywhere (list tabs, section headers, dock).
+     Admin imageIcon still wins; otherwise GREEK_CAT_ICON; SVG only as last resort. */
+  if(c&&c.imageIcon) return pngIcon(c.imageIcon);
+  if(c&&GREEK_CAT_ICON[c.id]) return pngIcon(GREEK_CAT_ICON[c.id]);
+  return svgFor(DISH_ICON[c&&c.icon] || CAT_ICON[c&&c.id] || c&&c.icon || 'dish');
 }

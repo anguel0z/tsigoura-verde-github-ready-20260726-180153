@@ -44,12 +44,24 @@ test('admin has no horizontal overflow at required layouts', async ({ page }) =>
 
 test('traditional mode hides inactive table and ordering systems', async ({ page }) => {
   await login(page);
+  /* Shared ui-server live store can retain a prior POST with online mode on. */
+  await page.evaluate(() => {
+    S.settings.traditionalMenuOnly = true;
+    persist('ui-test-traditional-reset');
+    updateAdminFeatureVisibility();
+  });
   await expect(page.getByTestId('admin-tab-tables')).toBeHidden();
   await expect(page.getByTestId('admin-tab-orders')).toBeHidden();
   await page.getByTestId('admin-tab-settings').click();
   await page.locator('[data-set="traditionalMenuOnly"]').click();
   await expect(page.getByTestId('admin-tab-tables')).toBeVisible();
   await expect(page.getByTestId('admin-tab-orders')).toBeVisible();
+  /* Restore so later suites / guest flows keep traditional defaults. */
+  await page.evaluate(() => {
+    S.settings.traditionalMenuOnly = true;
+    persist('ui-test-traditional-restore');
+    updateAdminFeatureVisibility();
+  });
 });
 
 test('admin can add, edit, hide, and delete categories and dishes', async ({ page }) => {
@@ -57,7 +69,8 @@ test('admin can add, edit, hide, and delete categories and dishes', async ({ pag
   await page.getByTestId('admin-tab-menu').click();
   await page.locator('#modeSwitch [data-mode="pro"]').click();
   const categoryNames = await page.locator('.cat-edit [data-cat-name]').evaluateAll(inputs => inputs.map(input => input.value));
-  expect(categoryNames).toEqual(expect.arrayContaining(['Ορεκτικά', 'Σαλάτες', 'Της ώρας', 'Ποτά']));
+  expect(categoryNames).toEqual(expect.arrayContaining(['Ορεκτικά', 'Σαλάτες', 'Ποτά']));
+  expect(categoryNames.some(n => n === 'Της ώρας' || n === 'Κρεατικά' || n === 'Σούβλες')).toBeTruthy();
 
   const beforeCats = await page.locator('.cat-edit').count();
   await page.getByTestId('add-category').click();
@@ -144,4 +157,34 @@ test('device upload and manual path controls remain available', async ({ page })
   await expect(firstDish.locator('[data-image]')).toBeVisible();
   await expect(firstDish.locator('[data-image-file]')).toHaveAttribute('accept', /image/);
   await expect(firstDish.locator('.upload-pick')).toContainText('Από συσκευή');
+});
+
+test('special menu tab customizes announcement media and copy', async ({ page }) => {
+  await login(page, { width: 1280, height: 800 });
+  await page.getByTestId('admin-tab-special').click();
+  await expect(page.locator('#panel-special.on')).toBeVisible();
+  await expect(page.locator('#announceEditor')).toBeVisible();
+  await expect(page.locator('#presetEditor')).toBeVisible();
+  await expect(page.locator('#annImage')).toBeVisible();
+  await expect(page.locator('#annPhoto')).toBeVisible();
+  await expect(page.locator('#annWhenEl')).toBeVisible();
+  await page.locator('#annWhenEl').fill('Κυριακή δοκιμή');
+  await page.locator('#annPhone').fill('6985856367');
+  /* Keep banner-over-catalogue (with-full) so guest tests do not inherit a
+     one-category “Σήμερα” special filter from the shared ui-server live store. */
+  const exclusive = page.locator('#annExclusive');
+  if (await exclusive.evaluate(el => el.classList.contains('on'))) {
+    await exclusive.click();
+  }
+  await page.locator('#announceEditor [data-ann-cat]').evaluateAll(els => els.forEach(el => { el.checked = false; }));
+  await page.getByTestId('announcement-save').click();
+  await expect(page.locator('#toast')).toBeVisible();
+  const stored = await page.evaluate(() => {
+    const A = normalizeAnnouncement(S.settings.announcement || {});
+    return { whenEl: A.whenEl, phone: A.phone, exclusiveMode: A.exclusiveMode, specialCats: A.specialCats };
+  });
+  expect(stored.whenEl).toBe('Κυριακή δοκιμή');
+  expect(stored.phone).toBe('6985856367');
+  expect(stored.exclusiveMode).toBe('with-full');
+  expect(stored.specialCats || []).toEqual([]);
 });
