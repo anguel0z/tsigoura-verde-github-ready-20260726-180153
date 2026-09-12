@@ -285,3 +285,44 @@ Append-only. Newest entries at the bottom.
 - Pattern: fixed head + document scroll + sticky/min-height stage = mid-list after category change (overflow-anchor / scroll restoration).
 - Fix recipe: hard jump scrollY→0 (double rAF), `overflow-anchor:none`, kill `min-height:100dvh` on stages, pin search under head with `--search-h`, disconnect category spy in one-at-a-time guided mode.
 - Verify with mid-scroll→dock-tap matrix before calling scroll “fixed”.
+
+## 2026-09-12 — rembetika poster → special menu assets
+- Crop poster regions with ImageMagick; `-fuzz` + `-transparent` for cream backgrounds; circular mask for TR crest.
+- Keep partner logo brown-on-transparent; invert via CSS on dark event hero (`brightness(0) invert(.92)`).
+- Bump `catalogVersion` when shipping announcement defaults so localStorage guests pick up the live event banner.
+
+### Observation 18: Shared icon helper must own the asset map
+
+**Status:** OPEN
+**Date:** 2026-09-12
+**Session context:** Event menu split drinks into soft/beer/retsina/wine/spirits; list tabs showed SVG stubs while dock used a one-off PNG map that collapsed drinks onto cat-drinks.png. Category focus crushed 9 dock tabs under 44px with no prev/next/back chrome.
+**Skill:** task-observer
+**Type:** internal
+**Phase/Area:** Guest icons + guided navigation
+
+**Issue:** `catIcon()` ignored `GREEK_CAT_ICON`, so list/section headers used stroke SVGs. Dock had a duplicate filename map that overrode drink categories. Dock `flex:1` + `min-width:0` for “five categories” made nine tabs untappable; guide-home/pager were force-hidden.
+
+**Suggested improvement:** Route all category surfaces through `catIcon()` → `GREEK_CAT_ICON` (same contract as `dishIcon`). Keep dock tabs `flex:0 0 auto` with ≥72px min-width so they scroll. Always expose an in-category back control and prev/next when pager chrome is intentionally hidden.
+
+**Principle:** One icon resolver for every surface. Layout rules written for N items break silently when N grows — preserve scroll + tap size, and keep an explicit back/forth affordance.
+
+
+### Observation 19: Date-gated dual catalogue + admin Special tab
+
+**Status:** OPEN
+**Date:** 2026-09-12
+**Session context:** Owner wants rembetika only for 12/09 then automatic classic menu; special events must be fully editable in admin.
+**Skill:** task-observer
+**Type:** internal
+**Phase/Area:** tsigoura-data.js / admin special tab
+
+**Issue:** A one-shot Python rewrite of tsigoura-data.js left duplicate const blocks (UNITS/ANNOUNCE/DEFAULT_SETTINGS) that broke parse until surgically deleted. Overnight flip needs ensureCatalogueForToday on guest schedule checks and remote hydrate, not only loadState.
+
+**Suggested improvement:** Keep NORMAL_* and EVENT_* catalogues with EVENT_CATALOGUE_DAY + activeCatalogVersion(); call ensureCatalogueForToday after remote/published apply and in checkScheduleDate. Put announcement+presets in a dedicated admin Σπέσιαλ tab with all media fields (image/photo/logo/phone/doors/entry/whenEl/whenEn).
+
+**Principle:** Calendar-day product modes belong in data defaults + a single flip helper; owner customization belongs in its own admin surface, not buried in Settings.
+
+## 2026-09-12
+- Observation: User rejected splash welcome-language carousel and infinite logo float as a bad "animation cycle" on the loading screen; prefer static splash copy + one-shot entrance only.
+- Suggested skill: design-taste-frontend / splash motion restraint
+- Confidence: medium
