@@ -121,12 +121,12 @@ const DISH_ART = {
   515:'51-retsina-georgiadi', 516:'52-house-rose', 517:'53-house-red',
   518:'54-house-white', 519:'55-king-hearts-red', 520:'56-ouzo', 521:'57-tsipouro',
   522:'58-idoniko', 523:'59-whiskey-bottle', 524:'60-vodka-bottle', 525:'61-rum-bottle',
-  526:'62-campari-bottle', 527:'63-spirits-portion',
+  526:'62-campari-bottle', 527:'63-spirits-portion', 531:'37-cola',
 };
 /* representative plate for each category chapter */
 const CAT_ART = {
   appetizers:'01-tzatziki', salads:'16-horiatiki-salad',
-  spit:'67-lamb-spit-clean', meat:'65-gyros', pizza:'35-margherita', drinks:'53-house-red',
+  spit:'68-kontosouvli-clean', meat:'21-bifteki', pizza:'35-margherita', drinks:'53-house-red',
 };
 function safeMediaPath(v){
   v=String(v||'').trim();
@@ -165,6 +165,7 @@ const GREEK_FOOD_ICON = {
   519:'55-king-hearts-red.png', 520:'56-ouzo.png', 521:'57-tsipouro.png',
   522:'58-idoniko.png', 523:'59-whiskey-bottle.png', 524:'60-vodka-bottle.png',
   525:'61-rum-bottle.png', 526:'62-campari-bottle.png', 527:'63-spirits-portion.png',
+  531:'37-cola.png',
 };
 const GREEK_CAT_ICON = {
   appetizers:'05-bougiourdi.png',

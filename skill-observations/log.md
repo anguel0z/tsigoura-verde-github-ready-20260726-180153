@@ -265,3 +265,23 @@ Append-only. Newest entries at the bottom.
 **Suggested improvement:** Update title + `.guide-list` in place; remove `data-travel`; force `pageIn*` off; eager plates with icon underneath; assert opacity stays 1 across rAF samples after click.
 
 **Principle:** Instant content swap must not destroy the pane. Destroying the pane is a fade whether or not CSS animation is named fade.
+
+### Observation 17: Printed event slips are the only guest catalogue
+
+**Status:** OPEN
+**Date:** 2026-09-12
+**Session context:** Owner photographed today’s event pricelist (food + drinks) and said ONLY what is written there may appear.
+**Skill:** task-observer
+**Type:** internal
+**Phase/Area:** Guest catalogue / tsigoura-data.js
+
+**Issue:** Built-in DEFAULT_MENU still carried the full July catalogue plus a JULY26_VISIBLE hide mask, so phones showed dishes not on today’s slips (and wrong prices).
+
+**Suggested improvement:** Replace DEFAULT_MENU with a 1:1 printed list; bump STORAGE_KEY + catalogVersion with a hard replace (keep only custom id>=9000); turn announcement off because the printed list *is* the menu.
+
+**Principle:** When the owner shows a paper slip and says “only this,” delete everything else — do not hide leftovers behind a visibility mask.
+
+## 2026-09-12 — guided mobile UI scroll/chrome overhaul
+- Pattern: fixed head + document scroll + sticky/min-height stage = mid-list after category change (overflow-anchor / scroll restoration).
+- Fix recipe: hard jump scrollY→0 (double rAF), `overflow-anchor:none`, kill `min-height:100dvh` on stages, pin search under head with `--search-h`, disconnect category spy in one-at-a-time guided mode.
+- Verify with mid-scroll→dock-tap matrix before calling scroll “fixed”.

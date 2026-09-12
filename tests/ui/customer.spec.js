@@ -47,20 +47,24 @@ test('classic menu has no overflow and uses the correct responsive layout', asyn
 test('mobile controls meet the tap target and search handles empty results', async ({ page }) => {
   await openMenu(page, { width: 320, height: 568 });
   const selectors = [
-    '[data-testid="social-open"]',
     '[data-testid="wifi-open"]',
     '[data-testid="language-open"]',
-    '[data-testid="search-clear"]',
     '#catDock .tab',
   ];
+  /* Social is hidden in printed guided chrome; clear only appears while searching. */
   for (const selector of selectors) {
     const box = await page.locator(selector).first().boundingBox();
+    expect(box, selector).toBeTruthy();
     expect(box.width, selector).toBeGreaterThanOrEqual(43.9);
     expect(box.height, selector).toBeGreaterThanOrEqual(43.9);
   }
 
   await page.getByTestId('menu-search').fill('ZZZ-NO-MATCH');
   await expect(page.getByText('Δεν βρέθηκε πιάτο')).toBeVisible();
+  const clearBox = await page.getByTestId('search-clear').boundingBox();
+  expect(clearBox).toBeTruthy();
+  expect(clearBox.width).toBeGreaterThanOrEqual(43.9);
+  expect(clearBox.height).toBeGreaterThanOrEqual(43.9);
   await page.getByTestId('search-clear').click();
   await expect(page.locator('#root .sec').first()).toBeVisible();
 });
