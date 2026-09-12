@@ -34,7 +34,7 @@ header{background:var(--forest);color:var(--cream);padding:16px 0 0;position:sti
 header .bar{display:flex;align-items:center;gap:14px;max-width:1080px;margin:0 auto;padding:0 20px 14px;}
 header h1{font-size:19px;color:var(--cream);}
 header .sub{font-size:11px;opacity:.65;}
-.status-pill{margin-left:auto;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.10);
+.status-pill{margin-left:auto;display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.10);
   padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;}
 .undo-pill{margin-left:0;color:var(--cream);border:1px solid rgba(255,255,255,.16);transition:.18s;}
 .undo-pill:not(:disabled):hover{background:rgba(255,255,255,.18);transform:translateY(-1px);}
@@ -299,15 +299,32 @@ nav.tabs button.on{color:var(--cream);border-bottom-color:var(--gold);}
 .tcard .note{font-size:10.5px;color:var(--warn);margin-top:7px;line-height:1.4;display:flex;gap:5px;align-items:flex-start;}
 .tcard .note .ico{width:11px;height:11px;stroke-width:2;flex:0 0 auto;margin-top:1px;}
 
-/* easy mode item rows */
-.easy-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto auto;align-items:center;gap:10px;background:var(--paper);border-radius:14px;padding:11px 14px;
-  box-shadow:var(--shadow);margin-bottom:8px;max-width:100%;overflow:hidden;}
-.easy-row .nm{font-weight:600;font-size:14px;}
-.easy-row .cat{font-size:10.5px;color:var(--muted);}
+/* easy mode item rows — single horizontal band; never stack controls under ↑↓ */
+.easy-row{
+  display:flex;align-items:center;gap:10px 12px;flex-wrap:nowrap;
+  background:var(--paper);border-radius:14px;padding:10px 12px;
+  box-shadow:var(--shadow);margin-bottom:8px;max-width:100%;
+}
+.easy-row .easy-left{display:flex;align-items:center;gap:8px;flex:0 0 auto;}
+.easy-row .easy-main{flex:1 1 auto;min-width:0;}
+.easy-row .easy-controls{
+  display:flex;align-items:center;justify-content:flex-end;gap:8px;
+  flex:0 1 auto;min-width:0;flex-wrap:nowrap;
+}
+.easy-row .nm{font-weight:600;font-size:14px;line-height:1.25;margin:0;}
+.easy-row .cat{font-size:10.5px;color:var(--muted);line-height:1.3;margin:2px 0 0;}
 .easy-row .nm,.easy-row .cat{overflow-wrap:anywhere;}
-.easy-row .spacer{display:none;}
-.price-edit{display:flex;align-items:center;gap:6px;}
-.price-edit input{width:82px;text-align:right;font-weight:700;}
+.price-edit{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;}
+.price-edit input{
+  width:72px;min-width:72px;max-width:88px;height:40px;min-height:40px;
+  text-align:right;font-weight:700;font-size:14px;line-height:1;padding:0 8px;
+  box-sizing:border-box;
+}
+.price-edit .btn{
+  width:40px;min-width:40px;height:40px;min-height:40px;padding:0;
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+}
+.price-edit .btn .ico{width:14px;height:14px;display:block;}
 .toggle{position:relative;width:52px;height:29px;border-radius:15px;background:#D8D2C4;transition:.2s;flex:0 0 auto;}
 .toggle.on{background:var(--ok);}
 .toggle::after{content:'';position:absolute;top:3px;left:3px;width:23px;height:23px;border-radius:50%;
@@ -315,9 +332,58 @@ nav.tabs button.on{color:var(--cream);border-bottom-color:var(--gold);}
 .toggle.on::after{transform:translateX(23px);}
 .easy-row.off{opacity:.55;}
 .easy-row.hidden{opacity:.42;background:#F0EDE6;}
-.soldlabel{font-size:10.5px;font-weight:700;width:66px;text-align:right;}
-.hidebtn{font-size:10.5px;font-weight:800;border:1px solid var(--line);border-radius:10px;background:var(--cream);color:var(--muted);padding:8px 10px;white-space:nowrap;}
+.soldlabel{
+  font-size:11px;font-weight:700;line-height:1.2;white-space:nowrap;
+  min-width:4.5em;text-align:center;flex:0 0 auto;
+}
+.hidebtn{
+  font-size:11px;font-weight:800;border:1px solid var(--line);border-radius:10px;
+  background:var(--cream);color:var(--muted);padding:0 12px;white-space:nowrap;
+  height:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;
+  flex:0 0 auto;line-height:1;
+}
 .hidebtn.on{background:#FBEAE5;border-color:#E7C3B2;color:var(--bad);}
+.dish-order{display:flex;flex-direction:column;gap:3px;flex:0 0 auto;}
+.dish-order button{
+  width:36px;height:32px;min-height:32px;border-radius:10px;border:1px solid var(--line);
+  background:var(--cream);color:var(--forest);font-size:14px;font-weight:900;padding:0;
+  display:inline-flex;align-items:center;justify-content:center;line-height:1;
+}
+.dish-order button:disabled{opacity:.35;}
+.easy-edit{
+  width:40px;min-width:40px;height:40px;min-height:40px;border-radius:10px;
+  border:1px solid var(--line);background:var(--cream);color:var(--forest);
+  padding:0;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+}
+.easy-edit .ico{width:18px;height:18px;stroke:currentColor;stroke-width:1.8;display:block;flex:0 0 auto;}
+.easy-row .rico{width:40px;height:40px;border-radius:12px;background:var(--cream);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex:0 0 auto;overflow:hidden;}
+.easy-row .rico .ico{width:17px;height:17px;stroke:var(--forest-2);stroke-width:1.7;}
+.easy-row .rico .greek-ic{width:34px;height:34px;}
+/* Tablet: keep one row; shrink name before wrapping controls under arrows */
+@media(max-width:900px){
+  .easy-row .easy-main{flex:1 1 120px;}
+  .soldlabel{min-width:0;}
+  .hidebtn{padding:0 10px;}
+}
+/* Phone: wrap controls to a FULL-WIDTH second row (below name), never under ↑↓ alone */
+@media(max-width:640px){
+  .easy-row{flex-wrap:wrap;align-items:center;}
+  .easy-row .easy-main{flex:1 1 calc(100% - 100px);}
+  .easy-row .easy-controls{
+    flex:1 1 100%;justify-content:flex-start;flex-wrap:wrap;
+    padding-left:0;margin-left:0;width:100%;
+  }
+  .dish-order{flex-direction:row;gap:4px;}
+  .dish-order button{width:34px;height:34px;min-height:34px;}
+  .price-edit .btn{min-width:40px;}
+}
+@media(max-width:420px){
+  .easy-row .easy-controls{gap:6px;}
+  .soldlabel{font-size:10.5px;}
+  .hidebtn{padding:0 8px;font-size:10.5px;}
+  .price-edit input{width:64px;min-width:64px;}
+}
 
 /* pro mode */
 .pro-item{background:var(--paper);border-radius:16px;box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden;}
@@ -344,14 +410,20 @@ nav.tabs button.on{color:var(--cream);border-bottom-color:var(--gold);}
 .cat-manager .cat-top{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:12px;}
 .cat-manager h3{font-size:18px;color:var(--forest);display:flex;align-items:center;gap:8px;}
 .cat-list{display:grid;gap:8px;}
-.cat-edit{display:grid;grid-template-columns:28px 46px minmax(0,1fr) minmax(96px,.55fr) 54px auto;
+.cat-edit{display:grid;grid-template-columns:48px 46px minmax(0,1fr) minmax(96px,.55fr) 54px auto;
   gap:8px;align-items:center;background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:14px;padding:8px;max-width:100%;overflow:hidden;}
 .cat-edit.dragging{opacity:.55;outline:2px dashed var(--gold);}
 .cat-edit.hidden{opacity:.52;background:#F0EDE6;}
 .cat-edit .drag-handle{width:28px;height:28px;}
+.cat-order{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;}
+.cat-order .ord{font-size:11px;font-weight:900;color:var(--gold);letter-spacing:.4px;min-width:18px;text-align:center;}
+.cat-order button{width:44px;height:44px;min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--cream);color:var(--forest);font-size:16px;font-weight:900;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;}
+.cat-order button:disabled{opacity:.35;cursor:default;}
+.cat-order button:not(:disabled):active{transform:scale(.94);background:#EEF5EA;}
 .cat-edit .cat-preview{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;
   background:var(--catbg,#E7EEEA);color:var(--catacc,#38564F);box-shadow:inset 0 0 0 1px rgba(255,255,255,.65);}
 .cat-edit .cat-preview .ico{width:22px;height:22px;stroke-width:1.9;}
+.cat-edit .cat-preview .greek-ic{width:34px;height:34px;}
 .cat-edit input,.cat-edit select{min-width:0;}
 .cat-edit input[type="color"]{width:54px;height:42px;padding:4px;border-radius:11px;}
 .cat-state{display:inline-flex;align-items:center;gap:5px;margin-top:5px;padding:3px 7px;border-radius:999px;
@@ -367,19 +439,19 @@ nav.tabs button.on{color:var(--cream);border-bottom-color:var(--gold);}
 .cat-translation-grid input{width:100%;}
 .cat-mini{font-size:10.5px;color:var(--muted);line-height:1.3;margin-top:3px;}
 .cat-actions{display:flex;gap:6px;justify-content:flex-end;}
-.cat-actions button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--cream);color:var(--forest);}
+.cat-actions button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--cream);color:var(--forest);display:inline-flex;align-items:center;justify-content:center;padding:0;}
 .cat-actions button.danger{color:var(--bad);}
+.cat-edit.drop-target{outline:2px solid rgba(160,126,60,.45);background:#FFF8E8;}
 @media(max-width:780px){
-  .easy-row{grid-template-columns:34px minmax(0,1fr) auto;gap:9px;}
-  .easy-row .price-edit,.easy-row .soldlabel,.easy-row .hidebtn{grid-column:2 / 4;}
-  .easy-row .price-edit{justify-content:flex-start;}
-  .easy-row .soldlabel{text-align:left;width:auto;}
-  .cat-edit{grid-template-columns:28px 42px minmax(0,1fr);align-items:start;}
+  .cat-edit{grid-template-columns:52px 42px minmax(0,1fr);align-items:start;}
   .cat-edit select,.cat-edit input[type="color"],.cat-actions{grid-column:3 / 4;}
   .cat-media{grid-column:1 / -1;grid-template-columns:1fr;}
   .cat-translations{grid-column:1 / -1;}
   .cat-translation-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
   .cat-actions{justify-content:flex-start;}
+  .announce-editor{padding:12px;overflow-x:hidden;}
+  .announce-editor .checks{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+  .announce-editor .checks label{min-height:44px;}
 }
 
 /* orders */
@@ -479,12 +551,16 @@ nav.tabs button .ico{width:15px;height:15px;stroke-width:1.9;}
 .tcard .actions button{display:inline-flex;align-items:center;gap:4px;}
 .tcard .actions button .ico{width:11px;height:11px;stroke-width:2.2;}
 .state .ico{width:11px;height:11px;stroke-width:2.4;}
-.easy-row .rico{width:34px;height:34px;border-radius:11px;background:var(--cream);
-  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
-.easy-row .rico .ico{width:17px;height:17px;stroke:var(--forest-2);stroke-width:1.7;}
-.pro-head .phico{width:30px;height:30px;border-radius:10px;background:var(--cream);
-  display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.easy-row .rico .greek-ic{width:34px;height:34px;}
+.pro-head .phico{width:34px;height:34px;border-radius:11px;background:var(--cream);
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto;overflow:hidden;}
 .pro-head .phico .ico{width:15px;height:15px;stroke:var(--forest-2);stroke-width:1.8;}
+.pro-head .phico .greek-ic{width:28px;height:28px;}
+.easy-cat-h .greek-ic{width:22px;height:22px;}
+.easy-cat-h .ico{width:16px;height:16px;stroke-width:1.9;}
+/* Plate-art thumbs (same rule as guest menu) */
+.greek-ic{display:block;width:1.35em;height:1.35em;background:var(--food) center/contain no-repeat;flex:0 0 auto;}
+.rico .greek-ic,.phico .greek-ic,.cat-preview .greek-ic,.easy-cat-h .greek-ic{background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;}
 .order .tbl .ico{width:15px;height:15px;stroke-width:2;}
 .checks label .ico{width:13px;height:13px;stroke:var(--forest-3);stroke-width:1.8;}
 .warnbox{display:flex;gap:9px;align-items:flex-start;}
@@ -605,14 +681,14 @@ nav.tabs button .ico{width:15px;height:15px;stroke-width:1.9;}
   .layout-row,.fieldrow{grid-template-columns:1fr;}
   .layout-actions{display:grid;grid-template-columns:1fr 1fr;}
   .layout-actions .btn{justify-content:center;}
-  .easy-row{grid-template-columns:34px minmax(0,1fr) 52px;}
+  .easy-row .easy-controls{flex:1 1 100%;}
   .price-edit{flex-wrap:wrap;}
   .pro-head{gap:8px;padding:12px;}
   .pro-head .phico{display:none;}
   .cat-manager{padding:12px;}
   .cat-manager .cat-top{align-items:flex-start;flex-wrap:wrap;}
   .cat-manager .cat-top .btn{width:100%;justify-content:center;}
-  .cat-edit{grid-template-columns:28px 40px minmax(0,1fr);}
+  .cat-edit{grid-template-columns:52px 40px minmax(0,1fr);}
   .cat-edit select,.cat-edit input[type="color"],.cat-actions{grid-column:1 / -1;width:100%;}
   .cat-actions{display:grid;grid-template-columns:repeat(3,1fr);}
   .cat-actions button{width:100%;}
@@ -645,9 +721,7 @@ nav.tabs button .ico{width:15px;height:15px;stroke-width:1.9;}
   .floor-label.round-row{left:36%;}
   .plan-table{border-width:2.5px;}
   .plan-table b{font-size:12px;}
-  .easy-row{grid-template-columns:30px minmax(0,1fr);}
-  .easy-row .toggle{grid-column:2;justify-self:start;}
-  .easy-row .price-edit,.easy-row .soldlabel,.easy-row .hidebtn{grid-column:1 / -1;}
+  .easy-row .easy-controls{width:100%;}
   .io-ticket,.io-side{padding:16px;}
   .io-line .pr{grid-column:2 / 4;justify-self:start;}
   .order .top{flex-wrap:wrap;}
@@ -666,12 +740,49 @@ nav.tabs button .ico{width:15px;height:15px;stroke-width:1.9;}
 /* 2026-07-31 — owner UI quality pass */
 :root{--tap:44px;}
 :focus-visible{outline:3px solid #E4C95F;outline-offset:3px;}
-button,.btn,nav.tabs button,.hidebtn,.upload-pick,.langtabs button,.cat-actions button,
+button,.btn,nav.tabs button,.hidebtn,.upload-pick,.langtabs button,.cat-actions button,.cat-order button,.easy-edit,
 .io-x,.io-editbtn,.io-shortcuts button,.ops-go,.ops-actions button{
   min-height:var(--tap);
 }
-input,select,textarea{min-height:var(--tap);font-size:16px;}
+/* Keep ↑↓ compact — global tap size would blow them up and warp the row */
+.dish-order button{min-height:32px!important;height:32px;}
+.price-edit .btn{min-height:40px!important;height:40px;}
+.easy-edit{min-height:40px!important;height:40px;}
+input,select,textarea{min-height:var(--tap);font-size:16px;line-height:1.25;box-sizing:border-box;}
 button:disabled,[aria-disabled="true"]{cursor:not-allowed;}
+
+/* Hard rule: buttons never drip text / mis-align icons across aspect ratios */
+.btn,nav.tabs button,.modeswitch button,.status-pill,.sync-pill,.hidebtn,.easy-edit,
+.upload-pick,.langtabs button,.ops-go,.ops-actions button,.announce-actions .btn,
+.panel-head .btn,.setting-row .btn,.preset-actions .btn,.scan-actions .btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  line-height:1.15;vertical-align:middle;box-sizing:border-box;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.btn .ico,nav.tabs button .ico,.modeswitch button .ico,.hidebtn .ico,.easy-edit .ico,
+.upload-pick .ico,.ops-go .ico,.panel-head .btn .ico{
+  flex:0 0 auto;display:block;overflow:visible;
+}
+.modeswitch button,.status-pill,.sync-pill{min-width:0;max-width:100%;}
+header .bar{align-items:center;}
+header .bar .btn,header .bar .status-pill,header .bar .sync-pill{
+  flex:0 1 auto;align-self:center;
+}
+nav.tabs{align-items:stretch;-webkit-overflow-scrolling:touch;}
+nav.tabs button{align-items:center;}
+.panel-head{gap:10px;}
+.panel-head .btn{flex:0 1 auto;}
+.setting-row{align-items:center;}
+.announce-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.announce-actions .btn{flex:0 1 auto;}
+.pro-head{align-items:center;}
+.pro-head .dish-order button{min-height:32px!important;}
+.login .btn{width:100%;justify-content:center;}
+@media(max-width:760px){
+  .btn,.modeswitch button,.status-pill,.sync-pill,.hidebtn{white-space:nowrap;}
+  .modeswitch button{font-size:12.5px;padding-inline:8px;}
+  header .bar{gap:8px;}
+}
 .login{padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));}
 .login .box{max-width:420px;}
 .login-status{min-height:22px;margin:10px 0 0;color:var(--bad);font-size:12px;line-height:1.45;}
@@ -713,7 +824,8 @@ body.is-saving button[data-save],body.is-saving .upload-pick{pointer-events:none
 }
 @media(max-width:390px){
   .status-pill{flex-basis:100%;}
-  .modeswitch{grid-template-columns:1fr;}
+  .modeswitch{grid-template-columns:repeat(3,1fr);}
+  .modeswitch button{font-size:12px;padding-inline:4px;}
   .media-upload{display:grid;grid-template-columns:1fr;}
   .media-upload .upload-status{min-height:32px;}
   .cat-actions{grid-template-columns:repeat(3,1fr)!important;}
@@ -972,7 +1084,7 @@ function knownDishImagePath(i){
   return '';
 }
 function knownCategoryImagePath(c){
-  if(c&&c.image) return c.image;
+  if(c&&c.image && !/(?:^|\/)cat-[a-z0-9-]+\.png$/i.test(c.image)) return c.image;
   if(typeof catArtSrc==='function') return catArtSrc(c)||'';
   return '';
 }
@@ -1424,6 +1536,41 @@ function flushRemoteSave(options={}){
   saveState(S);
   return saveLiveMenu(options);
 }
+/** Persist locally then wait for the live store write (phone + PC publish path). */
+async function persistAndPublish(reason, options={}){
+  persist(reason||'edit');
+  clearTimeout(remoteSaveTimer);
+  const ok=await flushRemoteSave({
+    silent: options.silent!==false,
+    skipConfirm: !!options.skipConfirm,
+    lightSaving: !!options.lightSaving
+  });
+  if(ok) dirtySincePublish=false;
+  return !!ok;
+}
+/** Debounced publish for rapid ↑↓ / price taps — UI stays instant. */
+let quickPublishTimer=null;
+function queueQuickPublish(reason){
+  pendingRemoteReason=reason||pendingRemoteReason||'edit';
+  dirtySincePublish=true;
+  setSyncState('pending');
+  clearTimeout(remoteSaveTimer);
+  clearTimeout(quickPublishTimer);
+  quickPublishTimer=setTimeout(()=>{
+    flushRemoteSave({silent:true,skipConfirm:true,lightSaving:true}).then(ok=>{
+      if(ok) dirtySincePublish=false;
+      else toast('Δεν δημοσιεύτηκε · δοκιμάστε ξανά');
+    });
+  }, 420);
+}
+function adminDishThumb(i){
+  try{ if(typeof dishIcon==='function') return dishIcon(i); }catch(e){}
+  return ICO.get((i&&i.icon)||'bowl');
+}
+function adminCatThumb(c){
+  try{ if(typeof catIcon==='function') return catIcon(c); }catch(e){}
+  return ICO.get((c&&c.icon)||'bowl');
+}
 function persist(reason){
   S=normalizeState(S||defaultState());
   const nextSnapshot=JSON.stringify(S);
@@ -1739,7 +1886,7 @@ function saveLiveMenu(options={}){
   liveSaveChain=liveSaveChain.catch(()=>false).then(()=>performLiveMenuSave(options));
   return liveSaveChain;
 }
-async function performLiveMenuSave({silent=false,resetOps=false}={}){
+async function performLiveMenuSave({silent=false,resetOps=false,skipConfirm=false,lightSaving=false}={}){
   const pin=adminPin();
   if(!pin){
     lastRemoteSaveOk=false; lastRemoteSaveWhy='wrong_pin'; dirtySincePublish=true;
@@ -1747,7 +1894,7 @@ async function performLiveMenuSave({silent=false,resetOps=false}={}){
     toast(saveErrorMessage('wrong_pin'));
     return false;
   }
-  document.body.classList.add('is-saving');
+  if(!lightSaving) document.body.classList.add('is-saving');
   try{
     flushOpenProForms();
     /* Catalogue / settings edits keep kitchen orders and table occupancy.
@@ -1785,12 +1932,21 @@ async function performLiveMenuSave({silent=false,resetOps=false}={}){
       saveState(S);
       if(menuBroadcast) menuBroadcast.postMessage({type:'menu-revision',revision});
     }catch(e){}
+    lastRemoteSaveOk=true; lastRemoteSaveWhy=''; dirtySincePublish=false;
+    pendingRemoteReason='edit';
+    /* Fast path for ↑↓ / price taps: don't block the UI waiting on CDN. */
+    if(skipConfirm){
+      setSyncState('pending');
+      if(!silent) toast('Αποθηκεύτηκε · ενημέρωση πελατών…');
+      confirmPublicMenuRevision(revision,{timeoutMs:20000,intervalMs:800}).then(ok=>{
+        if(ok && !dirtySincePublish) setSyncState('live');
+      });
+      return true;
+    }
     /* POST can succeed while public /api/menu still serves the previous Blob
        for a moment. Keep the pill on "confirming" until guests can read it. */
     setSyncState('confirming');
     const visible=await confirmPublicMenuRevision(revision);
-    lastRemoteSaveOk=true; lastRemoteSaveWhy=''; dirtySincePublish=false;
-    pendingRemoteReason='edit';
     if(visible){
       setSyncState('live');
       if(!silent) toast('Ενημερώθηκε ζωντανά ✓');
@@ -2248,6 +2404,7 @@ $('tabs').querySelectorAll('button').forEach(b=>{
   b.onclick = ()=>{
     $('tabs').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
     b.classList.add('on');
+    try{ b.scrollIntoView({ inline:'nearest', block:'nearest', behavior:'smooth' }); }catch(e){}
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
     $('panel-'+b.dataset.tab).classList.add('on');
     if(b.dataset.tab==='qr') renderQR();
@@ -2438,7 +2595,7 @@ function renderEasy(){
   tools.innerHTML=`
     <button type="button" class="btn gold pressable" id="easyAddDish" data-testid="easy-add-dish">${ICO.get('plus')}Προσθήκη πιάτου</button>
     <button type="button" class="btn ghost sm pressable" id="easyAddCat" data-testid="easy-add-category">${ICO.get('plus')}Νέα κατηγορία</button>
-    <span class="hint" style="flex:1 1 100%;margin:0;">Τιμή / διαθεσιμότητα εδώ · πλήρες edit (όνομα, αλλεργιογόνα) ανοίγει στο Pro.</span>`;
+    <span class="hint" style="flex:1 1 100%;margin:0;">Τιμή / απόκρυψη εδώ · πάτα «Επεξεργασία» για πλήρες edit σε κινητό ή PC.</span>`;
   area.appendChild(tools);
   tools.querySelector('#easyAddDish').onclick=()=>{
     const id=addNewDish();
@@ -2450,46 +2607,60 @@ function renderEasy(){
 
   const cats = S.categories.slice().sort((a,b)=>a.order-b.order);
   cats.forEach(c=>{
-    const items = S.menu.filter(i=>i.cat===c.id); if(!items.length) return;
+    const items = S.menu.filter(i=>i.cat===c.id)
+      .slice()
+      .sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0));
+    if(!items.length) return;
     const h=document.createElement('h3');
+    h.className='easy-cat-h';
     h.style.cssText='font-size:15px;color:var(--forest-3);margin:18px 0 8px;display:flex;align-items:center;gap:8px;';
-    h.innerHTML = ICO.draw(c.icon) + '<span>'+catLabel(c,'el')+'</span>';
-    h.querySelector('.ico').style.cssText='width:16px;height:16px;stroke-width:1.9;';
+    h.innerHTML = adminCatThumb(c) + '<span>'+catLabel(c,'el')+'</span>';
     area.appendChild(h);
 
-    items.forEach(i=>{
+    items.forEach((i,ix)=>{
       const ss=dishScheduleStatus(i);
       const scheduleText=ss.enabled?(ss.active?'Προγραμματισμένο · live':(ss.upcoming?'Έρχεται '+ss.schedule.from:'Έληξε '+ss.schedule.to)):'';
       const row=document.createElement('div');
       row.className='easy-row reveal'+(i.available?'':' off')+(i.hidden||!ss.active?' hidden':'');
       row.dataset.id=String(i.id);
       row.innerHTML=`
-        <div class="rico">${ICO.get(i.icon)}</div>
-        <div>
+        <div class="easy-left">
+          <div class="dish-order">
+            <button type="button" data-dish-up data-testid="easy-dish-up-${i.id}" title="Πάνω" ${ix===0?'disabled':''}>↑</button>
+            <button type="button" data-dish-down data-testid="easy-dish-down-${i.id}" title="Κάτω" ${ix===items.length-1?'disabled':''}>↓</button>
+          </div>
+          <div class="rico">${adminDishThumb(i)}</div>
+        </div>
+        <div class="easy-main">
           <div class="nm">${itemName(i,'el')}</div>
           <div class="cat">${itemName(i,'en')}${scheduleText?` · ${scheduleText}`:''}</div>
         </div>
-        <div class="spacer"></div>
-        <div class="price-edit">
-          <button class="btn ghost sm pressable" data-minus>${ICO.get('minus')}</button>
-          <input type="number" step="0.10" min="0" value="${i.price.toFixed(2)}" data-price>
-          <button class="btn ghost sm pressable" data-plus>${ICO.get('plus')}</button>
-        </div>
-        <span class="soldlabel" style="color:${(i.hidden||!ss.active)?'var(--bad)':(i.available?'var(--ok)':'var(--bad)')}">${i.hidden?'Κρυφό':(!ss.active?'Εκτός ημερομηνίας':(i.available?'Διαθέσιμο':'Τελείωσε'))}</span>
-        <button class="hidebtn ${i.hidden?'on':''}" data-hide data-testid="dish-visibility-${i.id}">${i.hidden?'Εμφάνιση':'Απόκρυψη'}</button>
-        <div class="toggle ${i.available?'on':''}" data-toggle title="Διαθέσιμο / τελείωσε"></div>`;
-      row.querySelector('[data-toggle]').onclick=()=>{ i.available=!i.available; persist(); renderEasy(); toast(i.available?'Διαθέσιμο':'Τελείωσε'); };
-      row.querySelector('[data-hide]').onclick=()=>{ i.hidden=!i.hidden; persist(); renderEasy(); toast(i.hidden?'Κρύφτηκε από το menu':'Εμφανίζεται στο menu'); };
+        <div class="easy-controls">
+          <div class="price-edit">
+            <button class="btn ghost sm pressable" data-minus aria-label="Μείωση">${ICO.get('minus')}</button>
+            <input type="number" step="0.10" min="0" value="${i.price.toFixed(2)}" data-price>
+            <button class="btn ghost sm pressable" data-plus aria-label="Αύξηση">${ICO.get('plus')}</button>
+          </div>
+          <span class="soldlabel" style="color:${(i.hidden||!ss.active)?'var(--bad)':(i.available?'var(--ok)':'var(--bad)')}">${i.hidden?'Κρυφό':(!ss.active?'Εκτός':(i.available?'Διαθέσιμο':'Τελείωσε'))}</span>
+          <button class="hidebtn ${i.hidden?'on':''}" data-hide data-testid="dish-visibility-${i.id}">${i.hidden?'Εμφάνιση':'Απόκρυψη'}</button>
+          <div class="toggle ${i.available?'on':''}" data-toggle title="Διαθέσιμο / τελείωσε"></div>
+          <button class="easy-edit pressable" type="button" data-edit data-testid="easy-edit-${i.id}" title="Πλήρης επεξεργασία" aria-label="Επεξεργασία">${ICO.get('edit')}</button>
+        </div>`;
+      row.querySelector('[data-dish-up]').onclick=()=>shiftDishInCategory(i.id,-1);
+      row.querySelector('[data-dish-down]').onclick=()=>shiftDishInCategory(i.id,1);
+      row.querySelector('[data-edit]').onclick=()=>openProDish(i.id);
+      row.querySelector('[data-toggle]').onclick=()=>{ i.available=!i.available; persist('availability'); queueQuickPublish('availability'); renderEasy(); toast(i.available?'Διαθέσιμο ✓':'Τελείωσε ✓'); };
+      row.querySelector('[data-hide]').onclick=()=>{ i.hidden=!i.hidden; persist('visibility'); queueQuickPublish('visibility'); renderEasy(); toast(i.hidden?'Κρύφτηκε ✓':'Εμφανίζεται ✓'); };
       const inp=row.querySelector('[data-price]');
       const commitPrice=()=>{
         const v=parseFloat(inp.value);
         if(isNaN(v)||v<0){ toast('Μη έγκυρη τιμή'); inp.value=Number(i.price||0).toFixed(2); return; }
-        i.price=+v.toFixed(2); persist(); toast('Τιμή ενημερώθηκε');
+        i.price=+v.toFixed(2); persist('price'); queueQuickPublish('price'); toast('Τιμή ενημερώθηκε ✓');
       };
       inp.onchange=commitPrice;
       inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); commitPrice(); inp.blur(); } };
-      row.querySelector('[data-minus]').onclick=()=>{ i.price=Math.max(0,+(Number(i.price||0)-0.5).toFixed(2)); persist(); renderEasy(); };
-      row.querySelector('[data-plus]').onclick=()=>{ i.price=+(Number(i.price||0)+0.5).toFixed(2); persist(); renderEasy(); };
+      row.querySelector('[data-minus]').onclick=()=>{ i.price=Math.max(0,+(Number(i.price||0)-0.5).toFixed(2)); persist('price'); queueQuickPublish('price'); renderEasy(); };
+      row.querySelector('[data-plus]').onclick=()=>{ i.price=+(Number(i.price||0)+0.5).toFixed(2); persist('price'); queueQuickPublish('price'); renderEasy(); };
       area.appendChild(row);
     });
   });
@@ -2520,13 +2691,17 @@ function renderPro(){
   };
   area.appendChild(addBtn);
 
-  S.menu.forEach(i=>{
+  S.menu.forEach((i,ix)=>{
     const box=document.createElement('div'); box.className='pro-item';
     box.draggable=true; box.dataset.id=i.id;
     box.innerHTML=`
       <div class="pro-head">
-        <span class="drag-handle" title="Σύρε για αλλαγή σειράς">⋮⋮</span>
-        <span class="phico">${ICO.get(i.icon||'bowl')}</span>
+        <div class="dish-order">
+          <button type="button" data-dish-up data-testid="dish-up-${i.id}" title="Πάνω" ${ix===0?'disabled':''}>↑</button>
+          <button type="button" data-dish-down data-testid="dish-down-${i.id}" title="Κάτω" ${ix===S.menu.length-1?'disabled':''}>↓</button>
+        </div>
+        <span class="drag-handle" title="Σύρε για αλλαγή σειράς (PC)">⋮⋮</span>
+        <span class="phico">${adminDishThumb(i)}</span>
         <span class="dotstate" style="width:9px;height:9px;border-radius:50%;flex:0 0 auto;
           background:${i.hidden?'#8B8674':(i.available?'var(--ok)':'var(--bad)')}"></span>
         <span class="nm">${itemName(i,'el')}</span>
@@ -2591,7 +2766,9 @@ function renderPro(){
           <button type="button" class="btn danger sm pressable" data-del data-testid="dish-delete-${i.id}">${ICO.get('trash')}Διαγραφή πιάτου</button>
         </div>
       </div>`;
-    box.querySelector('.pro-head').onclick=e=>{ if(e.target.closest('.drag-handle')) return; box.classList.toggle('open'); };
+    box.querySelector('.pro-head').onclick=e=>{ if(e.target.closest('.drag-handle,[data-dish-up],[data-dish-down]')) return; box.classList.toggle('open'); };
+    box.querySelector('[data-dish-up]').onclick=e=>{ e.stopPropagation(); shiftDish(i.id,-1); };
+    box.querySelector('[data-dish-down]').onclick=e=>{ e.stopPropagation(); shiftDish(i.id,1); };
     box.addEventListener('dragstart',e=>{
       if(!e.target.closest('.drag-handle')){ e.preventDefault(); return; }
       box.classList.add('dragging'); e.dataTransfer.setData('text/plain',String(i.id));
@@ -2602,11 +2779,7 @@ function renderPro(){
       e.preventDefault();
       const from=String(e.dataTransfer.getData('text/plain')), to=String(i.id);
       if(!from || from===to) return;
-      const a=S.menu.findIndex(x=>String(x.id)===from), b=S.menu.findIndex(x=>String(x.id)===to);
-      if(a<0||b<0) return;
-      const [m]=S.menu.splice(a,1); S.menu.splice(b,0,m);
-      S.menu.forEach((x,idx)=>x.order=idx+1);
-      persist(); renderPro(); toast('Η σειρά ενημερώθηκε');
+      moveDish(from,to);
     });
     box.querySelectorAll('[data-lang]').forEach(b=>b.onclick=(e)=>{
       e.stopPropagation();
@@ -2727,7 +2900,8 @@ function applyDishForm(i,box,opts={}){
   i.removable=(box.querySelector('[data-removable]')?box.querySelector('[data-removable]').value:'').split(',').map(v=>v.trim()).filter(Boolean).slice(0,20)
     .map((value,idx)=>Object.assign({},oldRemovable[idx]||{},{[proLang]:value}));
   i.icon = (box.querySelector('[data-icon]')&&box.querySelector('[data-icon]').value) || 'bowl';
-  i.iconOverride = true;
+  /* Never force iconOverride — it hid plate art and left every Easy row as a generic bowl. */
+  if('iconOverride' in i) delete i.iconOverride;
   i.image = cleanAdminPath(box.querySelector('[data-image]')?box.querySelector('[data-image]').value:'');
   box.querySelectorAll('[data-flag]').forEach(cb=> i[cb.dataset.flag] = cb.checked );
   i.schedule=normalizeDishSchedule({
@@ -2752,11 +2926,12 @@ function renderCategoryManager(area){
     <h3>${ICO.get('layers')}Κατηγορίες</h3>
     <button type="button" class="btn gold sm pressable" id="addCategoryBtn" data-testid="add-category">${ICO.get('plus')}Νέα κατηγορία</button>
   </div>
-  <div class="cat-mini" style="margin-bottom:10px;">Προσθέστε, μετονομάστε, ταξινομήστε, κρύψτε ή διαγράψτε κατηγορίες. Οι αλλαγές ισχύουν αμέσως στο μενού.</div>
+  <div class="cat-mini" style="margin-bottom:10px;">Αλλάξτε τη <b>σειρά</b> με τα μεγάλα βέλη ↑ ↓ (δουλεύει σε κινητό και PC). Η σειρά φαίνεται αμέσως στους πελάτες.</div>
   <div class="cat-list"></div>`;
   const list=wrap.querySelector('.cat-list');
   wrap.querySelector('#addCategoryBtn').onclick=()=>addCategory();
-  S.categories.slice().sort((a,b)=>a.order-b.order).forEach((c,ix)=>{
+  const ordered=S.categories.slice().sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0));
+  ordered.forEach((c,ix)=>{
     const used=S.menu.filter(i=>i.cat===c.id).length;
     const visible=S.menu.filter(i=>i.cat===c.id&&dishGuestVisible(i)).length;
     const autoHidden=!c.hidden&&visible===0;
@@ -2767,14 +2942,19 @@ function renderCategoryManager(area){
     row.className='cat-edit';
     row.draggable=true;
     row.dataset.id=c.id;
+    row.dataset.order=String(c.order||ix+1);
     row.style.setProperty('--catacc', acc);
     row.style.setProperty('--catbg', tint);
     row.innerHTML=`
-      <span class="drag-handle" title="Σύρε για αλλαγή σειράς">⋮⋮</span>
-      <span class="cat-preview">${ICO.get(c.icon||'bowl')}</span>
+      <div class="cat-order">
+        <button type="button" data-cat-up data-testid="category-up-${ioEsc(c.id)}" title="Πάνω" ${ix===0?'disabled':''}>↑</button>
+        <span class="ord" title="Σειρά">${ix+1}</span>
+        <button type="button" data-cat-down data-testid="category-down-${ioEsc(c.id)}" title="Κάτω" ${ix===ordered.length-1?'disabled':''}>↓</button>
+      </div>
+      <span class="cat-preview" title="Σύρε για αλλαγή σειράς">${adminCatThumb(c)}</span>
       <div>
         <input data-cat-name value="${catLabel(c,'el')}" maxlength="40" placeholder="Όνομα κατηγορίας">
-        <div class="cat-mini">${used} πιάτα · id ${ioEsc(c.id)}</div>
+        <div class="cat-mini">${used} πιάτα · σειρά ${ix+1} · id ${ioEsc(c.id)}</div>
         <span class="cat-state ${stateClass}">${stateText}</span>
       </div>
       <select data-cat-icon>${icons.map(ic=>`<option value="${ic}" ${ic===(c.icon||'bowl')?'selected':''}>${ic}</option>`).join('')}</select>
@@ -2794,16 +2974,25 @@ function renderCategoryManager(area){
       </div>`;
     if(c.hidden) row.classList.add('hidden');
     row.addEventListener('dragstart',e=>{
-      if(!e.target.closest('.drag-handle')){ e.preventDefault(); return; }
-      row.classList.add('dragging'); e.dataTransfer.setData('text/plain',String(c.id));
+      /* Allow drag from the row chrome; block when editing form fields. */
+      if(e.target.closest('input,select,textarea,button,label,.cat-media,.cat-translations,.upload-pick,.media-upload')){
+        e.preventDefault(); return;
+      }
+      row.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';
+      e.dataTransfer.setData('text/plain',String(c.id));
     });
     row.addEventListener('dragend',()=>row.classList.remove('dragging'));
-    row.addEventListener('dragover',e=>e.preventDefault());
+    row.addEventListener('dragover',e=>{ e.preventDefault(); e.dataTransfer.dropEffect='move'; row.classList.add('drop-target'); });
+    row.addEventListener('dragleave',()=>row.classList.remove('drop-target'));
     row.addEventListener('drop',e=>{
       e.preventDefault();
+      row.classList.remove('drop-target');
       const from=String(e.dataTransfer.getData('text/plain')), to=String(c.id);
       moveCategory(from,to);
     });
+    row.querySelector('[data-cat-up]').onclick=e=>{ e.stopPropagation(); shiftCategory(c.id,-1); };
+    row.querySelector('[data-cat-down]').onclick=e=>{ e.stopPropagation(); shiftCategory(c.id,1); };
     row.querySelector('[data-cat-save]').onclick=()=>saveCategoryRow(c,row);
     row.querySelector('[data-cat-name]').onchange=()=>saveCategoryRow(c,row);
     row.querySelector('[data-cat-icon]').onchange=()=>saveCategoryRow(c,row);
@@ -2822,7 +3011,14 @@ function renderCategoryManager(area){
     row.querySelector('[data-cat-accent]').onchange=()=>saveCategoryRow(c,row);
     row.querySelector('[data-cat-tint]').onchange=()=>saveCategoryRow(c,row);
     row.querySelectorAll('[data-cat-lang]').forEach(input=>input.onchange=()=>saveCategoryRow(c,row));
-    row.querySelector('[data-cat-hide]').onclick=()=>{ c.hidden=!c.hidden; persist(); renderPro(); toast(c.hidden?'Η κατηγορία κρύφτηκε':'Η κατηγορία εμφανίζεται'); };
+    row.querySelector('[data-cat-hide]').onclick=async()=>{
+      c.hidden=!c.hidden;
+      const ok=await persistAndPublish('visibility',{silent:true});
+      renderPro();
+      toast(ok
+        ? (c.hidden?'Η κατηγορία κρύφτηκε ✓':'Η κατηγορία εμφανίζεται ✓')
+        : (c.hidden?'Η κατηγορία κρύφτηκε':'Η κατηγορία εμφανίζεται'));
+    };
     row.querySelector('[data-cat-del]').onclick=()=>deleteCategory(c);
     list.appendChild(row);
   });
@@ -2858,19 +3054,88 @@ function deleteCategory(c){
   if(!confirm(question)) return;
   if(used) S.menu=S.menu.filter(i=>i.cat!==c.id);
   S.categories=S.categories.filter(x=>x!==c);
-  S.categories.forEach((x,ix)=>x.order=ix+1);
-  persist(); renderPro(); renderDash();
-  toast(used?`Διαγράφηκαν η κατηγορία και ${used} πιάτα`:'Η κατηγορία διαγράφηκε');
+  S.categories.slice().sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0)).forEach((x,ix)=>{ x.order=ix+1; });
+  persistAndPublish('category-delete',{silent:false}).then(ok=>{
+    renderPro(); renderDash();
+    toast(ok
+      ? (used?`Διαγράφηκαν η κατηγορία και ${used} πιάτα ✓`:'Η κατηγορία διαγράφηκε ✓')
+      : (used?`Διαγράφηκαν η κατηγορία και ${used} πιάτα`:'Η κατηγορία διαγράφηκε'));
+  });
+}
+function applyCategoryOrder(ordered){
+  ordered.forEach((c,ix)=>{ c.order=ix+1; });
+  S.categories=ordered;
+  /* Instant UI — publish in the background after a short debounce. */
+  if(editMode==='pro') renderPro();
+  else if(editMode==='easy') renderEasy();
+  toast('Σειρά κατηγοριών ενημερώθηκε');
+  persist('category-order');
+  queueQuickPublish('category-order');
+  return Promise.resolve(true);
+}
+function shiftCategory(id, dir){
+  const ordered=S.categories.slice().sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0));
+  const ix=ordered.findIndex(c=>String(c.id)===String(id));
+  if(ix<0) return;
+  const j=ix+Number(dir||0);
+  if(j<0 || j>=ordered.length) return;
+  const [m]=ordered.splice(ix,1);
+  ordered.splice(j,0,m);
+  applyCategoryOrder(ordered);
 }
 function moveCategory(from,to){
   if(!from || !to || from===to) return;
-  const ordered=S.categories.slice().sort((a,b)=>a.order-b.order);
+  const ordered=S.categories.slice().sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0));
   const a=ordered.findIndex(c=>String(c.id)===from), b=ordered.findIndex(c=>String(c.id)===to);
   if(a<0||b<0) return;
   const [m]=ordered.splice(a,1); ordered.splice(b,0,m);
-  ordered.forEach((c,ix)=>c.order=ix+1);
-  S.categories=ordered;
-  persist(); renderPro(); toast('Η σειρά κατηγοριών ενημερώθηκε');
+  applyCategoryOrder(ordered);
+}
+function applyDishOrder(){
+  S.menu.forEach((x,idx)=>{ x.order=idx+1; });
+  if(editMode==='pro') renderPro();
+  else if(editMode==='easy') renderEasy();
+  toast('Σειρά ενημερώθηκε');
+  persist('dish-order');
+  queueQuickPublish('dish-order');
+  return Promise.resolve(true);
+}
+function shiftDish(id, dir){
+  const ix=S.menu.findIndex(x=>String(x.id)===String(id));
+  if(ix<0) return;
+  const j=ix+Number(dir||0);
+  if(j<0 || j>=S.menu.length) return;
+  const [m]=S.menu.splice(ix,1);
+  S.menu.splice(j,0,m);
+  applyDishOrder();
+}
+function shiftDishInCategory(id, dir){
+  const dish=(S.menu||[]).find(x=>String(x.id)===String(id));
+  if(!dish) return;
+  const list=(S.menu||[]).filter(x=>String(x.cat)===String(dish.cat))
+    .slice()
+    .sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0));
+  const ix=list.findIndex(x=>String(x.id)===String(id));
+  const j=ix+Number(dir||0);
+  if(ix<0 || j<0 || j>=list.length) return;
+  const [m]=list.splice(ix,1);
+  list.splice(j,0,m);
+  list.forEach((x,idx)=>{ x.order=idx+1; });
+  /* Keep global menu sorted: categories then dish order. */
+  const catOrder=new Map((S.categories||[]).map(c=>[String(c.id), Number(c.order)||0]));
+  S.menu.sort((a,b)=>{
+    const ca=catOrder.get(String(a.cat))||0, cb=catOrder.get(String(b.cat))||0;
+    if(ca!==cb) return ca-cb;
+    return (Number(a.order)||0)-(Number(b.order)||0);
+  });
+  applyDishOrder();
+}
+function moveDish(from,to){
+  if(!from || !to || from===to) return;
+  const a=S.menu.findIndex(x=>String(x.id)===from), b=S.menu.findIndex(x=>String(x.id)===to);
+  if(a<0||b<0) return;
+  const [m]=S.menu.splice(a,1); S.menu.splice(b,0,m);
+  applyDishOrder();
 }
 
 function rawItemName(i,code){

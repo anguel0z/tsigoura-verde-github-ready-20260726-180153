@@ -137,7 +137,11 @@ function safeMediaPath(v){
   return v.includes('..') ? '' : v;
 }
 function dishArt(i){ const custom=safeMediaPath(i&&i.image); if(custom) return custom; const f=i&&DISH_ART[i.id]; return f?ART_DIR+f+'.png':''; }
-function catArtSrc(c){ const custom=safeMediaPath(c&&c.image); if(custom) return custom; const f=c&&CAT_ART[c.id]; return f?ART_DIR+f+'.png':''; }
+function catArtSrc(c){
+  const custom=safeMediaPath(c&&c.image);
+  if(custom && !/(?:^|\/)cat-[a-z0-9-]+\.png$/i.test(custom)) return custom;
+  const f=c&&CAT_ART[c.id]; return f?ART_DIR+f+'.png':'';
+}
 
 const GREEK_FOOD_BASE = 'media/dishes/';
 const GREEK_FOOD_ICON = {
